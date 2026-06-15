@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 
 // Vues
 import Home from './views/Home';
-import NotFound from './views/NotFound';
+import NotFound from './views/Notfound';
 
 import './App.css'; 
 
