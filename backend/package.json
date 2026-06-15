@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "idfm_hackaton_2026",
+  "main": "api.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "nodemon api.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.22.5",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^8.0.1",
+    "nodemailer-smtp-transport": "^2.4.2",
+    "nodemon": "^3.1.0",
+    "path": "^0.12.7",
+    "pdfkit": "^0.15.2",
+    "sharp": "^0.33.3",
+    "tls": "^0.0.1",
+    "uuidv4": "^6.2.13"
+  }
+}

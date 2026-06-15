@@ -1,0 +1,22 @@
+{
+  "name": "idfm_hackaton_2026",
+  "version": "1.0.0",
+  "description": "Ce projet est divisé en deux dossiers, un pour le backend et un pour le frontend.",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm install --prefix ./frontend && npm run start --prefix ./frontend\" \"npm install --prefix ./backend && npm run start --prefix ./backend\""
+  },
+  "keywords": [],
+  "author": "idfm_hackaton_2026",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
+    "express-rate-limit": "^8.3.2",
+    "idfm_hackaton_2026": "file:"
+  },
+  "type": "commonjs"
+}
