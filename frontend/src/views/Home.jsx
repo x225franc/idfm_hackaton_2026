@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 /* ── Profile data ── */
 const PROFILES = [
@@ -212,127 +213,13 @@ function NewsCard({ item }) {
   );
 }
 
-/* ── Footer ── */
-function Footer() {
-  return (
-    <footer className="bg-anthracite text-white mt-12">
-      <div className="max-w-7xl mx-auto px-5 py-10">
-        <div className="flex flex-col md:flex-row gap-8 mb-8">
-          {/* Brand */}
-          <div className="md:w-72 shrink-0">
-            <div className="flex items-center gap-2 mb-3">
-              <img
-                src="/images/logo.svg"
-                alt="Comutitres"
-                className="h-10 w-auto object-contain brightness-0 invert"
-              />
-            </div>
-            <p className="text-sm text-white/60 leading-relaxed italic">
-              En partenariat avec{' '}
-              <span className="text-white/80 font-medium">Île-de-France Mobilités</span> pour
-              faciliter vos déplacements quotidiens.
-            </p>
-          </div>
-
-          {/* Links grid */}
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-white/70 flex-1">
-            {[
-              'Mentions légales',
-              'Données personnelles',
-              'Accessibilité',
-              'CGU',
-              'Plan du site',
-              'Cookies',
-            ].map((l) => (
-              <Link key={l} to="#" className="hover:text-white transition-colors">
-                {l}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Social + copyright */}
-        <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex gap-4">
-            {/* Twitter/X */}
-            <a
-              href="#"
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-              aria-label="Twitter"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            {/* Instagram */}
-            <a
-              href="#"
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-              aria-label="Instagram"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0" />
-              </svg>
-            </a>
-            {/* LinkedIn */}
-            <a
-              href="#"
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-              aria-label="LinkedIn"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
-                <circle cx="4" cy="4" r="2" />
-              </svg>
-            </a>
-          </div>
-          <p className="text-sm text-white/40">© 2024 COMUTITRES — Tous droits réservés</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 /* ── Main component ── */
 export default function Home() {
   const [selectedProfile, setSelectedProfile] = useState(null);
 
   return (
     <div className="min-h-screen bg-page flex flex-col">
-      {/* ── Header ── */}
-      <header className="bg-white border-b border-border sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-          <Logo size="md" />
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-secondary">
-            <Link to="#" className="hover:text-brand-interaction transition-colors">
-              Nos offres
-            </Link>
-            <Link to="#" className="hover:text-brand-interaction transition-colors">
-              Actualités
-            </Link>
-            <Link to="#" className="hover:text-brand-interaction transition-colors">
-              Aide
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <button className="text-xl" aria-label="Langue française">
-              🇫🇷
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         {/* ── Hero ── */}
