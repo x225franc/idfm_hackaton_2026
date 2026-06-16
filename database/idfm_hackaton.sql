@@ -48,8 +48,8 @@ CREATE TABLE `profil` (
     CONSTRAINT `fk_profil_compte` FOREIGN KEY (`compte_id`) REFERENCES `compte_connect` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- 3. Table Abonnement 
-CREATE TABLE `abonnement` (
+-- 3. Table forfait 
+CREATE TABLE `forfait` (
     `id` int NOT NULL AUTO_INCREMENT,
     `porteur_id` int NOT NULL,
     `payeur_id` int NOT NULL,

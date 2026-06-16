@@ -89,11 +89,17 @@ app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "co
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const profilRoutes = require("./routes/profil.routes");
+const forfaitRoutes = require("./routes/forfait.routes");
+const documentRoutes = require("./routes/document.routes");
 
 
 // Utilisation des routes
 app.use(authRoutes);
 app.use(userRoutes);
+app.use(profilRoutes);
+app.use(forfaitRoutes);
+app.use(documentRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
