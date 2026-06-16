@@ -1,0 +1,79 @@
+version: '3.8'
+
+networks:
+  idfm_prod_network:
+    driver: overlay
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "${DB_NAME}"
+    networks:
+      - idfm_prod_network
+    volumes:
+      - ./database/idfm_hackaton.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  backend:
+    image: node:20-alpine
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db 
+      - PORT=${BACKEND_PORT}
+      - NODE_ENV=production
+    networks:
+      - idfm_prod_network
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install --omit=dev && node api.js"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      - PORT=${FRONTEND_PORT}
+      - NODE_ENV=production
+    networks:
+      - idfm_prod_network
+    ports:
+      - "80:${FRONTEND_PORT}"
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run build && npx serve -s dist -l tcp://0.0.0.0:${FRONTEND_PORT}"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  mysql_data_prod:
