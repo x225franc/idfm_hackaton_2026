@@ -1,30 +1,20 @@
 import { Routes, Route } from 'react-router-dom';
 
-// Composants
-import Header from './components/Header';
-import Footer from './components/Footer';
-
-// Vues
 import Home from './views/Home';
+import Login from './views/Login';
+import Register from './views/Register';
 import NotFound from './views/Notfound';
 
-import './App.css'; 
+import './App.css';
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 p-8 font-sans">
-      
-      <Header />
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-
-      <Footer />
-
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
