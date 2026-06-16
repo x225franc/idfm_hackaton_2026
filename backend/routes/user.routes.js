@@ -251,4 +251,42 @@ router.put("/api/user/:id/role", (req, res) => {
 	});
 });
 
+// Route RGPD : Suppression totale et définitive du compte
+router.delete("/api/user/:id", (req, res) => {
+    const id = req.params.id;
+
+    // Récupérer le compte pour envoyer un mail d'adieu avant suppression
+    const sqlGet = "SELECT email FROM compte_connect WHERE id = ?";
+    db.query(sqlGet, [id], (err, rows) => {
+        if (err || rows.length === 0) return res.status(404).json({ message: "Compte introuvable" });
+        
+        const email = rows[0].email;
+
+        // La suppression en cascade (ON DELETE CASCADE) de la BDD s'occupe de vider les autres tables
+        const sqlDelete = "DELETE FROM compte_connect WHERE id = ?";
+        db.query(sqlDelete, [id], (err, result) => {
+            if (err) return res.status(500).json({ message: "Erreur lors de la suppression" });
+            
+            res.status(200).json({ message: "Compte et données associées supprimés conformément au RGPD" });
+
+            // Envoi de l'e-mail de confirmation
+            const emailTemplate = EmailTemplate({
+                url: `${process.env.FRONTEND_URL}`,
+                text1: `<strong style="color: #ef4444; font-size: 18px;">Suppression de votre compte</strong>`,
+                text2: `Conformément au RGPD, l'intégralité de vos données personnelles a été effacée de nos serveurs. Nous sommes désolés de vous voir partir !`,
+                link: "",
+                logo: logo,
+                mail: process.env.MAIL_USER,
+            });
+
+            transporter.sendMail({
+                from: process.env.MAIL_USER,
+                to: email,
+                subject: "idfm_hackaton_2026 - Suppression de compte confirmée",
+                html: emailTemplate,
+            }, () => {});
+        });
+    });
+});
+
 module.exports = router;

@@ -25,4 +25,42 @@ router.get("/api/forfaits/porteur/:porteur_id", (req, res) => {
     });
 });
 
+// Récupérer tous les forfaits avec les infos du porteur et payeur
+router.get("/api/admin/forfaits", (req, res) => {
+    const sql = `
+        SELECT f.*, 
+               porteur.firstName AS porteur_nom, porteur.lastName AS porteur_prenom,
+               payeur.firstName AS payeur_nom, payeur.lastName AS payeur_prenom
+        FROM forfait f
+        JOIN profil porteur ON f.porteur_id = porteur.id
+        JOIN profil payeur ON f.payeur_id = payeur.id
+        ORDER BY f.date_debut DESC
+    `;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ message: "Erreur serveur" });
+        res.status(200).json(results);
+    });
+});
+
+// Changer le statut d'un forfait (Ex: de 'En attente' à 'Actif' ou 'Suspendu')
+router.put("/api/admin/forfaits/:id/status", (req, res) => {
+    const { statut, date_debut, date_fin } = req.body;
+    let sql = "UPDATE forfait SET statut = ?";
+    const values = [statut];
+
+    // Si on active le forfait, on peut définir sa date de validité
+    if (date_debut && date_fin) {
+        sql += ", date_debut = ?, date_fin = ?";
+        values.push(date_debut, date_fin);
+    }
+
+    sql += " WHERE id = ?";
+    values.push(req.params.id);
+
+    db.query(sql, values, (err, result) => {
+        if (err) return res.status(500).json({ message: "Erreur serveur" });
+        res.status(200).json({ message: `Le forfait est désormais ${statut}` });
+    });
+});
+
 module.exports = router;
