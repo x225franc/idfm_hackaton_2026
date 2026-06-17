@@ -6,7 +6,7 @@ export const useChatbot = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Bonjour! 👋 Je suis ici pour vous aider à trouver le meilleur abonnement de transport en Île-de-France. Pouvez-vous me dire votre situation ?",
+      text: "Bonjour! Je suis ici pour vous aider à trouver le meilleur abonnement de transport en Île-de-France. Pouvez-vous me dire votre situation ?",
       sender: 'assistant',
       timestamp: new Date(),
       suggestedActions: [

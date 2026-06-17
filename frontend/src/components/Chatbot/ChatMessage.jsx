@@ -5,7 +5,7 @@ export const ChatMessage = ({ message, onActionClick }) => {
     <div className={`flex gap-3 mb-4 ${isUser ? 'justify-end' : 'justify-start'} w-full`}>
       {!isUser && (
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-sm font-bold">💬</span>
+          <span className="text-white text-sm font-bold">A</span>
         </div>
       )}
 
@@ -22,7 +22,7 @@ export const ChatMessage = ({ message, onActionClick }) => {
 
       {isUser && (
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-sm">👤</span>
+          <span className="text-white text-sm">U</span>
         </div>
       )}
     </div>
