@@ -4,19 +4,21 @@ import StepWelcome from './steps/StepWelcome';
 import StepProfile from './steps/StepProfile';
 import StepFrequency from './steps/StepFrequency';
 import StepOffer from './steps/StepOffer';
+import StepPersonal from './steps/StepPersonal';
 import StepDocuments from './steps/StepDocuments';
 import StepPayment from './steps/StepPayment';
 import StepSuccess from './steps/StepSuccess';
 
-const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'documents', 'payment', 'success'];
+const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'personal', 'documents', 'payment', 'success'];
 
 // Étapes affichant la barre de progression / le stepper desktop (on exclut l'accueil et la confirmation finale)
-const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'documents', 'payment'];
+const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'personal', 'documents', 'payment'];
 
 const STEP_LABELS = {
   profile: 'Votre situation',
   frequency: 'Fréquence de trajet',
   offer: 'Votre offre',
+  personal: 'Vos informations',
   documents: 'Documents',
   payment: 'Paiement',
 };
@@ -27,6 +29,7 @@ export default function Onboarding() {
     profile: '',
     frequency: '',
     offerId: '',
+    personal: { firstName: '', lastName: '', email: '', password: '', birthDate: '' },
     documents: {},
     paymentMethod: 'cb',
   });
@@ -71,6 +74,17 @@ export default function Onboarding() {
             frequency={data.frequency}
             value={data.offerId}
             onChange={(offerId) => update({ offerId })}
+            onNext={goNext}
+            onBack={goBack}
+            progress={progress}
+          />
+        );
+
+      case 'personal':
+        return (
+          <StepPersonal
+            value={data.personal}
+            onChange={(personal) => update({ personal })}
             onNext={goNext}
             onBack={goBack}
             progress={progress}
