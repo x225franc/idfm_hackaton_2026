@@ -26,143 +26,170 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [verificationMode, setVerificationMode] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+
+  const API_BASE = window.config?.BACKEND_URL;
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setLoading(true); 
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/login`, {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, password: form.password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.jwt);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
+      } else {
+        if (response.status === 401 && data.isVerified === "NO") {
+          setVerificationMode(true);
+        } else {
+          setError(data.message || 'Erreur lors de la connexion.');
+        }
+      }
+    } catch (err) { 
+      setError('Impossible de joindre le serveur.'); 
+    } finally { 
+      setLoading(false); 
+    }
+  };
+
+  const handleVerify = async (e) => {
     e.preventDefault();
-    // TODO: appel API auth
+    setLoading(true); 
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/verify-email?token=${verificationCode}`, { method: 'POST' });
+      if (response.ok) {
+        await handleSubmit();
+      } else {
+        setError("Code invalide ou expiré.");
+      }
+    } catch (err) { 
+      setError("Erreur serveur lors de la vérification."); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* ── Header ── */}
-      <header className="flex items-center px-4 py-3 border-b border-border bg-white sticky top-0 z-10">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 -ml-2 rounded-lg text-anthracite hover:bg-surface transition-colors"
-          aria-label="Retour"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+      <header className="flex items-center px-4 py-3 border-b border-border sticky top-0 z-10 bg-white">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-lg text-anthracite hover:bg-surface transition-colors" aria-label="Retour">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
         </button>
-        <div className="flex-1 flex justify-center">
-          <Logo size="md" />
-        </div>
+        <div className="flex-1 flex justify-center"><Logo size="md" /></div>
         <div className="w-9" />
       </header>
 
-      {/* ── Hero station ── */}
-      <div className="h-52 sm:h-64 md:h-72 flex-shrink-0 overflow-hidden relative">
-        {/* Ceiling */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#D4DCE8] via-[#9BAEC8] to-[#5A7BA8]" />
-        {/* Arch windows suggestion */}
-        <div className="absolute top-0 left-0 right-0 flex justify-around pt-4 opacity-30">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="w-12 h-20 rounded-t-full border-2 border-white/40 bg-white/10" />
-          ))}
-        </div>
-        {/* Floor */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#3A5A88] to-transparent" />
-        {/* Rails perspective */}
-        <svg className="absolute bottom-0 left-0 right-0 w-full h-24 opacity-40" viewBox="0 0 400 96" preserveAspectRatio="none">
-          <line x1="160" y1="96" x2="195" y2="0" stroke="white" strokeWidth="2" />
-          <line x1="240" y1="96" x2="205" y2="0" stroke="white" strokeWidth="2" />
-          <line x1="100" y1="96" x2="192" y2="0" stroke="white" strokeWidth="1" opacity="0.5" />
-          <line x1="300" y1="96" x2="208" y2="0" stroke="white" strokeWidth="1" opacity="0.5" />
-        </svg>
-        {/* Subtle figure in distance */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-2 h-8 bg-white/20 rounded-full" />
-      </div>
-
-      {/* ── Form ── */}
       <div className="flex-1 px-5 py-7 w-full max-w-lg mx-auto">
         <h1 className="text-[2rem] font-bold text-anthracite mb-1.5">Connexion</h1>
-        <p className="text-secondary text-base mb-8">
-          Accédez à votre espace personnel Comutitres.
-        </p>
+        {!verificationMode && (
+          <p className="text-secondary text-base mb-8">
+            Accédez à votre espace personnel Comutitres.
+          </p>
+        )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <Input
-            label="Email"
-            type="email"
-            name="email"
-            placeholder="nom@exemple.com"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-
-          {/* Password with inline label row */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="text-[11px] font-semibold text-anthracite uppercase tracking-widest"
-              >
-                Mot de passe
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-brand-interaction font-medium hover:underline"
-              >
-                Mot de passe oublié
-              </Link>
-            </div>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={handleChange}
-                required
-                className="w-full rounded-xl border border-border py-3.5 px-4 pr-12 text-anthracite text-base bg-white
-                  focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-shadow"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-anthracite transition-colors"
-                aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-              >
-                <EyeIcon open={showPassword} />
-              </button>
-            </div>
+        {error && (
+          <div className="mb-6 p-4 rounded-xl bg-danger-light/20 border border-danger text-danger text-sm font-medium flex gap-2">
+            <svg className="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {error}
           </div>
+        )}
 
-          <Button type="submit" variant="primary" full className="mt-1">
-            Se connecter
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-              <polyline points="10 17 15 12 10 7" />
-              <line x1="15" y1="12" x2="3" y2="12" />
-            </svg>
-          </Button>
-        </form>
+        {verificationMode ? (
+          <form onSubmit={handleVerify} className="flex flex-col gap-5 mt-4">
+            <div className="bg-blue-50 text-[#0050AA] p-4 rounded-xl border border-blue-200 text-center mb-2">
+              <p className="font-semibold mb-1">Dernière étape !</p>
+              <p className="text-sm">Votre compte n'est pas encore activé. Un nouveau code à 6 caractères vient de vous être envoyé par email.</p>
+            </div>
+            <Input
+              label="Code de vérification"
+              type="text"
+              name="verificationCode"
+              placeholder="Ex: A1B2C3"
+              value={verificationCode}
+              onChange={(e) => {
+                setVerificationCode(e.target.value.toUpperCase());
+                setError(null);
+              }}
+              required
+              maxLength={6}
+            />
+            <Button type="submit" variant="primary" full disabled={loading || verificationCode.length < 6}>
+              {loading ? 'Vérification...' : 'Valider mon compte'}
+            </Button>
+            <button type="button" onClick={() => setVerificationMode(false)} className="text-sm text-secondary hover:underline mt-2">
+              Annuler et retourner à la connexion
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-6">
+            <Input label="Email" type="email" name="email" value={form.email} onChange={handleChange} placeholder="nom@exemple.com" required />
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-anthracite uppercase tracking-widest">Mot de passe</label>
+                <Link to="/forgot-password" className="text-sm text-brand-interaction font-medium hover:underline">Mot de passe oublié ?</Link>
+              </div>
+              <div className="relative">
+                <input 
+                  name="password" 
+                  type={showPassword ? 'text' : 'password'} 
+                  value={form.password} 
+                  onChange={handleChange} 
+                  required 
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-border py-3.5 px-4 pr-12 text-anthracite text-base bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-shadow" 
+                />
+                <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-anthracite transition-colors">
+                  <EyeIcon open={showPassword} />
+                </button>
+              </div>
+            </div>
+            <Button type="submit" variant="primary" full disabled={loading} className="mt-1">
+              {loading ? 'Connexion en cours...' : 'Se connecter'}
+            </Button>
+          </form>
+        )}
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 my-7">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-secondary text-sm font-medium">OU</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
+        {!verificationMode && (
+          <>
+            <div className="flex items-center gap-4 my-7">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-secondary text-sm font-medium">OU</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
 
-        <Link to="/register">
-          <Button variant="secondary" full>
-            Créer un compte
-          </Button>
-        </Link>
+            <Link to="/register">
+              <Button variant="secondary" full>Créer un compte</Button>
+            </Link>
 
-        <p className="text-center text-sm text-secondary mt-8">
-          Besoin d'aide ?{' '}
-          <Link to="/faq" className="text-brand-interaction font-medium hover:underline">
-            Consulter la FAQ
-          </Link>
-        </p>
+            <p className="text-center text-sm text-secondary mt-8">
+              Besoin d'aide ?{' '}
+              <Link to="/faq" className="text-brand-interaction font-medium hover:underline">
+                Consulter la FAQ
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

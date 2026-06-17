@@ -10,12 +10,11 @@ const transporter = require("../config/mailer");
 const EmailTemplate = require("../components/emailTemplate");
 
 const backendUrl = process.env.BACKEND_URL;
-const logo = `${process.env.BACKEND_URL}/components/logo.png`;
+const logo = `${process.env.BACKEND_URL}/components/logo.svg`;
 
 // recuperer tout les comptes (admin basique)
 router.get("/api/get/user", (req, res) => {
-	const rek = "SELECT * FROM compte_connect";
-	db.query(rek, (err, result) => {
+	db.query("SELECT * FROM compte_connect", (err, result) => {
 		if (err) console.log(err);
 		else res.json(result);
 	});
@@ -65,7 +64,6 @@ router.get("/api/get/user/admin", async (req, res) => {
 
 		res.json({ items: items, total: countResult[0].total, limit: limit, offset: offset });
 	} catch (error) {
-		console.error("Erreur récupération utilisateurs admin:", error);
 		res.status(500).json({ message: "Erreur serveur" });
 	}
 });
@@ -73,7 +71,7 @@ router.get("/api/get/user/admin", async (req, res) => {
 // route pour recuperer un user et son profil associé
 router.get("/api/get/user/:id", (req, res) => {
 	const id = req.params.id;
-    // On join les deux tables pour tout renvoyer au front en une fois
+    // On join les deux tables (compte_connect + profil) pour tout renvoyer au front en une fois
 	const rek = "SELECT c.*, p.id as profil_id, p.type_profil, p.phoneNumber, p.profilePicture, p.address, p.postalCode, p.city, p.profession, p.date_naissance FROM compte_connect c LEFT JOIN profil p ON c.id = p.compte_id WHERE c.id = ?";
 
 	db.query(rek, id, (err, result) => {
@@ -106,7 +104,7 @@ router.get("/api/get/user/:id", (req, res) => {
 	});
 });
 
-// route pour modifier un user (Séparé en modification compte_connect et profil)
+// route pour modifier un user (Mise à jour dans compte_connect et profil)
 router.put("/api/update/user/:id", async (req, res) => {
 	const id = req.params.id;
 
@@ -125,7 +123,7 @@ router.put("/api/update/user/:id", async (req, res) => {
             db.query("UPDATE compte_connect SET updatedAt = NOW() WHERE id = ?", [id]);
         }
 
-        // 2. Gestion de l'image (dans profil)
+        // 2. Gestion de l'image (dans profil) avec sharp
 		let images = null;
 		if (req.files && req.files.length > 0) {
 			const oldImagePath = "uploads" + user.profilePicture;
@@ -135,7 +133,6 @@ router.put("/api/update/user/:id", async (req, res) => {
 			const imagePath = "uploads/images/user/" + "user-" + path.parse(file.filename).name + ".png";
 
 			if (!fs.existsSync("uploads/images/user")) fs.mkdirSync("uploads/images/user", { recursive: true });
-
 			await sharp(file.path).resize({ width: 300, height: 300, fit: "cover" }).png({ quality: 80 }).toFile(imagePath);
 
 			images = imagePath.replace("uploads", "");
@@ -143,12 +140,10 @@ router.put("/api/update/user/:id", async (req, res) => {
 		}
 
         // 3. Mise à jour des infos personnelles (dans profil)
-        // Vérifie d'abord si le profil existe
         db.query("SELECT id FROM profil WHERE compte_id = ?", [id], (err, profilRows) => {
             if(err) return res.status(500).json({ message: "Erreur profil" });
 
             if(profilRows.length > 0) {
-                // Le profil existe, on fait un UPDATE
                 let updateProfilRek = "UPDATE profil SET ";
                 const profilValues = [];
                 const updates = [];
@@ -180,19 +175,17 @@ router.put("/api/update/user/:id", async (req, res) => {
 // route permettant de bannir un utilisateur (admin)
 router.put("/api/ban/user/:id", (req, res) => {
 	const id = req.params.id;
-	const sql = "UPDATE compte_connect SET isBanned = 1 WHERE id = ?";
-	db.query(sql, id, (err, result) => {
+	db.query("UPDATE compte_connect SET isBanned = 1 WHERE id = ?", id, (err) => {
 		if (err) return res.status(500).json({ message: "Erreur serveur" });
 		res.status(200).json({ message: "Utilisateur banni !" });
 
-		const emailQuery = "SELECT * FROM compte_connect WHERE id = ?";
-		db.query(emailQuery, id, (err, ress) => {
-			if (err) return;
+		db.query("SELECT email FROM compte_connect WHERE id = ?", id, (err, ress) => {
+			if (err || ress.length === 0) return;
 
 			const emailTemplate = EmailTemplate({
 				url: `${process.env.FRONTEND_URL}`,
                 text1: `<strong style="color: #ef4444; font-size: 18px;">Suspension de compte</strong>`,
-                text2: `L'accès à votre compte a été révoqué.`,
+                text2: `L'accès à votre compte Comutitres a été temporairement révoqué.`,
                 link: `<a href="mailto:${process.env.MAIL_USER}">Contacter le support</a>`,
                 logo: logo,
                 mail: process.env.MAIL_USER,
@@ -201,7 +194,7 @@ router.put("/api/ban/user/:id", (req, res) => {
 			transporter.sendMail({
 				from: process.env.MAIL_USER,
 				to: ress[0].email,
-				subject: "comutitres_hackaton_2026 - Compte suspendu",
+				subject: "Comutitres - Compte suspendu",
 				html: emailTemplate,
 			}, () => {});
 		});
@@ -211,26 +204,24 @@ router.put("/api/ban/user/:id", (req, res) => {
 // route permettant de rétablir un compte utilisateur (admin)
 router.put("/api/unban/user/:id", (req, res) => {
 	const id = req.params.id;
-	const sql = "UPDATE compte_connect SET isBanned = 0 WHERE id = ?";
-	db.query(sql, id, (err, result) => {
+	db.query("UPDATE compte_connect SET isBanned = 0 WHERE id = ?", id, (err) => {
 		if (err) return res.status(500).json({ message: "Erreur serveur" });
 		res.json({ message: "Utilisateur rétabli !" });
 
-		const emailQuery = "SELECT * FROM compte_connect WHERE id = ?";
-		db.query(emailQuery, id, (err, ress) => {
-			if (err) return;
+		db.query("SELECT email FROM compte_connect WHERE id = ?", id, (err, ress) => {
+			if (err || ress.length === 0) return;
             const emailTemplate = EmailTemplate({
 				url: `${process.env.FRONTEND_URL}`,
-                text1: `<strong style="color: #6485F6; font-size: 18px;">Excellente nouvelle !</strong>`,
-                text2: `Votre compte comutitres_hackaton_2026 a été entièrement rétabli.`,
-                link: `<a href="${process.env.FRONTEND_URL}/signin">Me connecter</a>`,
+                text1: `<strong style="color: #0050AA; font-size: 18px;">Excellente nouvelle !</strong>`,
+                text2: `Votre compte Comutitres a été entièrement rétabli. Vous pouvez de nouveau accéder à l'ensemble de vos services.`,
+                link: `<a href="${process.env.FRONTEND_URL}/login">Me connecter</a>`,
                 logo: logo,
                 mail: process.env.MAIL_USER,
             });
 			transporter.sendMail({
 				from: process.env.MAIL_USER,
 				to: ress[0].email,
-				subject: "comutitres_hackaton_2026 - Compte rétabli",
+				subject: "Comutitres - Compte rétabli",
 				html: emailTemplate,
 			}, () => {});
 		});
@@ -243,8 +234,7 @@ router.put("/api/user/:id/role", (req, res) => {
 	const { role } = req.body;
 	if (!role || !["admin", "user"].includes(role)) return res.status(400).json({ message: "Rôle invalide" });
 
-	const sql = "UPDATE compte_connect SET role = ?, updatedAt = NOW() WHERE id = ?";
-	db.query(sql, [role, id], (err, result) => {
+	db.query("UPDATE compte_connect SET role = ?, updatedAt = NOW() WHERE id = ?", [role, id], (err, result) => {
 		if (err) return res.status(500).json({ message: "Erreur serveur" });
 		if (result.affectedRows === 0) return res.status(404).json({ message: "Utilisateur non trouvé" });
 		res.status(200).json({ message: "Rôle modifié avec succès" });
@@ -255,25 +245,22 @@ router.put("/api/user/:id/role", (req, res) => {
 router.delete("/api/user/:id", (req, res) => {
     const id = req.params.id;
 
-    // Récupérer le compte pour envoyer un mail d'adieu avant suppression
-    const sqlGet = "SELECT email FROM compte_connect WHERE id = ?";
-    db.query(sqlGet, [id], (err, rows) => {
+    // Récupérer le compte pour envoyer un mail d'adieu avant la suppression destructrice
+    db.query("SELECT email FROM compte_connect WHERE id = ?", [id], (err, rows) => {
         if (err || rows.length === 0) return res.status(404).json({ message: "Compte introuvable" });
         
         const email = rows[0].email;
 
-        // La suppression en cascade (ON DELETE CASCADE) de la BDD s'occupe de vider les autres tables
-        const sqlDelete = "DELETE FROM compte_connect WHERE id = ?";
-        db.query(sqlDelete, [id], (err, result) => {
+        // La suppression en cascade (ON DELETE CASCADE) de la BDD s'occupe de vider profil, documents, forfaits, etc.
+        db.query("DELETE FROM compte_connect WHERE id = ?", [id], (err) => {
             if (err) return res.status(500).json({ message: "Erreur lors de la suppression" });
             
             res.status(200).json({ message: "Compte et données associées supprimés conformément au RGPD" });
 
-            // Envoi de l'e-mail de confirmation
             const emailTemplate = EmailTemplate({
                 url: `${process.env.FRONTEND_URL}`,
                 text1: `<strong style="color: #ef4444; font-size: 18px;">Suppression de votre compte</strong>`,
-                text2: `Conformément au RGPD, l'intégralité de vos données personnelles a été effacée de nos serveurs. Nous sommes désolés de vous voir partir !`,
+                text2: `Conformément au RGPD et à votre demande, l'intégralité de vos données personnelles a été effacée de nos serveurs. Nous sommes désolés de vous voir partir !`,
                 link: "",
                 logo: logo,
                 mail: process.env.MAIL_USER,
@@ -282,7 +269,7 @@ router.delete("/api/user/:id", (req, res) => {
             transporter.sendMail({
                 from: process.env.MAIL_USER,
                 to: email,
-                subject: "idfm_hackaton_2026 - Suppression de compte confirmée",
+                subject: "Comutitres - Suppression de compte confirmée",
                 html: emailTemplate,
             }, () => {});
         });

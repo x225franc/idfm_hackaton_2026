@@ -7,28 +7,28 @@ import PageHeading from '@/components/PageHeading';
 import Button from '@/components/ui/Button';
 
 export default function NotFound() {
-  return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <Header />
+    return (
+        <div className="min-h-screen bg-white flex flex-col">
+            <Header />
 
-      <HeroBanner title="404" subtitle="Terminus non desservi" />
+            <HeroBanner title="404" subtitle="Terminus non desservi" />
 
-      <div className="flex-1 px-5 py-10 w-full max-w-lg mx-auto flex flex-col items-center text-center">
-        <PageHeading
-          title="Page introuvable"
-          description="Cette page n'existe pas ou a changé de quai. Vérifiez l'adresse ou retournez à l'accueil."
-          className="mb-8"
-        />
+            <div className="flex-1 px-5 py-10 w-full max-w-lg mx-auto flex flex-col items-center text-center">
+                <PageHeading
+                    title="Page introuvable"
+                    description="Cette page n'existe pas ou a changé de quai. Vérifiez l'adresse ou retournez à l'accueil."
+                    className="mb-8"
+                />
 
-        <Link to="/" className="w-full">
-          <Button variant="primary" full>
-            Retourner à l'accueil
-            <IconHome size={18} stroke={2.5} />
-          </Button>
-        </Link>
-      </div>
+                <Link to="/" className="w-full">
+                    <Button variant="primary" full>
+                        Retourner à l'accueil
+                        <IconHome size={18} stroke={2.5} />
+                    </Button>
+                </Link>
+            </div>
 
-      <Footer />
-    </div>
-  );
+            <Footer />
+        </div>
+    );
 }
