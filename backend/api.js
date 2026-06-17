@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const swaggerUi = require("swagger-ui-express");
 
 // importation de middleware pour les images
 const multer = require("multer");
@@ -84,6 +85,13 @@ app.use("/images", express.static(path.join(__dirname, "uploads/images")));
 app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "components/idfm_hackaton_2026")),);
 
 /////////////////////////////////////////////////////////////////////////////////
+
+// Swagger UI
+const swaggerSpec = require("./config/swagger");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "Comutitres API",
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+}));
 
 // Importation des routes
 
