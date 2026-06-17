@@ -103,17 +103,18 @@ export default function Onboarding() {
           />
         );
 
-      case 'payment':
+    case 'payment':
         return (
-          <StepPayment
-            profile={data.profile}
-            frequency={data.frequency}
+          <StepPayment 
+            profile={data.profile} 
+            frequency={data.frequency} 
             offerId={data.offerId}
             value={data.paymentMethod}
-            onChange={(paymentMethod) => update({ paymentMethod })}
+            userData={data.documents}
+            onChange={(val) => update({ paymentMethod: val })}
             onNext={goNext}
             onBack={goBack}
-            progress={progress}
+            progress={100}
           />
         );
 
@@ -125,8 +126,6 @@ export default function Onboarding() {
     }
   };
 
-  // L'accueil est une landing page pleine largeur (pas le découpage sidebar/carte du tunnel) :
-  // son rôle est de convertir vers le tunnel ("Démarrer") ou vers la connexion.
   if (step === 'welcome') {
     return <StepWelcome onNext={goNext} />;
   }

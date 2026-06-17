@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
+import Header from '../../../components/Header';
 
 const BENEFITS = [
   {
@@ -41,18 +42,7 @@ function SkylineIllustration() {
 export default function StepWelcome({ onNext }) {
   return (
     <div className="min-h-screen bg-page flex flex-col">
-      {/* ── Header ── */}
-      <header className="bg-white border-b border-border sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
-          <Logo size="md" />
-          <div className="flex items-center gap-3">
-            <span className="text-xl" aria-label="Langue française">🇫🇷</span>
-            <Link to="/login">
-              <Button variant="outline">Se connecter</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         {/* ── Hero ── */}
@@ -93,18 +83,6 @@ export default function StepWelcome({ onNext }) {
                 <p className="text-secondary text-sm leading-relaxed">{b.desc}</p>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* ── CTA bas de page ── */}
-        <section className="px-5 py-12">
-          <div className="max-w-6xl mx-auto bg-anthracite rounded-3xl px-6 py-10 lg:px-12 text-center">
-            <h2 className="text-white text-2xl lg:text-3xl font-bold mb-2">Prêt à simplifier vos trajets ?</h2>
-            <p className="text-white/60 mb-6">Le tunnel de souscription prend moins de 5 minutes.</p>
-            <Button variant="primary" onClick={onNext} className="mx-auto">
-              Démarrer mon abonnement
-              <ArrowIcon />
-            </Button>
           </div>
         </section>
       </main>
