@@ -83,5 +83,46 @@ services:
     depends_on:
       - backend
 
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: idfm_n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TEMP_NODE_FOLDER=/home/node/.n8n/nodes
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_SKIP_WEBHOOK_VALIDATION=true
+      - N8N_ENCRYPTION_KEY=idfm_hackaton_2026_super_secret_key_12345
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n-workflow-chatbot.json:/app/workflow.json
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5678/api/v1/workflows"]
+      interval: 5s
+      timeout: 10s
+      retries: 60
+
+  n8n-init:
+    image: node:20-alpine
+    container_name: idfm_n8n_init
+    working_dir: /app
+    volumes:
+      - ./scripts/init-n8n.js:/app/init-n8n.js
+      - ./n8n-workflow-chatbot.json:/app/workflow.json
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    command: sh -c "sleep 15 && node /app/init-n8n.js"
+    depends_on:
+      n8n:
+        condition: service_healthy
+
 volumes:
   mysql_data:
+  n8n_data:
