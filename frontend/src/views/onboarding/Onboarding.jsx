@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OnboardingSidebar } from './components';
 import StepWelcome from './steps/StepWelcome';
@@ -11,18 +12,28 @@ import StepSuccess from './steps/StepSuccess';
 
 const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'documents', 'payment', 'success'];
 
-// Étapes affichant la barre de progression / le stepper desktop (on exclut l'accueil et la confirmation finale)
 const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'documents', 'payment'];
 
 
 export default function Onboarding() {
   const { t } = useTranslation();
-  const [stepIndex, setStepIndex] = useState(0);
+  const { state } = useLocation();
+  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+  const isLoggedIn = !!localStorage.getItem('token') && !!storedUser;
+
+  const [stepIndex, setStepIndex] = useState(
+    state?.startStep != null ? state.startStep : isLoggedIn ? 1 : 0
+  );
+
   const [data, setData] = useState({
     profile: '',
     frequency: '',
     offerId: '',
-    documents: {},
+    documents: isLoggedIn ? {
+      firstName: storedUser.firstName ?? '',
+      lastName:  storedUser.lastName  ?? '',
+      email:     storedUser.email     ?? '',
+    } : {},
     paymentMethod: 'cb',
   });
 
@@ -36,7 +47,7 @@ export default function Onboarding() {
 
   const step = STEPS[stepIndex];
   const goNext = () => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
-  const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
+  const goBack = isLoggedIn && stepIndex === 1 ? undefined : () => setStepIndex((i) => Math.max(0, i - 1));
   const update = (patch) => setData((prev) => ({ ...prev, ...patch }));
 
   const progressIndex = PROGRESS_STEPS.indexOf(step); // -1 sur welcome/success
@@ -89,6 +100,7 @@ export default function Onboarding() {
             onNext={goNext}
             onBack={goBack}
             progress={progress}
+            isLoggedIn={isLoggedIn}
           />
         );
 
@@ -108,7 +120,15 @@ export default function Onboarding() {
         );
 
       case 'success':
-        return <StepSuccess profile={data.profile} frequency={data.frequency} offerId={data.offerId} />;
+        return (
+          <StepSuccess
+            profile={data.profile}
+            frequency={data.frequency}
+            offerId={data.offerId}
+            isLoggedIn={isLoggedIn}
+            email={data.documents.email}
+          />
+        );
 
       default:
         return null;

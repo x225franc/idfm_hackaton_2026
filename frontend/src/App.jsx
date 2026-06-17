@@ -1,5 +1,7 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatBox from './components/Chatbot/ChatBox';
+import { apiFetch } from './utils';
 
 import Login from './views/Login';
 import Register from './views/Register';
@@ -9,15 +11,29 @@ import Faq from './views/Faq';
 import NotFound from './views/Notfound';
 import Admin from './views/admin/Home';
 import Onboarding from './views/onboarding/Onboarding';
+import Tableau from './views/app/Tableau';
+import Passes from './views/app/Passes';
+import Ask from './views/app/Ask';
 
 import './App.css';
 
-// Composant de sécurité : Vérifie le rôle avant d'afficher la page
+const GuestRoute = ({ children }) => {
+  const { state } = useLocation();
+  if (localStorage.getItem('token') && localStorage.getItem('user') && state?.startStep == null)
+    return <Navigate to="/dashboard" replace />;
+  return children;
+};
+
+const PrivateRoute = ({ children }) => {
+  if (!localStorage.getItem('token') || !localStorage.getItem('user'))
+    return <Navigate to="/login" replace />;
+  return children;
+};
+
 const AdminRoute = ({ children }) => {
   const userStr = localStorage.getItem('user');
 
   if (!userStr) {
-    // Non connecté -> Redirection vers login
     return <Navigate to="/login" replace />;
   }
 
@@ -34,21 +50,57 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+
+    if (!token || !user?.id) {
+      setSessionChecked(true);
+      return;
+    }
+
+    apiFetch(`/api/get/user/${user.id}`)
+      .then((data) => {
+        if (data.email !== user.email) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      })
+      .finally(() => setSessionChecked(true));
+  }, []);
+
+  if (!sessionChecked) return null;
+
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<Onboarding />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<GuestRoute><Onboarding /></GuestRoute>} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/admin" element={<AdminRoute> <Admin /> </AdminRoute>} />
+
+        <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+        <Route path="/admin/users" element={<Admin />} />
+
         <Route path="/faq" element={<Faq />} />
+
+        <Route path="/dashboard" element={<PrivateRoute><Tableau /></PrivateRoute>} />
+        <Route path="/passes"    element={<PrivateRoute><Passes /></PrivateRoute>} />
+        <Route path="/ask"       element={<PrivateRoute><Ask /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <ChatBox />
+      {!isAdmin && <ChatBox />}
     </>
   );
 }
 
-export default App;

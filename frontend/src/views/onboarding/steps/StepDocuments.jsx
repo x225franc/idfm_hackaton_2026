@@ -49,12 +49,13 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
   );
 }
 
-export default function StepDocuments({ profile, value, onChange, onNext, onBack, progress }) {
+export default function StepDocuments({ profile, value, onChange, onNext, onBack, progress, isLoggedIn }) {
   const { t } = useTranslation();
   const docs = getDocuments(profile);
 
   const requiredDocsOk = docs.every((d) => !d.required || value[d.id]);
-  const requiredInfoOk = value.firstName && value.lastName && value.email && value.password && value.date_naissance;
+  const requiredInfoOk = value.firstName && value.lastName && value.email && value.date_naissance
+    && (isLoggedIn || !!value.password);
   const isReady = requiredDocsOk && requiredInfoOk;
 
   const handleChange = (e) => onChange({ ...value, [e.target.name]: e.target.value });
@@ -71,32 +72,64 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('documents.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('documents.subtitle')}</p>
 
-        {/* Formulaire identité */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">1</span>
             {t('documents.section_identity')}
           </h2>
+
+          {isLoggedIn && (
+            <div className="flex items-center gap-2 mb-4 text-xs text-secondary bg-page rounded-xl px-3 py-2.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-success shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+              Informations pré-remplies depuis votre compte
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.firstName')} *</label>
-              <input type="text" name="firstName" value={value.firstName || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="Jean" />
+              <input
+                type="text" name="firstName" value={value.firstName || ''} onChange={handleChange}
+                required readOnly={isLoggedIn}
+                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                placeholder="Jean"
+              />
             </div>
             <div>
               <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.lastName')} *</label>
-              <input type="text" name="lastName" value={value.lastName || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="Dupont" />
+              <input
+                type="text" name="lastName" value={value.lastName || ''} onChange={handleChange}
+                required readOnly={isLoggedIn}
+                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                placeholder="Dupont"
+              />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+
+          <div className={`gap-4 mb-4 ${isLoggedIn ? 'flex flex-col' : 'grid grid-cols-2'}`}>
             <div>
               <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.email')} *</label>
-              <input type="email" name="email" value={value.email || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="jean@email.com" />
+              <input
+                type="email" name="email" value={value.email || ''} onChange={handleChange}
+                required readOnly={isLoggedIn}
+                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                placeholder="jean@email.com"
+              />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.password')} *</label>
-              <input type="password" name="password" value={value.password || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="••••••••" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" />
-            </div>
+            {!isLoggedIn && (
+              <div>
+                <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.password')} *</label>
+                <input
+                  type="password" name="password" value={value.password || ''} onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors"
+                  placeholder="••••••••"
+                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                />
+              </div>
+            )}
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.birthDate')} *</label>
@@ -109,7 +142,6 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
           </div>
         </div>
 
-        {/* Documents */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">2</span>

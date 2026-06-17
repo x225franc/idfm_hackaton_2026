@@ -43,9 +43,9 @@ export const ChatInput = ({ onSend, loading, suggestedActions, onActionClick }) 
         <button
           type="submit"
           disabled={!input.trim() || loading}
-          className="p-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full hover:shadow-lg disabled:opacity-50 transition-all"
+          className="w-10 h-10 flex items-center justify-center shrink-0 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-full hover:shadow-lg disabled:opacity-50 transition-all"
         >
-          <IconSend size={20} />
+          <IconSend size={18} />
         </button>
       </form>
     </div>

@@ -108,7 +108,7 @@ const register = async (req, res) => {
 const registerOnboarding = async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const result = await userModel.create(req.body.firstName, req.body.lastName, req.body.email, hashedPassword, true);
+        const result = await userModel.create(req.body.firstName, req.body.lastName, req.body.email, hashedPassword, false);
         res.status(200).json({ message: 'Utilisateur ajouté avec succès', user: result });
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY')

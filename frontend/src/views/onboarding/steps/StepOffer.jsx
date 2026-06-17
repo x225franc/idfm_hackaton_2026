@@ -26,7 +26,6 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
 
   useEffect(() => {
     if (!value) onChange(recommended.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getPerks = (offer) => {
@@ -41,7 +40,6 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('offer.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('offer.subtitle')}</p>
 
-        {/* Offre recommandée */}
         <button
           type="button"
           onClick={() => onChange(recommended.id)}
@@ -73,7 +71,6 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
           </span>
         </button>
 
-        {/* Offre alternative */}
         <button
           type="button"
           onClick={() => onChange(alternative.id)}
