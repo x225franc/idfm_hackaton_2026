@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const swaggerUi = require("swagger-ui-express");
 
 // importation de middleware pour les images
 const multer = require("multer");
@@ -93,6 +94,13 @@ app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "co
 
 /////////////////////////////////////////////////////////////////////////////////
 
+// Swagger UI
+const swaggerSpec = require("./config/swagger");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "Comutitres API",
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+}));
+
 // Importation des routes
 
 const authRoutes = require("./routes/auth.routes");
@@ -101,6 +109,7 @@ const profilRoutes = require("./routes/profil.routes");
 const forfaitRoutes = require("./routes/forfait.routes");
 const documentRoutes = require("./routes/document.routes");
 const paiementRoutes = require("./routes/paiement.routes");
+const chatRoutes = require("./routes/chat.routes");
 
 
 // Utilisation des routes
@@ -110,6 +119,7 @@ app.use(profilRoutes);
 app.use(forfaitRoutes);
 app.use(documentRoutes);
 app.use(paiementRoutes);
+app.use(chatRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
