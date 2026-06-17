@@ -1,0 +1,96 @@
+{
+  "name": "IDFM Chatbot - Groq Intelligence",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "idfm-chat",
+        "responseMode": "onReceived",
+        "method": "POST"
+      },
+      "id": "webhook_start",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "method": "POST",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GROQ_API_KEY"
+            }
+          ]
+        },
+        "bodyParametersJson": "{\"model\": \"mixtral-8x7b-32768\", \"messages\": [{\"role\": \"system\", \"content\": \"Tu es un assistant expert en transports en Île-de-France. Analyse le message utilisateur et extrais les informations pour recommander le meilleur forfait.\\n\\nForfaits disponibles: Imagine R Etudiant, Liberté+, Navigo Annuel, Imagine R Junior, Imagine R Scolaire, Améthyste, TST\\n\\nExtrait TOUJOURS ces infos et réponds en JSON valide:\\n{\\\"profil\\\": \\\"étudiant|salarié|senior|junior|autre|null\\\", \\\"frequence\\\": \\\"quotidien|régulier|occasionnel|rare|null\\\", \\\"region\\\": \\\"Paris|proche_banlieue|grande_banlieue|null\\\", \\\"recommendations\\\": [\\\"forfait1\\\", \\\"forfait2\\\"], \\\"response\\\": \\\"Message naturel et amical\\\"}\", \"role\": \"user\"}, {\"role\": \"user\", \"content\": \"{{ $json.body.message }}\"}], \"temperature\": 0.7, \"max_tokens\": 500}"
+      },
+      "id": "groq_request",
+      "name": "Groq API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [550, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst content = response.choices[0].message.content;\n\ntry {\n  const jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\n  if (!jsonMatch) {\n    return { error: 'Impossible de parser la réponse' };\n  }\n  const result = JSON.parse(jsonMatch[0]);\n  \n  return {\n    success: true,\n    response: result.response || 'Réponse',\n    recommendations: result.recommendations || [],\n    detectedProfile: result.profil || null,\n    detectedFrequency: result.frequence || null,\n    detectedRegion: result.region || null,\n    suggestedActions: (result.recommendations || []).map(f => ({\n      text: 'Voir détails',\n      action: 'viewDetails',\n      forfait: f\n    }))\n  };\n} catch (e) {\n  return { error: 'Erreur parsing: ' + e.message };\n}"
+      },
+      "id": "parse_response",
+      "name": "Parse Réponse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "responseBody": "={{ $json }}"
+      },
+      "id": "webhook_response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1100, 300]
+    }
+  ],
+  "connections": {
+    "webhook_start": {
+      "main": [
+        [
+          {
+            "node": "groq_request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "groq_request": {
+      "main": [
+        [
+          {
+            "node": "parse_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse_response": {
+      "main": [
+        [
+          {
+            "node": "webhook_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
