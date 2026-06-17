@@ -5,7 +5,13 @@
   "main": "api.js",
   "type": "commonjs",
   "scripts": {
-    "start": "nodemon api.js"
+    "start": "nodemon api.js",
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/*.test.js"],
+    "testPathIgnorePatterns": ["/node_modules/"]
   },
   "author": "",
   "license": "ISC",
@@ -30,5 +36,8 @@
     "swagger-ui-express": "^5.0.1",
     "tls": "^0.0.1",
     "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }
