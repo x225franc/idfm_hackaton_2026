@@ -4,15 +4,15 @@ services:
     container_name: idfm_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: '${DB_PASS}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: '${DB_NAME}'
     ports:
-      - "3307:3306"
+      - '3307:3306'
     volumes:
       - ./database/idfm_hackaton.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 3s
       timeout: 2s
       retries: 10
@@ -28,7 +28,7 @@ services:
       - DB_HOST=db
       - PORT=${BACKEND_PORT}
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -44,9 +44,9 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
+      MYSQL_ROOT_PASSWORD: '${DB_PASS}'
     ports:
-      - "8080:80"
+      - '8080:80'
     depends_on:
       db:
         condition: service_healthy
@@ -56,7 +56,7 @@ services:
     container_name: idfm_adminer
     restart: unless-stopped
     ports:
-      - "8081:8080"
+      - '8081:8080'
     depends_on:
       db:
         condition: service_healthy
@@ -74,7 +74,7 @@ services:
       - WATCHPACK_POLLING=true
       - WDS_SOCKET_PORT=0
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -82,138 +82,22 @@ services:
     depends_on:
       - backend
 
-  monitoring-db:
-    image: postgres:15-alpine
-    container_name: idfm_monitoring_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: monitoring
-      POSTGRES_PASSWORD: ${MONITORING_DB_PASS:-monitoring_secret}
-      POSTGRES_DB: monitoring
-    volumes:
-      - monitoring_db_data:/var/lib/postgresql/data
-      - ./monitoring/postgres/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U monitoring"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  redis:
-    image: redis:7-alpine
-    container_name: idfm_redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
-    container_name: idfm_umami
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://monitoring:${MONITORING_DB_PASS:-monitoring_secret}@monitoring-db:5432/umami
-      DATABASE_TYPE: postgresql
-      APP_SECRET: ${UMAMI_SECRET:-umami_app_secret_changeme}
-    ports:
-      - "3001:3000"
-    depends_on:
-      monitoring-db:
-        condition: service_healthy
-
-  glitchtip:
-    image: glitchtip/glitchtip:latest
-    container_name: idfm_glitchtip
-    restart: unless-stopped
-    environment: &glitchtip-env
-      DATABASE_URL: postgresql://monitoring:${MONITORING_DB_PASS:-monitoring_secret}@monitoring-db:5432/glitchtip
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${GLITCHTIP_SECRET:-glitchtip_secret_changeme}
-      GLITCHTIP_DOMAIN: http://localhost:8082
-      DEFAULT_FROM_EMAIL: noreply@comutitres.fr
-      EMAIL_URL: consolemail://
-      CELERY_WORKER_CONCURRENCY: 2
-    ports:
-      - "8082:8000"
-    depends_on:
-      monitoring-db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  glitchtip-worker:
-    image: glitchtip/glitchtip:latest
-    container_name: idfm_glitchtip_worker
-    restart: unless-stopped
-    command: ./bin/run-celery-with-beat.sh
-    environment: *glitchtip-env
-    depends_on:
-      monitoring-db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  glitchtip-migrate:
-    image: glitchtip/glitchtip:latest
-    container_name: idfm_glitchtip_migrate
-    restart: "no"
-    command: "python manage.py migrate"
-    environment: *glitchtip-env
-    depends_on:
-      monitoring-db:
-        condition: service_healthy
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: idfm_prometheus
-    restart: unless-stopped
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=15d"
-      - "--web.enable-lifecycle"
-    ports:
-      - "9090:9090"
-    depends_on:
-      - backend
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: idfm_grafana
-    restart: unless-stopped
-    environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
-      GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_SERVER_ROOT_URL: http://localhost:3003
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-    ports:
-      - "3003:3000"
-    depends_on:
-      - prometheus
-
   ollama:
     image: ollama/ollama:latest
     container_name: idfm_ollama
     restart: unless-stopped
     ports:
-      - "11434:11434"
+      - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
-      interval: 5s
-      timeout: 10s
+      test: ['CMD', 'ollama', 'list']
+      interval: 10s
+      timeout: 5s
       retries: 30
+      start_period: 30s
 
   ollama-init:
     image: ollama/ollama:latest
@@ -228,8 +112,5 @@ services:
         condition: service_healthy
 
 volumes:
-  monitoring_db_data:
-  prometheus_data:
-  grafana_data:
   mysql_data:
   ollama_data:
