@@ -107,7 +107,7 @@ router.post("/api/chat", async (req, res) => {
           forfait: f
         })),
         {
-          text: "❓ Autre question",
+          text: " Autre question",
           action: "askAnother"
         }
       ]
