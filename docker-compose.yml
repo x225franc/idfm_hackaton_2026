@@ -81,50 +81,35 @@ services:
     command: sh -c "npm install && npm run start"
     depends_on:
       - backend
-<<<<<<< HEAD
 
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: idfm_n8n
+  ollama:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama
     restart: unless-stopped
     ports:
-      - "5678:5678"
-    environment:
-      - N8N_HOST=localhost
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=http
-      - WEBHOOK_URL=http://localhost:5678/
-      - GENERIC_TEMP_NODE_FOLDER=/home/node/.n8n/nodes
-      - N8N_USER_MANAGEMENT_DISABLED=true
-      - N8N_SKIP_WEBHOOK_VALIDATION=true
-      - N8N_ENCRYPTION_KEY=idfm_hackaton_2026_super_secret_key_12345
+      - "11434:11434"
     volumes:
-      - n8n_data:/home/node/.n8n
-      - ./n8n-workflow-chatbot.json:/app/workflow.json
-    depends_on:
-      - backend
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5678/api/v1/workflows"]
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 5s
       timeout: 10s
-      retries: 60
+      retries: 30
 
-  n8n-init:
-    image: node:20-alpine
-    container_name: idfm_n8n_init
-    working_dir: /app
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama_init
     volumes:
-      - ./scripts/init-n8n.js:/app/init-n8n.js
-      - ./n8n-workflow-chatbot.json:/app/workflow.json
+      - ollama_data:/root/.ollama
     environment:
-      - GROQ_API_KEY=${GROQ_API_KEY}
-    command: sh -c "sleep 15 && node /app/init-n8n.js"
+      - OLLAMA_HOST=http://idfm_ollama:11434
+    entrypoint: /bin/sh -c "ollama pull mistral && echo '✅ Modèle Mistral téléchargé!'"
     depends_on:
-      n8n:
+      ollama:
         condition: service_healthy
 
 volumes:
   mysql_data:
-  n8n_data:
-=======
->>>>>>> dev
+  ollama_data:
