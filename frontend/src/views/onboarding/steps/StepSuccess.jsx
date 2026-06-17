@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import { OFFERS, getOffers } from '../data';
@@ -8,9 +9,13 @@ function formatPrice(price) {
 }
 
 export default function StepSuccess({ profile, frequency, offerId }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { recommended } = getOffers(profile, frequency);
   const offer = OFFERS[offerId] || recommended;
+
+  const offerName   = t(`offer.offers.${offer.id}.name`,   { defaultValue: offer.name });
+  const offerPeriod = t(`offer.offers.${offer.id}.period`, { defaultValue: offer.period });
 
   return (
     <>
@@ -25,44 +30,41 @@ export default function StepSuccess({ profile, frequency, offerId }) {
           </svg>
         </div>
 
-        <h1 className="text-2xl font-bold text-anthracite mb-2">Votre abonnement est activé !</h1>
-        <p className="text-secondary text-sm mb-8">Un récapitulatif vous a été envoyé par email.</p>
+        <h1 className="text-2xl font-bold text-anthracite mb-2">{t('success.title')}</h1>
+        <p className="text-secondary text-sm mb-8">{t('success.subtitle')}</p>
 
         <div className="w-full border border-border rounded-2xl p-5 mb-8 text-left">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-blue-info text-brand-interaction flex items-center justify-center shrink-0">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="6" width="20" height="12" rx="2" />
-                <path d="M13 6v12" strokeDasharray="2 2" />
+                <rect x="2" y="6" width="20" height="12" rx="2" /><path d="M13 6v12" strokeDasharray="2 2" />
               </svg>
             </div>
-            <p className="font-bold text-anthracite">{offer.name}</p>
+            <p className="font-bold text-anthracite">{offerName}</p>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-secondary text-xs uppercase tracking-wide mb-0.5">Prix Total</p>
+              <p className="text-secondary text-xs uppercase tracking-wide mb-0.5">{t('success.price_label')}</p>
               <p className="text-lg font-black text-anthracite">
-                {formatPrice(offer.price)} €<span className="text-sm font-medium text-secondary">/{offer.period}</span>
+                {formatPrice(offer.price)} €<span className="text-sm font-medium text-secondary">/{offerPeriod}</span>
               </p>
             </div>
             <span className="text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#EDFAF3] text-success">
-              Payé
+              {t('success.paid')}
             </span>
           </div>
         </div>
 
-        <p className="text-secondary text-sm mb-1">Besoin d'aide pour votre abonnement ?</p>
+        <p className="text-secondary text-sm mb-1">{t('success.help')}</p>
         <Link to="/contact" className="text-brand-interaction font-semibold text-sm hover:underline mb-8">
-          Nous contacter
+          {t('success.contact')}
         </Link>
 
-        {/* TODO: rediriger vers /compte une fois l'espace personnel utilisateur disponible */}
         <div className="mt-auto w-full">
           <Button variant="primary" full onClick={() => navigate('/login')}>
-            Voir mon compte
+            {t('success.view_account')}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
+              <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
             </svg>
           </Button>
         </div>

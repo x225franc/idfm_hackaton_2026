@@ -16,6 +16,9 @@ const { resolve } = require("path");
 // importation de la connexion à la base de données
 const db = require("./config/db");
 
+// métriques Prometheus
+const { metricsMiddleware, metricsHandler } = require("./middleware/metrics");
+
 // configuration de dotenv
 dotenv.config({ path: resolve(__dirname, "../.env") });
 
@@ -38,6 +41,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(metricsMiddleware);
+
+// Endpoint Prometheus — accessible par le conteneur prometheus sur /metrics
+app.get("/metrics", metricsHandler);
+
 /////////////////////////////////////////////////////////////////////////////////
 
 app.get("/", (req, res) => {

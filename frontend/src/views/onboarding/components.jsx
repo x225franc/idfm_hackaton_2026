@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 
 // Header partagé par les étapes du tunnel : bouton retour + logo centré + barre de progression.
@@ -37,6 +38,7 @@ export function OnboardingHeader({ onBack, progress }) {
 
 // Sidebar desktop uniquement (cachée en mobile) : logo + stepper vertical cliquable.
 export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo }) {
+  const { t } = useTranslation();
   return (
     <aside className="hidden lg:flex lg:w-[380px] xl:w-[420px] flex-col justify-between bg-gradient-to-br from-brand to-brand-focus text-white p-10 shrink-0">
       <div>
@@ -78,7 +80,7 @@ export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo }) {
       </div>
 
       <p className="text-xs text-white/60">
-        © {new Date().getFullYear()} Comutitres — Île-de-France Mobilités
+        {t('steps.footer', { year: new Date().getFullYear() })}
       </p>
     </aside>
   );
