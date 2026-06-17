@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { OnboardingSidebar } from './components';
 import StepWelcome from './steps/StepWelcome';
 import StepProfile from './steps/StepProfile';
@@ -13,15 +14,9 @@ const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'documents', 'payment
 // Étapes affichant la barre de progression / le stepper desktop (on exclut l'accueil et la confirmation finale)
 const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'documents', 'payment'];
 
-const STEP_LABELS = {
-  profile: 'Votre situation',
-  frequency: 'Fréquence de trajet',
-  offer: 'Votre offre',
-  documents: 'Documents',
-  payment: 'Paiement',
-};
 
 export default function Onboarding() {
+  const { t } = useTranslation();
   const [stepIndex, setStepIndex] = useState(0);
   const [data, setData] = useState({
     profile: '',
@@ -30,6 +25,14 @@ export default function Onboarding() {
     documents: {},
     paymentMethod: 'cb',
   });
+
+  const STEP_LABELS = {
+    profile:   t('steps.profile'),
+    frequency: t('steps.frequency'),
+    offer:     t('steps.offer'),
+    documents: t('steps.documents'),
+    payment:   t('steps.payment'),
+  };
 
   const step = STEPS[stepIndex];
   const goNext = () => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));

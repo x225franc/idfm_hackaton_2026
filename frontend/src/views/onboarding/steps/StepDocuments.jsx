@@ -1,16 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import { OnboardingHeader } from '../components';
 import { getDocuments } from '../data';
 
 function DocumentRow({ doc, file, onPick, onRemove }) {
+  const { t } = useTranslation();
   const inputId = `doc-${doc.id}`;
+  const label = t(`documents.docs.${doc.id}.label`, { defaultValue: doc.label });
+  const hint  = t(`documents.docs.${doc.id}.hint`,  { defaultValue: doc.hint });
 
   return (
     <div className="border border-border rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
-        <p className="font-semibold text-anthracite text-sm">{doc.label}</p>
+        <p className="font-semibold text-anthracite text-sm">{label}</p>
         <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${doc.required ? 'bg-danger-light/20 text-danger' : 'bg-surface text-secondary'}`}>
-          {doc.required ? 'Requis' : 'Optionnel'}
+          {t(doc.required ? 'documents.required_badge' : 'documents.optional_badge')}
         </span>
       </div>
 
@@ -25,8 +29,7 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
           </div>
           <button type="button" onClick={onRemove} aria-label="Retirer le fichier" className="text-secondary hover:text-danger transition-colors shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -37,8 +40,8 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          <span className="text-sm font-semibold text-brand-interaction">Cliquez pour charger</span>
-          <span className="text-xs text-secondary">{doc.hint}</span>
+          <span className="text-sm font-semibold text-brand-interaction">{t('documents.upload_cta')}</span>
+          <span className="text-xs text-secondary">{hint}</span>
           <input id={inputId} type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
         </label>
       )}
@@ -47,83 +50,70 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
 }
 
 export default function StepDocuments({ profile, value, onChange, onNext, onBack, progress }) {
+  const { t } = useTranslation();
   const docs = getDocuments(profile);
-  
-  // 1. Vérifie si tous les documents requis sont bien uploadés
+
   const requiredDocsOk = docs.every((d) => !d.required || value[d.id]);
-  
-  // 2. Vérifie si les informations personnelles obligatoires sont remplies
   const requiredInfoOk = value.firstName && value.lastName && value.email && value.password && value.date_naissance;
-  
-  // 3. Le bouton sera cliquable UNIQUEMENT si les deux conditions sont remplies
   const isReady = requiredDocsOk && requiredInfoOk;
 
-  const handleChange = (e) => {
-    onChange({ ...value, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => onChange({ ...value, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Empêche la page de se recharger
-    // On avance uniquement si tout est prêt (sécurité supplémentaire)
-    if (isReady) {
-      onNext();
-    }
+    e.preventDefault();
+    if (isReady) onNext();
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col h-full">
       <OnboardingHeader onBack={onBack} progress={progress} />
       <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col overflow-y-auto">
-        <h1 className="text-2xl font-bold text-anthracite mb-1.5">Création de votre dossier</h1>
-        <p className="text-secondary text-sm mb-6">
-          Nous avons besoin de quelques informations pour finaliser votre abonnement.
-        </p>
+        <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('documents.title')}</h1>
+        <p className="text-secondary text-sm mb-6">{t('documents.subtitle')}</p>
 
-        {/* --- FORMULAIRE IDENTITÉ (REQUIS) --- */}
+        {/* Formulaire identité */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">1</span>
-            Informations personnelles
+            {t('documents.section_identity')}
           </h2>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Prénom *</label>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.firstName')} *</label>
               <input type="text" name="firstName" value={value.firstName || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="Jean" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Nom *</label>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.lastName')} *</label>
               <input type="text" name="lastName" value={value.lastName || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="Dupont" />
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Email *</label>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.email')} *</label>
               <input type="email" name="email" value={value.email || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="jean@email.com" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Mot de passe *</label>
-              <input type="password" name="password" value={value.password || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="••••••••" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"/>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.password')} *</label>
+              <input type="password" name="password" value={value.password || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="••••••••" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" />
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Date de naissance *</label>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.birthDate')} *</label>
               <input type="date" name="date_naissance" value={value.date_naissance || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">Téléphone</label>
+              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.phone')}</label>
               <input type="tel" name="phoneNumber" value={value.phoneNumber || ''} onChange={handleChange} className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="06 xx xx xx xx" pattern="0[1-9][0-9]{8}" />
             </div>
           </div>
         </div>
 
-        {/* --- DOCUMENTS --- */}
+        {/* Documents */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">2</span>
-            Justificatifs requis
+            {t('documents.section_docs')}
           </h2>
           <div className="flex flex-col gap-3">
             {docs.map((doc) => (
@@ -139,8 +129,9 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
         </div>
 
         <div className="mt-auto pt-4 pb-2">
-          {/* Le bouton est désactivé (grisé) tant que isReady est faux */}
-          <Button type="submit" variant="primary" full disabled={!isReady}>Suivant</Button>
+          <Button type="submit" variant="primary" full disabled={!isReady}>
+            {t('documents.next')}
+          </Button>
         </div>
       </div>
     </form>

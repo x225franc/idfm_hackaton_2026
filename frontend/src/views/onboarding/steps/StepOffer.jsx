@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import { OnboardingHeader } from '../components';
 import { getOffers } from '../data';
@@ -19,23 +20,26 @@ function CheckItem({ children }) {
 }
 
 export default function StepOffer({ profile, frequency, value, onChange, onNext, onBack, progress }) {
+  const { t } = useTranslation();
   const { recommended, alternative } = getOffers(profile, frequency);
   const selected = value || recommended.id;
 
-  // Pré-sélectionne l'offre recommandée par défaut quand on arrive sur l'étape.
   useEffect(() => {
     if (!value) onChange(recommended.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getPerks = (offer) => {
+    const translated = t(`offer.offers.${offer.id}.perks`, { returnObjects: true });
+    return Array.isArray(translated) ? translated : offer.perks;
+  };
+
   return (
     <>
       <OnboardingHeader onBack={onBack} progress={progress} />
       <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col">
-        <h1 className="text-2xl font-bold text-anthracite mb-1.5">Offre recommandée pour vous !</h1>
-        <p className="text-secondary text-sm mb-6">
-          Selon vos critères, voici l'offre qui vous correspond le mieux :
-        </p>
+        <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('offer.title')}</h1>
+        <p className="text-secondary text-sm mb-6">{t('offer.subtitle')}</p>
 
         {/* Offre recommandée */}
         <button
@@ -46,22 +50,26 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
           }`}
         >
           <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-brand-interaction bg-blue-info px-2 py-0.5 rounded-full mb-3">
-            Recommandé
+            {t('offer.badge')}
           </span>
-          <p className="font-bold text-anthracite text-lg mb-1">{recommended.name}</p>
+          <p className="font-bold text-anthracite text-lg mb-1">
+            {t(`offer.offers.${recommended.id}.name`, { defaultValue: recommended.name })}
+          </p>
           <p className="text-3xl font-black text-anthracite mb-3">
             {formatPrice(recommended.price)} €
-            <span className="text-base font-medium text-secondary">/{recommended.period}</span>
+            <span className="text-base font-medium text-secondary">
+              /{t(`offer.offers.${recommended.id}.period`, { defaultValue: recommended.period })}
+            </span>
           </p>
           {recommended.perks && (
             <ul className="flex flex-col gap-1.5 mb-3">
-              {recommended.perks.map((perk) => (
+              {getPerks(recommended).map((perk) => (
                 <CheckItem key={perk}>{perk}</CheckItem>
               ))}
             </ul>
           )}
           <span className="text-sm text-brand-interaction font-semibold hover:underline">
-            Voir le détail de l'offre
+            {t('offer.see_detail')}
           </span>
         </button>
 
@@ -73,16 +81,22 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
             selected === alternative.id ? 'border-brand shadow-md bg-blue-light' : 'border-border'
           }`}
         >
-          <p className="font-bold text-anthracite mb-1">{alternative.name}</p>
-          <p className="text-secondary text-sm mb-2">{alternative.desc}</p>
+          <p className="font-bold text-anthracite mb-1">
+            {t(`offer.offers.${alternative.id}.name`, { defaultValue: alternative.name })}
+          </p>
+          <p className="text-secondary text-sm mb-2">
+            {t(`offer.offers.${alternative.id}.desc`, { defaultValue: alternative.desc })}
+          </p>
           <p className="text-xl font-black text-anthracite">
             {formatPrice(alternative.price)} €
-            <span className="text-sm font-medium text-secondary">/{alternative.period}</span>
+            <span className="text-sm font-medium text-secondary">
+              /{t(`offer.offers.${alternative.id}.period`, { defaultValue: alternative.period })}
+            </span>
           </p>
         </button>
 
         <div className="mt-auto pt-8">
-          <Button variant="primary" full onClick={onNext}>Suivant</Button>
+          <Button variant="primary" full onClick={onNext}>{t('offer.next')}</Button>
         </div>
       </div>
     </>
