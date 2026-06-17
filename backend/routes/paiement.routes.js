@@ -1,44 +1,104 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
+const paiementController = require('../controllers/paiement.controller');
 
-// Initialiser un paiement pour un forfait
-router.post("/api/paiements", (req, res) => {
-    const { forfait_id, payeur_id, montant, type_paiement } = req.body;
+/**
+ * @swagger
+ * tags:
+ *   name: Paiements
+ *   description: Gestion des paiements de forfaits
+ */
 
-    const sql = `INSERT INTO paiement (forfait_id, payeur_id, montant, type_paiement, statut_paiement, date_paiement) 
-                 VALUES (?, ?, ?, ?, 'En attente', NOW())`;
+/**
+ * @swagger
+ * /api/paiements:
+ *   post:
+ *     summary: Initialiser un paiement pour un forfait
+ *     tags: [Paiements]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [forfait_id, payeur_id, montant, type_paiement]
+ *             properties:
+ *               forfait_id: { type: integer }
+ *               payeur_id: { type: integer }
+ *               montant: { type: number, format: float, example: 86.40 }
+ *               type_paiement:
+ *                 type: string
+ *                 enum: [Prélèvement automatique, Paiement direct, Virement]
+ *     responses:
+ *       201:
+ *         description: Paiement initié
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message: { type: string }
+ *                 paiement_id: { type: integer }
+ *       500:
+ *         description: Erreur serveur
+ */
+router.post('/api/paiements', paiementController.create);
 
-    db.query(sql, [forfait_id, payeur_id, montant, type_paiement], (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur", error: err });
-        res.status(201).json({ message: "Paiement initié", paiement_id: result.insertId });
-    });
-});
+/**
+ * @swagger
+ * /api/paiements/payeur/{payeur_id}:
+ *   get:
+ *     summary: Historique des paiements d'un payeur
+ *     tags: [Paiements]
+ *     parameters:
+ *       - in: path
+ *         name: payeur_id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Historique des paiements avec le type de forfait associé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - { $ref: '#/components/schemas/Paiement' }
+ *                   - type: object
+ *                     properties:
+ *                       type_forfait: { type: string }
+ */
+router.get('/api/paiements/payeur/:payeur_id', paiementController.getByPayeur);
 
-// Récupérer l'historique des paiements d'un payeur (Pour la facture client)
-router.get("/api/paiements/payeur/:payeur_id", (req, res) => {
-    const sql = `
-        SELECT p.*, f.type_forfait 
-        FROM paiement p 
-        JOIN forfait f ON p.forfait_id = f.id 
-        WHERE p.payeur_id = ? 
-        ORDER BY p.date_paiement DESC`;
-        
-    db.query(sql, [req.params.payeur_id], (err, results) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json(results);
-    });
-});
-
-// Simuler la validation d'un paiement (Webhook / Admin)
-router.put("/api/paiements/:id/status", (req, res) => {
-    const { statut_paiement } = req.body;
-    const sql = "UPDATE paiement SET statut_paiement = ? WHERE id = ?";
-
-    db.query(sql, [statut_paiement, req.params.id], (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json({ message: `Paiement mis à jour en : ${statut_paiement}` });
-    });
-});
+/**
+ * @swagger
+ * /api/paiements/{id}/status:
+ *   put:
+ *     summary: Mettre à jour le statut d'un paiement
+ *     tags: [Paiements]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [statut_paiement]
+ *             properties:
+ *               statut_paiement:
+ *                 type: string
+ *                 enum: [Réussi, Échoué, En attente]
+ *     responses:
+ *       200:
+ *         description: Statut du paiement mis à jour
+ *       500:
+ *         description: Erreur serveur
+ */
+router.put('/api/paiements/:id/status', paiementController.updateStatus);
 
 module.exports = router;

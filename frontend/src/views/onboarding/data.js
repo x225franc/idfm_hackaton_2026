@@ -62,7 +62,7 @@ export const OFFERS = {
   },
   'imagine-r': {
     id: 'imagine-r',
-    name: 'Navigo Imagine R',
+    name: 'Imagine R Etudiant',
     price: 78.7,
     period: 'an',
     desc: 'Idéal pour les étudiants en Île-de-France.',
