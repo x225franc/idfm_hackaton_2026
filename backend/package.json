@@ -25,6 +25,8 @@
     "path": "^0.12.7",
     "pdfkit": "^0.15.2",
     "sharp": "^0.33.3",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "tls": "^0.0.1",
     "uuidv4": "^6.2.13"
   }

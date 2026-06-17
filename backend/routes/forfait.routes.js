@@ -1,66 +1,125 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
+const forfaitController = require('../controllers/forfait.controller');
 
-// Souscrire à un nouveau forfait
-router.post("/api/forfaits", (req, res) => {
-    const { porteur_id, payeur_id, type_forfait } = req.body;
+/**
+ * @swagger
+ * tags:
+ *   name: Forfaits
+ *   description: Gestion des abonnements de transport
+ */
 
-    // Par défaut, le forfait est "En attente de validation" tant que les documents ne sont pas validés par l'admin
-    const sql = `INSERT INTO forfait (porteur_id, payeur_id, type_forfait, statut) 
-                VALUES (?, ?, ?, 'En attente de validation')`;
+/**
+ * @swagger
+ * /api/forfaits:
+ *   post:
+ *     summary: Souscrire à un nouveau forfait
+ *     tags: [Forfaits]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [porteur_id, payeur_id, type_forfait]
+ *             properties:
+ *               porteur_id: { type: integer }
+ *               payeur_id: { type: integer }
+ *               type_forfait:
+ *                 type: string
+ *                 enum: [Navigo Annuel, Imagine R Étudiant, Imagine R Junior, Imagine R Scolaire, Liberté+, TST, Améthyste]
+ *     responses:
+ *       201:
+ *         description: Demande de forfait enregistrée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message: { type: string }
+ *                 forfait_id: { type: integer }
+ *       500:
+ *         description: Erreur serveur
+ */
+router.post('/api/forfaits', forfaitController.create);
 
-    db.query(sql, [porteur_id, payeur_id, type_forfait], (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur", error: err });
-        res.status(201).json({ message: "Demande de forfait enregistrée", forfait_id: result.insertId });
-    });
-});
+/**
+ * @swagger
+ * /api/forfaits/porteur/{porteur_id}:
+ *   get:
+ *     summary: Récupérer les forfaits d'un porteur
+ *     tags: [Forfaits]
+ *     parameters:
+ *       - in: path
+ *         name: porteur_id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Liste des forfaits du porteur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/Forfait' }
+ */
+router.get('/api/forfaits/porteur/:porteur_id', forfaitController.getByPorteur);
 
-// Récupérer les forfaits actifs ou en attente d'un porteur
-router.get("/api/forfaits/porteur/:porteur_id", (req, res) => {
-    const sql = "SELECT * FROM forfait WHERE porteur_id = ? ORDER BY date_debut DESC";
-    db.query(sql, [req.params.porteur_id], (err, results) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json(results);
-    });
-});
+/**
+ * @swagger
+ * /api/admin/forfaits:
+ *   get:
+ *     summary: Récupérer tous les forfaits avec infos porteur et payeur (admin)
+ *     tags: [Forfaits]
+ *     responses:
+ *       200:
+ *         description: Liste complète des forfaits
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - { $ref: '#/components/schemas/Forfait' }
+ *                   - type: object
+ *                     properties:
+ *                       porteur_nom: { type: string }
+ *                       porteur_prenom: { type: string }
+ *                       payeur_nom: { type: string }
+ *                       payeur_prenom: { type: string }
+ */
+router.get('/api/admin/forfaits', forfaitController.getAll);
 
-// Récupérer tous les forfaits avec les infos du porteur et payeur
-router.get("/api/admin/forfaits", (req, res) => {
-    const sql = `
-        SELECT f.*, 
-               porteur.firstName AS porteur_nom, porteur.lastName AS porteur_prenom,
-               payeur.firstName AS payeur_nom, payeur.lastName AS payeur_prenom
-        FROM forfait f
-        JOIN profil porteur ON f.porteur_id = porteur.id
-        JOIN profil payeur ON f.payeur_id = payeur.id
-        ORDER BY f.date_debut DESC
-    `;
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json(results);
-    });
-});
-
-// Changer le statut d'un forfait (Ex: de 'En attente' à 'Actif' ou 'Suspendu')
-router.put("/api/admin/forfaits/:id/status", (req, res) => {
-    const { statut, date_debut, date_fin } = req.body;
-    let sql = "UPDATE forfait SET statut = ?";
-    const values = [statut];
-
-    // Si on active le forfait, on peut définir sa date de validité
-    if (date_debut && date_fin) {
-        sql += ", date_debut = ?, date_fin = ?";
-        values.push(date_debut, date_fin);
-    }
-
-    sql += " WHERE id = ?";
-    values.push(req.params.id);
-
-    db.query(sql, values, (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json({ message: `Le forfait est désormais ${statut}` });
-    });
-});
+/**
+ * @swagger
+ * /api/admin/forfaits/{id}/status:
+ *   put:
+ *     summary: Changer le statut d'un forfait (admin)
+ *     tags: [Forfaits]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [statut]
+ *             properties:
+ *               statut:
+ *                 type: string
+ *                 enum: [Actif, Suspendu, À renouveler, En attente de validation]
+ *               date_debut: { type: string, format: date }
+ *               date_fin: { type: string, format: date }
+ *     responses:
+ *       200:
+ *         description: Statut du forfait mis à jour
+ *       500:
+ *         description: Erreur serveur
+ */
+router.put('/api/admin/forfaits/:id/status', forfaitController.updateStatus);
 
 module.exports = router;

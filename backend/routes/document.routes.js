@@ -1,76 +1,127 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
+const documentController = require('../controllers/document.controller');
 
-// ==========================================
-// ROUTES UTILISATEURS
-// ==========================================
+/**
+ * @swagger
+ * tags:
+ *   name: Documents
+ *   description: Upload et vérification des documents justificatifs
+ */
 
-// Upload d'un document 
-router.post("/api/documents/upload", (req, res) => {
-    const { profil_id, type_document } = req.body;
-    
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ message: "Aucun fichier uploadé" });
-    }
+/**
+ * @swagger
+ * /api/documents/upload:
+ *   post:
+ *     summary: Uploader un document justificatif
+ *     tags: [Documents]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [profil_id, type_document, images]
+ *             properties:
+ *               profil_id: { type: integer }
+ *               type_document:
+ *                 type: string
+ *                 enum: ["Pièce d'identité", "Attestation de bourse", "Justificatif TST", "Photo d'identité"]
+ *               images:
+ *                 type: string
+ *                 format: binary
+ *                 description: Fichier image (JPEG/PNG, max 5 Mo)
+ *     responses:
+ *       201:
+ *         description: Document envoyé pour vérification
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message: { type: string }
+ *                 document_id: { type: integer }
+ *       400:
+ *         description: Aucun fichier uploadé
+ *       500:
+ *         description: Erreur d'insertion
+ */
+router.post('/api/documents/upload', documentController.upload);
 
-    const file = req.files[0];
-    const chemin_fichier = "/images/" + file.filename;
+/**
+ * @swagger
+ * /api/documents/profil/{profil_id}:
+ *   get:
+ *     summary: Récupérer les documents d'un profil
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: path
+ *         name: profil_id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Liste des documents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/Document' }
+ */
+router.get('/api/documents/profil/:profil_id', documentController.getByProfil);
 
-    const sql = `INSERT INTO document (profil_id, type_document, chemin_fichier, statut_verification, uploadedAt) 
-                VALUES (?, ?, ?, 'En attente', NOW())`;
+/**
+ * @swagger
+ * /api/admin/documents/pending:
+ *   get:
+ *     summary: Récupérer tous les documents en attente de vérification (admin)
+ *     tags: [Documents]
+ *     responses:
+ *       200:
+ *         description: Liste des documents en attente avec infos profil et compte
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - { $ref: '#/components/schemas/Document' }
+ *                   - type: object
+ *                     properties:
+ *                       firstName: { type: string }
+ *                       lastName: { type: string }
+ *                       type_profil: { type: string }
+ *                       compte_email: { type: string }
+ */
+router.get('/api/admin/documents/pending', documentController.getPending);
 
-    db.query(sql, [profil_id, type_document, chemin_fichier], (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur d'insertion en BDD" });
-        res.status(201).json({ message: "Document envoyé pour vérification", document_id: result.insertId });
-    });
-});
-
-// Récupérer les documents d'un profil
-router.get("/api/documents/profil/:profil_id", (req, res) => {
-    const sql = "SELECT * FROM document WHERE profil_id = ? ORDER BY uploadedAt DESC";
-    db.query(sql, [req.params.profil_id], (err, results) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json(results);
-    });
-});
-
-// ==========================================
-// ROUTES ADMIN (BACKOFFICE)
-// ==========================================
-
-// 1. Récupérer tous les documents "En attente" avec les infos du profil associé
-router.get("/api/admin/documents/pending", (req, res) => {
-    const sql = `
-        SELECT d.*, p.firstName, p.lastName, p.type_profil, c.email as compte_email
-        FROM document d
-        JOIN profil p ON d.profil_id = p.id
-        JOIN compte_connect c ON p.compte_id = c.id
-        WHERE d.statut_verification = 'En attente'
-        ORDER BY d.uploadedAt ASC
-    `;
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        res.status(200).json(results);
-    });
-});
-
-// 2. Valider ou Refuser un document
-router.put("/api/admin/documents/:id/status", (req, res) => {
-    const docId = req.params.id;
-    const { statut_verification, commentaire_admin } = req.body;
-
-    if (!['Validé', 'Refusé'].includes(statut_verification)) {
-        return res.status(400).json({ message: "Statut invalide" });
-    }
-
-    const sql = "UPDATE document SET statut_verification = ?, commentaire_admin = ? WHERE id = ?";
-    
-    db.query(sql, [statut_verification, commentaire_admin || null, docId], (err, result) => {
-        if (err) return res.status(500).json({ message: "Erreur serveur" });
-        
-        res.status(200).json({ message: `Document marqué comme ${statut_verification}` });
-    });
-});
+/**
+ * @swagger
+ * /api/admin/documents/{id}/status:
+ *   put:
+ *     summary: Valider ou refuser un document (admin)
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [statut_verification]
+ *             properties:
+ *               statut_verification: { type: string, enum: [Validé, Refusé] }
+ *               commentaire_admin: { type: string }
+ *     responses:
+ *       200:
+ *         description: Statut mis à jour
+ *       400:
+ *         description: Statut invalide
+ */
+router.put('/api/admin/documents/:id/status', documentController.updateStatus);
 
 module.exports = router;
