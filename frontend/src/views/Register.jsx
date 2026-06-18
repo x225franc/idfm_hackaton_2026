@@ -1,28 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { IconChevronLeft, IconEye, IconEyeOff, IconAlertCircle } from '@tabler/icons-react';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { PASSWORD_PATTERN } from '@/validation';
-
-function EyeIcon({ open }) {
-  if (open) {
-    return (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-        <line x1="1" y1="1" x2="23" y2="23" />
-      </svg>
-    );
-  }
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
 
 export default function Register() {
   const { t } = useTranslation();
@@ -102,7 +85,7 @@ export default function Register() {
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex items-center px-4 py-3 border-b border-border sticky top-0 z-10 bg-white">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-lg text-anthracite hover:bg-surface transition-colors" aria-label="Retour">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          <IconChevronLeft size={20} stroke={2.5} />
         </button>
         <div className="flex-1 flex justify-center"><Link to="/"><Logo size="md" /></Link></div>
         <div className="w-9" />
@@ -116,7 +99,7 @@ export default function Register() {
 
         {apiError && (
           <div className="mb-6 p-4 rounded-xl bg-danger-light/20 border border-danger text-danger text-sm font-medium flex gap-2">
-            <svg className="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <IconAlertCircle size={16} className="shrink-0 mt-0.5" stroke={2} />
             {apiError}
           </div>
         )}
@@ -163,7 +146,7 @@ export default function Register() {
                     pattern={PASSWORD_PATTERN}
                     className="w-full rounded-xl border border-border py-3.5 px-4 pr-12 text-anthracite text-base bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-shadow" />
                   <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-anthracite transition-colors">
-                    <EyeIcon open={showPassword} />
+                    {showPassword ? <IconEyeOff size={20} stroke={2} /> : <IconEye size={20} stroke={2} />}
                   </button>
                 </div>
               </div>
