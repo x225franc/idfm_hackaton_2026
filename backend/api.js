@@ -1,3 +1,11 @@
+// dotenv + GlitchTip doivent être chargés avant express : Sentry instrumente le module
+// express lui-même au moment où il est require() pour la première fois, donc Sentry.init()
+// (déclenché par ce require) doit obligatoirement précéder `require('express')`.
+const dotenv = require('dotenv');
+const { resolve } = require('path');
+dotenv.config({ path: resolve(__dirname, '../.env') });
+const Sentry = require('./config/sentry');
+
 // importation de express , mysql et cors
 const express = require("express");
 const cors = require("cors");
@@ -10,18 +18,11 @@ const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
-// importation de dotenv
-const dotenv = require("dotenv");
-const { resolve } = require("path");
-
 // importation de la connexion à la base de données
 const db = require("./config/db");
 
 // métriques Prometheus
 const { metricsMiddleware, metricsHandler } = require("./middleware/metrics");
-
-// configuration de dotenv
-dotenv.config({ path: resolve(__dirname, "../.env") });
 
 // creation de l'instance express (serveur)
 const app = express();
@@ -156,6 +157,17 @@ app.use(paiementRoutes);
 app.use(chatRoutes);
 app.use(notificationRoutes);
 app.use(familyRoutes);
+
+// Route de test GlitchTip (dev uniquement) — GET /api/debug-sentry doit faire apparaître
+// une erreur dans le dashboard GlitchTip une fois GLITCHTIP_DSN_BACKEND configuré.
+if (process.env.ENV === 'development') {
+  app.get('/api/debug-sentry', () => {
+    throw new Error('Erreur de test GlitchTip (backend)');
+  });
+}
+
+// GlitchTip — capture les erreurs non gérées par les routes ci-dessus (no-op si pas de DSN)
+Sentry.setupExpressErrorHandler(app);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
