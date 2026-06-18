@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../App';
 import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
@@ -26,6 +27,7 @@ function EyeIcon({ open }) {
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { refreshUser } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
@@ -54,6 +56,7 @@ export default function Login() {
       if (response.ok) {
         localStorage.setItem('token', data.jwt);
         localStorage.setItem('user', JSON.stringify(data.user));
+        await refreshUser();
         navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
       } else {
         if (response.status === 401 && data.isVerified === 'NO') {

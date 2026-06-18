@@ -1,7 +1,10 @@
+import { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import NotificationBell from '@/components/NotificationBell';
 import { IconLayoutDashboard, IconTicket, IconUser, IconLogout } from '@tabler/icons-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { AuthContext } from '@/App';
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Tableau', icon: IconLayoutDashboard },
@@ -12,21 +15,20 @@ const NAV_ITEMS = [
 export default function Header() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const isLoggedIn = !!localStorage.getItem('token');
+    const { user, logout } = useContext(AuthContext);
+    const isLoggedIn = !!user;
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
+        logout();
+        navigate('/');
     };
 
     return (
         <header className="bg-white border-b border-border sticky top-0 z-10">
             <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-                <Link to="/">
+                <Link to="/" style={{ cursor: 'pointer' }}>
                     <Logo size="md" />
                 </Link>
-                {/* Liens privés visibles uniquement en session (sans intérêt — et redirigés vers /login — pour un visiteur déconnecté) */}
                 {isLoggedIn && (
                     <nav className="hidden md:flex items-center gap-1">
                         {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
@@ -62,6 +64,7 @@ export default function Header() {
                 ) : (
                     <div className="w-22" />
                 )}
+            <LanguageSwitcher />
             </div>
         </header>
     );

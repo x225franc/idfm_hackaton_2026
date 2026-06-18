@@ -1,6 +1,8 @@
 const profilModel = require('../models/profil.model');
 
 const getByCompte = async (req, res) => {
+    if (parseInt(req.params.compte_id) !== req.user.id_user)
+        return res.status(403).json({ message: 'Accès refusé' });
     try {
         const results = await profilModel.getByCompteId(req.params.compte_id);
         res.status(200).json(results);
@@ -10,6 +12,8 @@ const getByCompte = async (req, res) => {
 };
 
 const create = async (req, res) => {
+    if (parseInt(req.body.compte_id) !== req.user.id_user)
+        return res.status(403).json({ message: 'Accès refusé' });
     try {
         const result = await profilModel.create(req.body);
         res.status(201).json({ message: 'Profil créé avec succès', profil_id: result.insertId });

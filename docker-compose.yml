@@ -111,6 +111,74 @@ services:
       ollama:
         condition: service_healthy
 
+  # ─── GlitchTip : centralisation des erreurs (alternative open-source self-hosted à Sentry) ───
+  glitchtip_db:
+    image: postgres:15-alpine
+    container_name: idfm_glitchtip_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: '${GLITCHTIP_DB_PASSWORD}'
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'glitchtip']
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  glitchtip_redis:
+    image: redis:7-alpine
+    container_name: idfm_glitchtip_redis
+    restart: unless-stopped
+
+  glitchtip_migrate:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_migrate
+    command: ./manage.py migrate
+    environment: &glitchtip_env
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip_db:5432/glitchtip
+      SECRET_KEY: '${GLITCHTIP_SECRET_KEY}'
+      REDIS_URL: redis://glitchtip_redis:6379/0
+      PORT: '8000'
+      GLITCHTIP_DOMAIN: 'http://localhost:${GLITCHTIP_PORT}'
+      DEFAULT_FROM_EMAIL: '${MAIL_USER}'
+      # consolemail:// en local : pas de dépendance à un vrai SMTP, l'email "envoyé" est juste
+      # affiché dans les logs du conteneur (docker logs idfm_glitchtip_web). Pour un GlitchTip
+      # exposé en prod, repasser sur smtp+tls://...  (smtp:// nu plante avec Gmail : pas de STARTTLS).
+      EMAIL_URL: 'consolemail://'
+      ENABLE_OPEN_USER_REGISTRATION: 'false'
+    depends_on:
+      glitchtip_db:
+        condition: service_healthy
+
+  glitchtip_web:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_web
+    restart: unless-stopped
+    environment: *glitchtip_env
+    ports:
+      - '${GLITCHTIP_PORT}:8000'
+    depends_on:
+      glitchtip_migrate:
+        condition: service_completed_successfully
+      glitchtip_redis:
+        condition: service_started
+
+  glitchtip_worker:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_worker
+    restart: unless-stopped
+    command: ./bin/run-celery-with-beat.sh
+    environment: *glitchtip_env
+    depends_on:
+      glitchtip_migrate:
+        condition: service_completed_successfully
+      glitchtip_redis:
+        condition: service_started
+
 volumes:
   mysql_data:
   ollama_data:
+  glitchtip_db_data:

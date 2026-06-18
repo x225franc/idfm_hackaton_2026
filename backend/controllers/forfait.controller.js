@@ -1,8 +1,16 @@
 const forfaitModel = require('../models/forfait.model');
+const profilModel = require('../models/profil.model');
 
 const create = async (req, res) => {
     const { porteur_id, payeur_id, type_forfait } = req.body;
     try {
+        const [porteurRows, payeurRows] = await Promise.all([
+            profilModel.belongsToCompte(porteur_id, req.user.id_user),
+            profilModel.belongsToCompte(payeur_id, req.user.id_user),
+        ]);
+        if (porteurRows.length === 0 || payeurRows.length === 0)
+            return res.status(403).json({ message: 'Accès refusé' });
+
         const result = await forfaitModel.create(porteur_id, payeur_id, type_forfait);
         res.status(201).json({ message: 'Demande de forfait enregistrée', forfait_id: result.insertId });
     } catch (err) {
@@ -12,6 +20,9 @@ const create = async (req, res) => {
 
 const getByPorteur = async (req, res) => {
     try {
+        const ownership = await profilModel.belongsToCompte(req.params.porteur_id, req.user.id_user);
+        if (ownership.length === 0) return res.status(403).json({ message: 'Accès refusé' });
+
         const results = await forfaitModel.getByPorteurId(req.params.porteur_id);
         res.status(200).json(results);
     } catch {

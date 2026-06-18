@@ -8,7 +8,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-5 py-10">
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="md:w-72 shrink-0">
-            <Logo size="sm" className="mb-3" />
+            <Link to="/" style={{ cursor: 'pointer' }}>
+              <Logo size="sm" className="mb-3" />
+            </Link>
             <p className="text-sm text-secondary leading-relaxed italic">
               En partenariat avec{' '}
               <span className="text-anthracite font-medium">Île-de-France Mobilités</span> pour

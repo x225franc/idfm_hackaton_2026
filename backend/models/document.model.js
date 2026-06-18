@@ -16,7 +16,6 @@ module.exports = {
     getByProfilId: (profil_id) =>
         q('SELECT * FROM document WHERE profil_id = ? ORDER BY uploadedAt DESC', [profil_id]),
 
-    // Tous les documents des profils donnés (vue détail admin d'un compte pouvant porter plusieurs profils).
     getByProfilIds: (profilIds) =>
         profilIds.length === 0
             ? Promise.resolve([])

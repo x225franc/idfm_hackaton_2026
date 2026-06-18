@@ -35,7 +35,6 @@ module.exports = {
             [firstName, lastName, email, hashedPassword, isVerified ? 1 : 0]
         ),
 
-    // Création directe par un admin depuis le backoffice : rôle choisi, compte pré-vérifié.
     createWithRole: (firstName, lastName, email, hashedPassword, role) =>
         q(
             `INSERT INTO compte_connect (firstName, lastName, email, password, role, consentement_rgpd, isVerified, passwordResetToken, createdAt, updatedAt, isBanned)
@@ -43,8 +42,6 @@ module.exports = {
             [firstName, lastName, email, hashedPassword, role]
         ),
 
-    // Création d'un compte enfant par un parent ("Ajouter un proche") : pré-vérifié, marqué
-    // mineur, rattaché au parent via parent_id (en plus de la table linked_accounts).
     createChild: (firstName, lastName, email, hashedPassword, parentId) =>
         q(
             `INSERT INTO compte_connect (firstName, lastName, email, password, role, consentement_rgpd, isVerified, passwordResetToken, createdAt, updatedAt, isBanned, is_minor, parent_id)
@@ -85,7 +82,6 @@ module.exports = {
     updatePassword: (id, hashedPassword) =>
         q('UPDATE compte_connect SET password = ?, updatedAt = NOW() WHERE id = ?', [hashedPassword, id]),
 
-    // Bascule un compte enfant en compte normal le jour de ses 16 ans révolus.
     setMinorStatus: (id, isMinor) =>
         q('UPDATE compte_connect SET is_minor = ?, updatedAt = NOW() WHERE id = ?', [isMinor ? 1 : 0, id]),
 

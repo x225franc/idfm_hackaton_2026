@@ -22,7 +22,7 @@ docker compose up -d
 
 ## Charger le jeu de données de test
 
-> A faire après le premier `docker compose up -d`, une fois la BDD démarrée.
+> A faire après le premier `docker compose up -d`, une fois la BDD démarrée !
 
 ```bash
 docker exec -i idfm_db mysql -u root idfm_hackaton_2026 < database/fixtures.sql

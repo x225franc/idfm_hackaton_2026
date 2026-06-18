@@ -37,14 +37,12 @@ module.exports = {
             [id, compte_id]
         ),
 
-    // Check dedup: avoid creating the same reminder twice for the same forfait+type
     existsForForfait: (forfait_id, type) =>
         q(
             'SELECT id FROM notification WHERE forfait_id = ? AND type = ? LIMIT 1',
             [forfait_id, type]
         ),
 
-    // Check dedup for age-transition: avoid duplicates per compte+type created today
     existsForCompteToday: (compte_id, type) =>
         q(
             `SELECT id FROM notification
@@ -53,7 +51,6 @@ module.exports = {
             [compte_id, type]
         ),
 
-    // Fetch all active forfaits expiring in N days (used by scheduler)
     getForfaitsExpiringInDays: (days) =>
         q(
             `SELECT f.id AS forfait_id, f.type_forfait, f.date_fin,
@@ -68,7 +65,6 @@ module.exports = {
             [days]
         ),
 
-    // Fetch profiles whose birthday is today and age matches a transition threshold
     getProfilesWithBirthdayAndAge: (age) =>
         q(
             `SELECT p.id AS profil_id, p.compte_id, p.firstName, p.lastName,
@@ -80,9 +76,7 @@ module.exports = {
                AND TIMESTAMPDIFF(YEAR, p.date_naissance, CURDATE()) = ?`,
             [age]
         ),
-
-    // Comptes mineurs dont l'anniversaire est aujourd'hui et qui atteignent 16 ans révolus
-    // (passage automatique en compte normal).
+        
     getMinorsTurning16Today: () =>
         q(
             `SELECT p.id AS profil_id, p.compte_id, p.firstName, p.lastName, cc.email

@@ -8,7 +8,6 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const MAIL_FROM    = process.env.MAIL_USER    || 'noreply@comutitres.fr';
 const LOGO_URL     = `${FRONTEND_URL}/logo.png`;
 
-// Age thresholds that trigger a "changement de tranche d'âge" notification
 const AGE_TRANSITIONS = [
     {
         age: 4,

@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   idfm_prod_network:
     driver: bridge
@@ -106,6 +104,83 @@ services:
       ollama:
         condition: service_healthy
 
+  glitchtip_db:
+    image: postgres:15-alpine
+    container_name: idfm_glitchtip_db_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: "${GLITCHTIP_DB_PASSWORD}"
+      POSTGRES_DB: glitchtip
+    networks:
+      - idfm_prod_network
+    volumes:
+      - glitchtip_db_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "glitchtip"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  glitchtip_redis:
+    image: redis:7-alpine
+    container_name: idfm_glitchtip_redis_prod
+    restart: unless-stopped
+    networks:
+      - idfm_prod_network
+
+  glitchtip_migrate:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_migrate_prod
+    restart: "no"
+    command: ./manage.py migrate
+    environment: &glitchtip_env
+      DATABASE_URL: "postgres://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip_db:5432/glitchtip"
+      SECRET_KEY: "${GLITCHTIP_SECRET_KEY}"
+      REDIS_URL: redis://glitchtip_redis:6379/0
+      PORT: "8000"
+      GLITCHTIP_DOMAIN: "${FRONTEND_URL}"
+      DEFAULT_FROM_EMAIL: "${MAIL_USER}"
+      EMAIL_URL: "smtp+tls://${MAIL_USER}:${MAIL_PASS}@${MAIL_HOST}:${MAIL_PORT}"
+      ENABLE_OPEN_USER_REGISTRATION: "false"
+    networks:
+      - idfm_prod_network
+    depends_on:
+      glitchtip_db:
+        condition: service_healthy
+      glitchtip_redis:
+        condition: service_started
+
+  glitchtip_web:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_web_prod
+    restart: unless-stopped
+    environment: *glitchtip_env
+    networks:
+      - idfm_prod_network
+    ports:
+      - "8001:8000"
+    depends_on:
+      glitchtip_migrate:
+        condition: service_completed_successfully
+      glitchtip_redis:
+        condition: service_started
+
+  glitchtip_worker:
+    image: glitchtip/glitchtip:latest
+    container_name: idfm_glitchtip_worker_prod
+    restart: unless-stopped
+    command: ./bin/run-celery-with-beat.sh
+    environment: *glitchtip_env
+    networks:
+      - idfm_prod_network
+    depends_on:
+      glitchtip_migrate:
+        condition: service_completed_successfully
+      glitchtip_redis:
+        condition: service_started
+
 volumes:
   mysql_data_prod:
   ollama_data_prod:
+  glitchtip_db_data_prod:

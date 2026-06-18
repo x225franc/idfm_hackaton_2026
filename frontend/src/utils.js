@@ -3,14 +3,22 @@ export function apiFetch(path, options = {}) {
   const token = localStorage.getItem('token');
   const headers = { ...(options.headers ?? {}) };
   if (token) headers.Authorization = `Bearer ${token}`;
-  return fetch(`${base}${path}`, { ...options, headers }).then((r) => {
+  return fetch(`${base}${path}`, { ...options, headers }).then(async (r) => {
     if (r.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
       throw new Error('401');
     }
-    if (!r.ok) throw new Error(String(r.status));
+    if (!r.ok) {
+      const contentType = r.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await r.json().catch(() => null);
+        throw new Error(data?.error || data?.message || String(r.status));
+      }
+      const text = await r.text().catch(() => '');
+      throw new Error(text || String(r.status));
+    }
     return r.json();
   });
 }

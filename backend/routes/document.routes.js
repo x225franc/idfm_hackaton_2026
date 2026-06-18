@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const documentController = require('../controllers/document.controller');
+const authMiddleware = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const requireVerified = require('../middleware/requireVerified');
 
 /**
  * @swagger
@@ -46,7 +49,7 @@ const documentController = require('../controllers/document.controller');
  *       500:
  *         description: Erreur d'insertion
  */
-router.post('/api/documents/upload', documentController.upload);
+router.post('/api/documents/upload', authMiddleware, documentController.upload);
 
 /**
  * @swagger
@@ -68,7 +71,7 @@ router.post('/api/documents/upload', documentController.upload);
  *               type: array
  *               items: { $ref: '#/components/schemas/Document' }
  */
-router.get('/api/documents/profil/:profil_id', documentController.getByProfil);
+router.get('/api/documents/profil/:profil_id', authMiddleware, requireVerified, documentController.getByProfil);
 
 /**
  * @swagger
@@ -93,7 +96,7 @@ router.get('/api/documents/profil/:profil_id', documentController.getByProfil);
  *                       type_profil: { type: string }
  *                       compte_email: { type: string }
  */
-router.get('/api/admin/documents/pending', documentController.getPending);
+router.get('/api/admin/documents/pending', authMiddleware, requireAdmin, documentController.getPending);
 
 /**
  * @swagger
@@ -122,6 +125,6 @@ router.get('/api/admin/documents/pending', documentController.getPending);
  *       400:
  *         description: Statut invalide
  */
-router.put('/api/admin/documents/:id/status', documentController.updateStatus);
+router.put('/api/admin/documents/:id/status', authMiddleware, requireAdmin, documentController.updateStatus);
 
 module.exports = router;
