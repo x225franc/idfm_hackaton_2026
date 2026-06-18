@@ -34,15 +34,11 @@ export default function StepWelcome({ onNext }) {
   return (
     <div className="min-h-screen bg-page flex flex-col">
       {/* ── Header ── */}
+      {/* Pas de bouton "Se connecter" ici : le hero ci-dessous propose déjà "Vous avez déjà un compte". */}
       <header className="bg-white border-b border-border sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
           <Logo size="md" />
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <Link to="/login">
-              <Button variant="outline">{t('welcome.login')}</Button>
-            </Link>
-          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 

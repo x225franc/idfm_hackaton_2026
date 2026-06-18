@@ -54,7 +54,7 @@ export default function ForgotPassword() {
                     </svg>
                 </button>
                 <div className="flex-1 flex justify-center">
-                    <Logo size="md" />
+                    <Link to="/"><Logo size="md" /></Link>
                 </div>
                 <div className="w-9" />
             </header>

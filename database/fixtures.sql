@@ -114,50 +114,53 @@ VALUES
 --   'Réduction 50%' | 'Solidarité 75%' | 'Solidarité Gratuité' | 'Handicap' | 'Accompagnant Handicap'
 -- Valeurs statut       : 'Actif' | 'Suspendu' | 'A renouveler' | 'En attente de validation'
 -- ────────────────────────────────────────────────────────────
+-- Les dates sont calculées par rapport à CURDATE() (et non figées) pour que les forfaits
+-- "Actif" affichent toujours une barre de progression crédible, quelle que soit la date
+-- à laquelle ce script est exécuté.
 INSERT INTO `forfait`
   (id, porteur_id, payeur_id, type_forfait, statut, date_debut, date_fin)
 VALUES
-  -- Jean — Navigo Annuel actif
-  (1, 1, 1, 'Navigo Annuel',        'Actif',                    '2025-01-01', '2025-12-31'),
+  -- Jean — Navigo Annuel actif (~17% écoulé)
+  (1, 1, 1, 'Navigo Annuel',        'Actif',                    DATE_SUB(CURDATE(), INTERVAL 2 MONTH),  DATE_ADD(CURDATE(), INTERVAL 10 MONTH)),
 
-  -- Marie — Imagine R Etudiant actif
-  (2, 2, 2, 'Imagine R Etudiant',   'Actif',                    '2024-09-01', '2025-08-31'),
+  -- Marie — Imagine R Etudiant actif (~50% écoulé)
+  (2, 2, 2, 'Imagine R Etudiant',   'Actif',                    DATE_SUB(CURDATE(), INTERVAL 6 MONTH),  DATE_ADD(CURDATE(), INTERVAL 6 MONTH)),
 
-  -- Robert — Améthyste expiré, à renouveler
-  (3, 3, 3, 'Améthyste',            'A renouveler',             '2024-01-01', '2024-12-31'),
+  -- Robert — Améthyste expiré depuis 2 mois, à renouveler
+  (3, 3, 3, 'Améthyste',            'A renouveler',             DATE_SUB(CURDATE(), INTERVAL 14 MONTH), DATE_SUB(CURDATE(), INTERVAL 2 MONTH)),
 
   -- Fatima — TST (palier générique historique) en attente de validation admin
   (4, 4, 4, 'TST',                  'En attente de validation', NULL,         NULL),
 
-  -- Lucas — Liberté+ actif
-  (5, 5, 5, 'Liberté+',             'Actif',                    '2025-01-20', '2026-01-20'),
+  -- Lucas — Liberté+ actif (~25% écoulé)
+  (5, 5, 5, 'Liberté+',             'Actif',                    DATE_SUB(CURDATE(), INTERVAL 3 MONTH),  DATE_ADD(CURDATE(), INTERVAL 9 MONTH)),
 
-  -- Claire — Navigo Annuel suspendu (compte banni)
-  (6, 6, 6, 'Navigo Annuel',        'Suspendu',                 '2024-10-01', '2025-09-30'),
+  -- Claire — Navigo Annuel suspendu en cours de période (compte banni)
+  (6, 6, 6, 'Navigo Annuel',        'Suspendu',                 DATE_SUB(CURDATE(), INTERVAL 4 MONTH),  DATE_ADD(CURDATE(), INTERVAL 8 MONTH)),
 
-  -- Sophie — Imagine R Scolaire actif
-  (7,  7,  7,  'Imagine R Scolaire',    'Actif',                    '2024-09-01', '2025-08-31'),
+  -- Sophie — Imagine R Scolaire actif (~33% écoulé)
+  (7,  7,  7,  'Imagine R Scolaire',    'Actif',                    DATE_SUB(CURDATE(), INTERVAL 4 MONTH), DATE_ADD(CURDATE(), INTERVAL 8 MONTH)),
 
-  -- Nathan — Imagine R Junior actif
-  (8,  8,  8,  'Imagine R Junior',      'Actif',                    '2024-09-01', '2025-08-31'),
+  -- Nathan — Imagine R Junior actif (~33% écoulé)
+  (8,  8,  8,  'Imagine R Junior',      'Actif',                    DATE_SUB(CURDATE(), INTERVAL 4 MONTH), DATE_ADD(CURDATE(), INTERVAL 8 MONTH)),
 
-  -- Amadou — Handicap actif
-  (9,  9,  9,  'Handicap',              'Actif',                    '2025-01-01', '2025-12-31'),
+  -- Amadou — Handicap actif (~8% écoulé)
+  (9,  9,  9,  'Handicap',              'Actif',                    DATE_SUB(CURDATE(), INTERVAL 1 MONTH), DATE_ADD(CURDATE(), INTERVAL 11 MONTH)),
 
   -- Camille (accompagnante d'Amadou) — Accompagnant Handicap, payé par Amadou (porteur ≠ payeur)
-  (10, 10, 9,  'Accompagnant Handicap', 'Actif',                    '2025-01-01', '2025-12-31'),
+  (10, 10, 9,  'Accompagnant Handicap', 'Actif',                    DATE_SUB(CURDATE(), INTERVAL 1 MONTH), DATE_ADD(CURDATE(), INTERVAL 11 MONTH)),
 
-  -- Henriette — Navigo Annuel Tarification Senior actif
-  (11, 11, 11, 'Navigo Senior',         'Actif',                    '2025-01-01', '2025-12-31'),
+  -- Henriette — Navigo Annuel Tarification Senior actif (~42% écoulé)
+  (11, 11, 11, 'Navigo Senior',         'Actif',                    DATE_SUB(CURDATE(), INTERVAL 5 MONTH), DATE_ADD(CURDATE(), INTERVAL 7 MONTH)),
 
-  -- Yasmine — Solidarité Gratuité actif (renouvelée tous les 3 mois)
-  (12, 12, 12, 'Solidarité Gratuité',   'Actif',                    '2025-04-01', '2025-06-30'),
+  -- Yasmine — Solidarité Gratuité actif (cycle de 3 mois, ~33% écoulé)
+  (12, 12, 12, 'Solidarité Gratuité',   'Actif',                    DATE_SUB(CURDATE(), INTERVAL 1 MONTH), DATE_ADD(CURDATE(), INTERVAL 2 MONTH)),
 
   -- Olivier — Réduction 50% en attente de validation du dossier AME
   (13, 13, 13, 'Réduction 50%',         'En attente de validation', NULL,         NULL),
 
-  -- Fatima — dossier validé : palier précis Solidarité 75% (vient compléter son ancien TST générique)
-  (14, 4,  4,  'Solidarité 75%',        'Actif',                    '2025-01-01', '2025-12-31');
+  -- Fatima — dossier validé : palier précis Solidarité 75% (~25% écoulé)
+  (14, 4,  4,  'Solidarité 75%',        'Actif',                    DATE_SUB(CURDATE(), INTERVAL 3 MONTH), DATE_ADD(CURDATE(), INTERVAL 9 MONTH));
 
 -- ────────────────────────────────────────────────────────────
 -- 4. DOCUMENTS

@@ -54,7 +54,7 @@ function LockIcon() {
   );
 }
 
-export default function StepPayment({ profile, frequency, offerId, value, userData, onChange, onNext, onBack, progress }) {
+export default function StepPayment({ profile, frequency, offerId, value, userData, onChange, onNext, onBack, onLogoClick, progress }) {
   const { t } = useTranslation();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -162,7 +162,7 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
 
   return (
     <>
-      <OnboardingHeader onBack={onBack} progress={progress} />
+      <OnboardingHeader onBack={onBack} onLogoClick={onLogoClick} progress={progress} />
       <div className="flex-1 w-full max-w-xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('payment.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('payment.subtitle')}</p>
