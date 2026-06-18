@@ -262,7 +262,7 @@ export function getChildOffers(age) {
 }
 
 const BASE_DOCS = [
-  { id: 'identite', label: "Carte d'identité", required: true, hint: 'PDF max 5 Mo' },
+  { id: 'identite', label: "Carte d'identité", required: true, hint: 'JPG, PNG ou PDF, max 5 Mo' },
 ];
 
 // Renvoie la liste des documents à fournir selon le profil sélectionné.

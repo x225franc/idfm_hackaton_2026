@@ -43,7 +43,7 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
           </svg>
           <span className="text-sm font-semibold text-brand-interaction">{t('documents.upload_cta')}</span>
           <span className="text-xs text-secondary">{hint}</span>
-          <input id={inputId} type="file" accept="application/pdf,.pdf" className="hidden" onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
+          <input id={inputId} type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
         </label>
       )}
     </div>
