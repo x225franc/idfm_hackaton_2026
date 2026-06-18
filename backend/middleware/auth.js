@@ -1,8 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-// Vérifie le JWT envoyé dans l'en-tête Authorization (format "Bearer <token>") et attache
-// son contenu décodé à req.user. Utilisé par les routes qui doivent identifier l'utilisateur
-// connecté côté serveur (ex: /api/family/*), plutôt que de faire confiance à un id fourni par le client.
 const verifyToken = (req, res, next) => {
     const header = req.headers.authorization;
     if (!header || !header.startsWith('Bearer ')) {

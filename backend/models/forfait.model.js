@@ -16,7 +16,6 @@ module.exports = {
     getByPorteurId: (porteur_id) =>
         q('SELECT * FROM forfait WHERE porteur_id = ? ORDER BY date_debut DESC', [porteur_id]),
 
-    // Tous les forfaits portés par l'un des profils donnés (vue détail admin d'un compte).
     getByPorteurIds: (profilIds) =>
         profilIds.length === 0
             ? Promise.resolve([])

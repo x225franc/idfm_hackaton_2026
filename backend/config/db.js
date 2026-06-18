@@ -4,7 +4,6 @@ const { resolve } = require("path");
 
 dotenv.config({ path: resolve(__dirname, "../../.env") });
 
-// Créer une connexion à la base de données MySQL
 const db = mysql.createConnection({
 	host: process.env.DB_HOST,
 	user: process.env.DB_USER,

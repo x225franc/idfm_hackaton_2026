@@ -158,15 +158,12 @@ app.use(chatRoutes);
 app.use(notificationRoutes);
 app.use(familyRoutes);
 
-// Route de test GlitchTip (dev uniquement) — GET /api/debug-sentry doit faire apparaître
-// une erreur dans le dashboard GlitchTip une fois GLITCHTIP_DSN_BACKEND configuré.
 if (process.env.ENV === 'development') {
   app.get('/api/debug-sentry', () => {
     throw new Error('Erreur de test GlitchTip (backend)');
   });
 }
 
-// GlitchTip — capture les erreurs non gérées par les routes ci-dessus (no-op si pas de DSN)
 Sentry.setupExpressErrorHandler(app);
 
 /////////////////////////////////////////////////////////////////////////////////

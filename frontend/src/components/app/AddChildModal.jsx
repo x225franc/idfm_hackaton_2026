@@ -69,7 +69,6 @@ export default function AddChildModal({ open, onClose, onCreated }) {
     onClose();
   };
 
-  // Étape 1 : crée le compte du proche, puis passe au choix du forfait.
   const handleSubmitInfos = async (e) => {
     e.preventDefault();
 
@@ -96,7 +95,6 @@ export default function AddChildModal({ open, onClose, onCreated }) {
     }
   };
 
-  // Étape 3 : crée le forfait (porté par le proche) et le paiement (réglé par le parent).
   const handlePay = async () => {
     setLoading(true);
     setError(null);
@@ -134,8 +132,6 @@ export default function AddChildModal({ open, onClose, onCreated }) {
     }
   };
 
-  // Calculée via if/else (et non un objet littéral) pour n'évaluer que la branche active :
-  // le rendu "paiement" lit offer.price, qui n'existe pas encore tant qu'on est à l'étape "infos".
   let footer;
   if (step === 'infos') {
     footer = (

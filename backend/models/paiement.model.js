@@ -23,7 +23,6 @@ module.exports = {
             [payeur_id]
         ),
 
-    // Tous les paiements réglés par l'un des profils donnés (vue détail admin d'un compte).
     getByPayeurIds: (profilIds) =>
         profilIds.length === 0
             ? Promise.resolve([])

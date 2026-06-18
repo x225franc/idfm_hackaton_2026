@@ -41,7 +41,7 @@ export const ChatBox = () => {
           {/* Header */}
           <div className="chatbot-header">
             <div>
-              <h3 className="font-bold text-white">Assistant IDFM</h3>
+              <h3 className="font-bold text-white">Assistant Comutitres</h3>
               <p className="text-xs text-blue-100">Toujours disponible</p>
             </div>
             <button

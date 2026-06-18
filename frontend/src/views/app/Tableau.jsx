@@ -198,7 +198,7 @@ function FamilySection({ children, loading, onAdd, onManage }) {
 export default function Tableau() {
   const location = useLocation();
   const [user, setUser]   = useState(null);
-  const [sub,  setSub]    = useState(undefined); // undefined = chargement, null = aucun forfait
+  const [sub,  setSub]    = useState(undefined); 
 
   const [children, setChildren] = useState([]);
   const [loadingChildren, setLoadingChildren] = useState(true);
@@ -259,13 +259,10 @@ export default function Tableau() {
       }
     })();
 
-    // Un compte mineur ne gère pas de proches : seuls les comptes normaux (parents) en ont.
     if (!stored?.is_minor) fetchChildren();
     else setLoadingChildren(false);
   }, []);
 
-  // Arrivée depuis l'interstitiel "Junior < 16 ans" de l'onboarding : ouvre directement la modale.
-  // (jamais pour un compte mineur lui-même, qui ne peut pas ajouter de proche)
   useEffect(() => {
     if (location.state?.openAddChild && !user?.is_minor) setAddChildOpen(true);
   }, [location.state, user]);

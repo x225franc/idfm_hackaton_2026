@@ -109,6 +109,7 @@ export default function App() {
       </Routes>
       {!isAdmin && <ChatBox />}
       <CookieBanner />
+    </>
     </AuthContext.Provider>
   );
 }
