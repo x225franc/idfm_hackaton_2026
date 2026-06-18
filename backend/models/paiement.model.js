@@ -23,6 +23,19 @@ module.exports = {
             [payeur_id]
         ),
 
+    // Tous les paiements réglés par l'un des profils donnés (vue détail admin d'un compte).
+    getByPayeurIds: (profilIds) =>
+        profilIds.length === 0
+            ? Promise.resolve([])
+            : q(
+                `SELECT p.*, f.type_forfait
+                 FROM paiement p
+                 JOIN forfait f ON p.forfait_id = f.id
+                 WHERE p.payeur_id IN (?)
+                 ORDER BY p.date_paiement DESC`,
+                [profilIds]
+            ),
+
     updateStatus: (id, statut) =>
         q('UPDATE paiement SET statut_paiement = ? WHERE id = ?', [statut, id]),
 };

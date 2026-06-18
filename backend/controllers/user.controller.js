@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const userModel = require('../models/user.model');
+const profilModel = require('../models/profil.model');
+const documentModel = require('../models/document.model');
+const forfaitModel = require('../models/forfait.model');
+const paiementModel = require('../models/paiement.model');
 const transporter = require('../config/mailer');
 const EmailTemplate = require('../components/emailTemplate');
 
@@ -44,6 +48,50 @@ const getAllAdmin = async (req, res) => {
         ]);
 
         res.json({ items, total: countResult[0].total, limit, offset });
+    } catch {
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// Création directe d'un compte depuis le backoffice (admin choisit le rôle, compte pré-vérifié).
+const adminCreate = async (req, res) => {
+    const { firstName, lastName, email, password, role } = req.body;
+    if (!firstName || !lastName || !email || !password)
+        return res.status(400).json({ message: 'Champs manquants' });
+    if (!['admin', 'user'].includes(role))
+        return res.status(400).json({ message: 'Rôle invalide' });
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await userModel.createWithRole(firstName, lastName, email, hashedPassword, role);
+        res.status(201).json({ message: 'Utilisateur créé avec succès', id: result.insertId });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY')
+            return res.status(409).json({ message: 'Cette adresse e-mail est déjà utilisée.' });
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// Vue détaillée d'un compte pour le backoffice : profil(s), documents, forfaits et paiements
+// rattachés à TOUS les profils de ce compte (un compte peut porter plusieurs profils, ex. un
+// payeur gérant aussi le profil d'un proche accompagné).
+const getFullDetail = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const userRows = await userModel.findById(id);
+        if (userRows.length === 0) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+
+        const profils = await profilModel.getByCompteId(id);
+        const profilIds = profils.map((p) => p.id);
+
+        const [documents, forfaits, paiements] = await Promise.all([
+            documentModel.getByProfilIds(profilIds),
+            forfaitModel.getByPorteurIds(profilIds),
+            paiementModel.getByPayeurIds(profilIds),
+        ]);
+
+        const { password, verificationToken, passwordResetToken, ...user } = userRows[0];
+        res.json({ user, profils, documents, forfaits, paiements });
     } catch {
         res.status(500).json({ message: 'Erreur serveur' });
     }
@@ -215,4 +263,4 @@ const remove = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getAllAdmin, getById, update, ban, unban, updateRole, remove };
+module.exports = { getAll, getAllAdmin, getById, adminCreate, getFullDetail, update, ban, unban, updateRole, remove };

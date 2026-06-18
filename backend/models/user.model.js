@@ -35,6 +35,14 @@ module.exports = {
             [firstName, lastName, email, hashedPassword, isVerified ? 1 : 0]
         ),
 
+    // Création directe par un admin depuis le backoffice : rôle choisi, compte pré-vérifié.
+    createWithRole: (firstName, lastName, email, hashedPassword, role) =>
+        q(
+            `INSERT INTO compte_connect (firstName, lastName, email, password, role, consentement_rgpd, isVerified, passwordResetToken, createdAt, updatedAt, isBanned)
+             VALUES (?, ?, ?, ?, ?, 1, 1, null, NOW(), NOW(), 0)`,
+            [firstName, lastName, email, hashedPassword, role]
+        ),
+
     updateVerificationToken: (email, token) =>
         q(
             'UPDATE compte_connect SET verificationToken = ?, updatedAt = CURRENT_TIMESTAMP WHERE email = ?',
