@@ -92,8 +92,9 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-app.use('/images', express.static(path.join(__dirname, 'uploads/images')));
-app.use('/documents', express.static(path.join(__dirname, 'uploads/documents')));
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
+app.use('/uploads/documents', express.static(path.join(__dirname, 'uploads/documents')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(
   '/components/idfm_hackaton_2026',
   express.static(path.join(__dirname, 'components/idfm_hackaton_2026')),
@@ -162,11 +163,8 @@ if (process.env.ENV === 'development') {
     console.log('Connecté a la bdd.');
 
     startNotificationScheduler();
-    httpServer.listen((err) => {
-      if (err) {
-        console.error('Erreur de demarrage du serveur : ' + err.stack);
-        return;
-      }
+    httpServer.listen(process.env.BACKEND_PORT, () => {
+      console.log(`Le serveur est en cours d'execution sur le port ${process.env.BACKEND_PORT}.`);
     });
   });
 }
