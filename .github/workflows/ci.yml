@@ -91,7 +91,8 @@ jobs:
           username: ${{ vars.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /app
+            cd /home/debian/idfm_hackaton_2026
+            git pull origin main
             docker compose -f docker-compose-prod.yml pull
             docker compose -f docker-compose-prod.yml up -d
             docker image prune -f
