@@ -208,7 +208,7 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
     onNext();
   };
 
-  return (
+return (
     <>
       <OnboardingHeader onBack={onBack} onLogoClick={onLogoClick} progress={progress} />
       <div className="flex-1 w-full max-w-xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
@@ -219,35 +219,7 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
           <div className="mb-4 px-4 py-3 rounded-xl bg-[#FFF0F0] border border-danger/20 text-danger text-sm">
             {error}
           </div>
-        ) : (
-          <>
-            <div className="flex flex-col gap-3 mb-6">
-              {PAYMENT_METHODS.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => onChange(m.id)}
-                  className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                    value === m.id ? 'border-brand bg-blue-light' : 'border-border hover:border-secondary/30'
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${value === m.id ? 'bg-brand text-white' : 'bg-surface text-secondary'}`}>
-                    <PaymentIcon id={m.id} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-anthracite text-sm">
-                      {t(`payment.methods.${m.id}.label`, { defaultValue: m.label })}
-                    </p>
-                    <p className="text-secondary text-xs">
-                      {t(`payment.methods.${m.id}.sub`, { defaultValue: m.sub })}
-                    </p>
-                  </div>
-                  <span className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: value === m.id ? '#6485F6' : '#DDDDDD' }}>
-                    {value === m.id && <span className="w-2.5 h-2.5 rounded-full bg-brand" />}
-                  </span>
-                </button>
-              ))}
-            </div>
+        )}
 
         {verificationMode ? (
           <form onSubmit={handleVerifySubmit} className="flex flex-col gap-5 mt-4 flex-1">

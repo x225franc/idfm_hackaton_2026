@@ -64,7 +64,7 @@ if (!fs.existsSync(uploadDir)) {
 // image upload via multer
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "uploads/images");
+		cb(null, uploadDir);
 	},
 	filename: (req, file, cb) => {
 		cb(null, uuidv4() + path.extname(file.originalname));
@@ -74,8 +74,17 @@ const upload = multer({
 	storage,
 	limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
 	fileFilter: (req, file, cb) => {
-		const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
-		if (!allowedTypes.includes(file.mimetype)) {
+		const allowedTypes = [
+			"image/jpeg",
+			"image/png",
+			"image/jpg",
+			"image/pjpeg",
+			"application/pdf",
+			"application/x-pdf",
+		];
+		const ext = path.extname(file.originalname || "").toLowerCase();
+		const allowedExtensions = [".jpg", ".jpeg", ".png", ".pdf"];
+		if (!allowedTypes.includes(file.mimetype) && !allowedExtensions.includes(ext)) {
 			return cb(
 				new Error(
 					"Type de fichier non valide. Seuls les formats JPG, PNG et PDF sont autorisés.",
@@ -100,11 +109,11 @@ app.use((err, req, res, next) => {
 
 app.use(
 	"/uploads/images",
-	express.static(path.join(__dirname, "uploads/images")),
+	express.static(uploadDir),
 );
 app.use(
-	"/uploads/documents",
-	express.static(path.join(__dirname, "uploads/documents")),
+	"/documents",
+	express.static(uploadDir),
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
