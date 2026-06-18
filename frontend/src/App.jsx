@@ -32,14 +32,11 @@ const PrivateRoute = ({ children }) => {
 };
 
 const AdminRoute = ({ children }) => {
-  const userStr = localStorage.getItem('user');
-
-  if (!userStr) {
+  if (!localStorage.getItem('token') || !localStorage.getItem('user'))
     return <Navigate to="/login" replace />;
-  }
 
   try {
-    const user = JSON.parse(userStr);
+    const user = JSON.parse(localStorage.getItem('user'));
     if (user.role === 'admin') {
       return children;
     } else {
@@ -91,7 +88,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
-        <Route path="/admin/users" element={<Admin />} />
+        <Route path="/admin/users" element={<AdminRoute><Admin /></AdminRoute>} />
 
         <Route path="/faq" element={<Faq />} />
         <Route path="/offres" element={<OffersCatalog />} />
