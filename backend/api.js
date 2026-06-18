@@ -146,11 +146,8 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
-		httpServer.listen((err) => {
-			if (err) {
-				console.error("Erreur de demarrage du serveur : " + err.stack);
-				return;
-			}
+		httpServer.listen(process.env.BACKEND_PORT, () => {
+			console.log(`Le serveur est en cours d'execution sur le port ${process.env.BACKEND_PORT}.`);
 		});
 	});
 }
