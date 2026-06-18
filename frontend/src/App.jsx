@@ -8,6 +8,7 @@ import Register from './views/Register';
 import ResetPassword from './views/Reset-password';
 import ForgotPassword from './views/Forgot-password';
 import Faq from './views/Faq';
+import OffersCatalog from './views/OffersCatalog';
 import NotFound from './views/Notfound';
 import Admin from './views/admin/Home';
 import Onboarding from './views/onboarding/Onboarding';
@@ -75,10 +76,10 @@ function App() {
       .finally(() => setSessionChecked(true));
   }, []);
 
-  if (!sessionChecked) return null;
-
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith('/admin');
+
+  if (!sessionChecked) return null;
 
   return (
     <>
@@ -93,6 +94,7 @@ function App() {
         <Route path="/admin/users" element={<Admin />} />
 
         <Route path="/faq" element={<Faq />} />
+        <Route path="/offres" element={<OffersCatalog />} />
 
         <Route path="/dashboard" element={<PrivateRoute><Tableau /></PrivateRoute>} />
         <Route path="/passes"    element={<PrivateRoute><Passes /></PrivateRoute>} />
@@ -103,4 +105,6 @@ function App() {
     </>
   );
 }
+
+export default App;
 

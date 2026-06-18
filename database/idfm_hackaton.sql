@@ -53,7 +53,7 @@ CREATE TABLE `forfait` (
     `id` int NOT NULL AUTO_INCREMENT,
     `porteur_id` int NOT NULL,
     `payeur_id` int NOT NULL,
-    `type_forfait` enum('Navigo Annuel','Imagine R Etudiant','Imagine R Junior','Imagine R Scolaire','Liberté+','TST','Améthyste') NOT NULL,
+    `type_forfait` enum('Navigo Annuel','Imagine R Etudiant','Imagine R Junior','Imagine R Scolaire','Liberté+','TST','Améthyste','Navigo Senior','Réduction 50%','Solidarité 75%','Solidarité Gratuité','Handicap','Accompagnant Handicap') NOT NULL,
     `statut` enum('Actif','Suspendu','A renouveler', 'En attente de validation') NOT NULL DEFAULT 'En attente de validation',
     `date_debut` date DEFAULT NULL,
     `date_fin` date DEFAULT NULL,

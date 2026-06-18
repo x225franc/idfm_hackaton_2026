@@ -49,16 +49,22 @@ docker exec -i idfm_db mysql -u root idfm_hackaton_2026 < database/fixtures.sql
 | `lucas.moreau@example.com` | `Test1234!` | User | Liberté+ — doc refusé puis re-soumis |
 | `claire.dubois@example.com` | `Test1234!` | User | **Compte banni** |
 | `thomas.petit@example.com` | `Test1234!` | User | **Email non vérifié** |
+| `sophie.garnier@example.com` | `Test1234!` | User | Imagine R Scolaire — actif |
+| `nathan.petit@example.com` | `Test1234!` | User | Imagine R Junior — actif |
+| `amadou.diallo@example.com` | `Test1234!` | User | Handicap — actif (porte aussi le profil de son accompagnante Camille) |
+| `henriette.dubreuil@example.com` | `Test1234!` | User | Navigo Senior — actif |
+| `yasmine.cherif@example.com` | `Test1234!` | User | Solidarité Gratuité — actif |
+| `olivier.mensah@example.com` | `Test1234!` | User | Réduction 50% — en attente de validation |
 
 ---
 
 ## Ce que couvre le jeu de données
 
-- Tous les **types de forfait** : Navigo Annuel, Imagine R Etudiant, Améthyste, TST, Liberté+
+- Les **13 types de forfait** : Navigo Annuel, Imagine R Etudiant/Scolaire/Junior, Améthyste, Navigo Senior, TST, Réduction 50%, Solidarité 75%/Gratuité, Handicap, Accompagnant Handicap, Liberté+
 - Tous les **statuts de forfait** : Actif, Suspendu, A renouveler, En attente de validation
 - 3 **documents en attente** visibles dans le backoffice (onglet Justificatifs)
 - Des **paiements** avec statuts variés : Réussi, Échoué, En attente
-- Des cas limites : compte banni, compte non vérifié, document refusé et re-soumis
+- Des cas limites : compte banni, compte non vérifié, document refusé et re-soumis, porteur ≠ payeur (Amadou/Camille)
 
 ---
 

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import { OnboardingHeader } from '../components';
@@ -10,8 +11,8 @@ function formatPrice(price) {
 
 function CheckItem({ children }) {
   return (
-    <li className="flex items-start gap-2 text-sm text-anthracite">
-      <svg className="text-success shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <li className="flex items-start gap-2 text-xs text-anthracite">
+      <svg className="text-success shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
       </svg>
       <span>{children}</span>
@@ -19,13 +20,26 @@ function CheckItem({ children }) {
   );
 }
 
+function EligibilityNote({ children }) {
+  return (
+    <div className="flex items-start gap-1.5 mt-auto pt-3 border-t border-border/70 text-[11px] text-secondary leading-relaxed">
+      <svg className="shrink-0 mt-0.5 text-secondary/70" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <span>{children}</span>
+    </div>
+  );
+}
+
 export default function StepOffer({ profile, frequency, value, onChange, onNext, onBack, progress }) {
   const { t } = useTranslation();
-  const { recommended, alternative } = getOffers(profile, frequency);
+  const { offers, recommended } = getOffers(profile, frequency);
   const selected = value || recommended.id;
 
+  // Pré-sélectionne l'offre recommandée par défaut quand on arrive sur l'étape.
   useEffect(() => {
     if (!value) onChange(recommended.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getPerks = (offer) => {
@@ -33,67 +47,86 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
     return Array.isArray(translated) ? translated : offer.perks;
   };
 
+  // 3 offres ou plus → grille à 3 colonnes + contenu plus large, pour tout loger sur une
+  // seule ligne plutôt que d'empiler et déclencher un scroll (largeur propre à cette étape).
+  const isMultiCard = offers.length >= 3;
+  const gridColsClass = isMultiCard ? 'lg:grid-cols-3' : 'lg:grid-cols-2';
+  const maxWidthClass = isMultiCard ? 'max-w-3xl' : 'max-w-xl';
+
   return (
     <>
       <OnboardingHeader onBack={onBack} progress={progress} />
-      <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col">
+      <div className={`flex-1 w-full ${maxWidthClass} mx-auto px-5 py-6 lg:px-8 lg:py-10 flex flex-col`}>
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('offer.title')}</h1>
-        <p className="text-secondary text-sm mb-6">{t('offer.subtitle')}</p>
+        <p className="text-secondary text-sm mb-5">{t('offer.subtitle')}</p>
 
-        <button
-          type="button"
-          onClick={() => onChange(recommended.id)}
-          className={`text-left rounded-2xl border-2 p-5 mb-4 transition-all cursor-pointer ${
-            selected === recommended.id ? 'border-brand shadow-md bg-blue-light' : 'border-border'
-          }`}
-        >
-          <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-brand-interaction bg-blue-info px-2 py-0.5 rounded-full mb-3">
-            {t('offer.badge')}
-          </span>
-          <p className="font-bold text-anthracite text-lg mb-1">
-            {t(`offer.offers.${recommended.id}.name`, { defaultValue: recommended.name })}
-          </p>
-          <p className="text-3xl font-black text-anthracite mb-3">
-            {formatPrice(recommended.price)} €
-            <span className="text-base font-medium text-secondary">
-              /{t(`offer.offers.${recommended.id}.period`, { defaultValue: recommended.period })}
-            </span>
-          </p>
-          {recommended.perks && (
-            <ul className="flex flex-col gap-1.5 mb-3">
-              {getPerks(recommended).map((perk) => (
-                <CheckItem key={perk}>{perk}</CheckItem>
-              ))}
-            </ul>
-          )}
-          <span className="text-sm text-brand-interaction font-semibold hover:underline">
-            {t('offer.see_detail')}
-          </span>
-        </button>
+        <div className={`grid grid-cols-1 ${gridColsClass} gap-3 mb-4`}>
+          {offers.map((offer) => (
+            <button
+              key={offer.id}
+              type="button"
+              onClick={() => onChange(offer.id)}
+              className={`text-left rounded-2xl border-2 p-4 transition-all cursor-pointer flex flex-col ${
+                selected === offer.id ? 'border-brand shadow-md bg-blue-light' : 'border-border hover:border-secondary/30'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2 min-h-5">
+                {offer.recommended ? (
+                  <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-brand-interaction bg-blue-info px-2 py-0.5 rounded-full">
+                    {t('offer.badge')}
+                  </span>
+                ) : <span />}
+                <span
+                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                  style={{ borderColor: selected === offer.id ? '#6485F6' : '#DDDDDD' }}
+                >
+                  {selected === offer.id && <span className="w-2.5 h-2.5 rounded-full bg-brand" />}
+                </span>
+              </div>
 
-        <button
-          type="button"
-          onClick={() => onChange(alternative.id)}
-          className={`text-left rounded-2xl border-2 p-5 transition-all cursor-pointer ${
-            selected === alternative.id ? 'border-brand shadow-md bg-blue-light' : 'border-border'
-          }`}
-        >
-          <p className="font-bold text-anthracite mb-1">
-            {t(`offer.offers.${alternative.id}.name`, { defaultValue: alternative.name })}
-          </p>
-          <p className="text-secondary text-sm mb-2">
-            {t(`offer.offers.${alternative.id}.desc`, { defaultValue: alternative.desc })}
-          </p>
-          <p className="text-xl font-black text-anthracite">
-            {formatPrice(alternative.price)} €
-            <span className="text-sm font-medium text-secondary">
-              /{t(`offer.offers.${alternative.id}.period`, { defaultValue: alternative.period })}
-            </span>
-          </p>
-        </button>
+              <p className="font-bold text-anthracite text-base mb-1">
+                {t(`offer.offers.${offer.id}.name`, { defaultValue: offer.name })}
+              </p>
+              <p className="text-secondary text-xs mb-2 leading-relaxed">
+                {t(`offer.offers.${offer.id}.desc`, { defaultValue: offer.desc })}
+              </p>
 
-        <div className="mt-auto pt-8">
+              <p className="text-xl font-black text-anthracite mb-2">
+                {offer.priceLabel ? (
+                  t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel })
+                ) : (
+                  <>
+                    {formatPrice(offer.price)} €
+                    <span className="text-xs font-medium text-secondary">
+                      /{t(`offer.offers.${offer.id}.period`, { defaultValue: offer.period })}
+                    </span>
+                  </>
+                )}
+              </p>
+
+              {offer.perks && (
+                <ul className="flex flex-col gap-1 mb-1">
+                  {getPerks(offer).slice(0, 1).map((perk) => (
+                    <CheckItem key={perk}>{perk}</CheckItem>
+                  ))}
+                </ul>
+              )}
+
+              {/* Éligibilité affichée directement sur la carte, pour chaque offre */}
+              <EligibilityNote>
+                {t(`offer.offers.${offer.id}.eligibility`, { defaultValue: offer.eligibility })}
+              </EligibilityNote>
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-auto pt-4">
           <Button variant="primary" full onClick={onNext}>{t('offer.next')}</Button>
+          <div className="text-center mt-3">
+            <Link to="/offres" className="text-xs text-secondary hover:text-brand-interaction hover:underline transition-colors">
+              Voir toutes les offres et leurs conditions
+            </Link>
+          </div>
         </div>
       </div>
     </>

@@ -10,7 +10,7 @@ import StepDocuments from './steps/StepDocuments';
 import StepPayment from './steps/StepPayment';
 import StepSuccess from './steps/StepSuccess';
 
-const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'documents', 'payment', 'success'];
+export const STEPS = ['welcome', 'profile', 'frequency', 'offer', 'documents', 'payment', 'success'];
 
 const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'documents', 'payment'];
 
@@ -25,10 +25,12 @@ export default function Onboarding() {
     state?.startStep != null ? state.startStep : isLoggedIn ? 1 : 0
   );
 
+  // Arrivée directe depuis la page /offres (carte retournée → "Souscrire") :
+  // le profil et l'offre choisis sont déjà connus, on les pré-remplit.
   const [data, setData] = useState({
-    profile: '',
+    profile: state?.profile ?? '',
     frequency: '',
-    offerId: '',
+    offerId: state?.offerId ?? '',
     documents: isLoggedIn ? {
       firstName: storedUser.firstName ?? '',
       lastName:  storedUser.lastName  ?? '',
@@ -148,10 +150,14 @@ export default function Onboarding() {
         onGoTo={goToStep}
       />
 
-      <main className="flex-1 flex justify-center lg:items-center lg:py-10 lg:px-8">
-        <div className="w-full max-w-lg lg:max-w-xl bg-white min-h-screen lg:min-h-0 lg:max-h-[90vh] lg:rounded-3xl lg:shadow-xl lg:border lg:border-border flex flex-col lg:overflow-y-auto">
-          {renderStep()}
-        </div>
+      {/*
+        Panneau de contenu : pas de "carte" unique à largeur fixe pour toutes les étapes.
+        Chaque étape (StepProfile, StepOffer, etc.) définit elle-même sa largeur de contenu
+        (via max-w + mx-auto) selon ce qu'elle affiche. Pas de scroll interne ici : si le contenu
+        dépasse la hauteur de l'écran, c'est la page (donc le navigateur) qui scrolle, pas ce bloc.
+      */}
+      <main className="flex-1 bg-white min-h-screen flex flex-col">
+        {renderStep()}
       </main>
     </div>
   );

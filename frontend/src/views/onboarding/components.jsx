@@ -40,7 +40,7 @@ export function OnboardingHeader({ onBack, progress }) {
 export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo }) {
   const { t } = useTranslation();
   return (
-    <aside className="hidden lg:flex lg:w-[380px] xl:w-[420px] flex-col justify-between bg-gradient-to-br from-brand to-brand-focus text-white p-10 shrink-0">
+    <aside className="hidden lg:flex lg:w-[380px] xl:w-[420px] lg:sticky lg:top-0 lg:self-start lg:h-screen flex-col justify-between bg-gradient-to-br from-brand to-brand-focus text-white p-10 shrink-0">
       <div>
         <img src="/comutitres_v_blanc.svg" alt="Comutitres" className="h-9 w-auto mb-12" />
 
