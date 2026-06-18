@@ -31,7 +31,7 @@ function EligibilityNote({ children }) {
   );
 }
 
-export default function StepOffer({ profile, frequency, value, onChange, onNext, onBack, progress }) {
+export default function StepOffer({ profile, frequency, value, onChange, onNext, onBack, onLogoClick, progress }) {
   const { t } = useTranslation();
   const { offers, recommended } = getOffers(profile, frequency);
   const selected = value || recommended.id;
@@ -55,7 +55,7 @@ export default function StepOffer({ profile, frequency, value, onChange, onNext,
 
   return (
     <>
-      <OnboardingHeader onBack={onBack} progress={progress} />
+      <OnboardingHeader onBack={onBack} onLogoClick={onLogoClick} progress={progress} />
       <div className={`flex-1 w-full ${maxWidthClass} mx-auto px-5 py-6 lg:px-8 lg:py-10 flex flex-col`}>
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('offer.title')}</h1>
         <p className="text-secondary text-sm mb-5">{t('offer.subtitle')}</p>

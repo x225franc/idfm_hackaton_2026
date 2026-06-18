@@ -22,7 +22,9 @@ export default function Header() {
     return (
         <header className="bg-white border-b border-border sticky top-0 z-10">
             <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-                <Logo size="md" />
+                <Link to="/">
+                    <Logo size="md" />
+                </Link>
                 {/* Liens privés visibles uniquement en session (sans intérêt — et redirigés vers /login — pour un visiteur déconnecté) */}
                 {isLoggedIn && (
                     <nav className="hidden md:flex items-center gap-1">

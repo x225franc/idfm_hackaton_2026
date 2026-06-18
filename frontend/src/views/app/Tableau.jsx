@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 import AppShell, { STATUS_MAP, subscriptionProgress } from '@/components/app/AppShell';
 import Button from '@/components/ui/Button';
 import { apiFetch, toDateStr, formatDate } from '@/utils';
+
+function nextDebitDateLabel() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+  const y = next.getFullYear();
+  const m = String(next.getMonth() + 1).padStart(2, '0');
+  return formatDate(`${y}-${m}-05`, 'long');
+}
 import {
   IconCalendar,
   IconClock,
@@ -66,7 +74,7 @@ function SubscriptionCard({ sub }) {
               <span className="font-semibold text-anthracite">
                 {sub.monthlyPrice.toFixed(2).replace('.', ',')} €
               </span>{' '}
-              interviendra le 05 du mois prochain.
+              interviendra le {nextDebitDateLabel()}.
             </p>
           </div>
         </div>
@@ -166,7 +174,7 @@ export default function Tableau() {
 
   return (
     <AppShell>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-8 pb-6">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-anthracite">
             Bonjour, {user?.firstName ?? '…'}&nbsp;👋

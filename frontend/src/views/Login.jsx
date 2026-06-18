@@ -93,7 +93,7 @@ export default function Login() {
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-lg text-anthracite hover:bg-surface transition-colors" aria-label="Retour">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
         </button>
-        <div className="flex-1 flex justify-center"><Logo size="md" /></div>
+        <div className="flex-1 flex justify-center"><Link to="/"><Logo size="md" /></Link></div>
         <div className="w-9" />
       </header>
 

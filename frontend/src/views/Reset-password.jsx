@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -65,7 +65,7 @@ export default function ResetPassword() {
         <div className="min-h-screen bg-white flex flex-col">
             <header className="flex items-center px-4 py-3 border-b border-border bg-white sticky top-0 z-10">
                 <div className="flex-1 flex justify-center">
-                    <Logo size="md" />
+                    <Link to="/"><Logo size="md" /></Link>
                 </div>
             </header>
 
