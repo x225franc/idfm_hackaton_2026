@@ -98,6 +98,8 @@ const getFullDetail = async (req, res) => {
 };
 
 const getById = async (req, res) => {
+    if (parseInt(req.params.id) !== req.user.id_user)
+        return res.status(403).json({ message: 'Accès refusé' });
     try {
         const rows = await userModel.findByIdWithProfil(req.params.id);
         if (rows.length === 0) return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -130,6 +132,8 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
     const { id } = req.params;
+    if (parseInt(id) !== req.user.id_user)
+        return res.status(403).json({ message: 'Accès refusé' });
     try {
         const rows = await userModel.findWithProfil(id);
         if (rows.length === 0) return res.status(404).json({ message: 'User not found' });

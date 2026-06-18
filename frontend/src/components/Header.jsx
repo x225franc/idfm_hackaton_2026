@@ -1,8 +1,10 @@
+import { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import NotificationBell from '@/components/NotificationBell';
 import { IconLayoutDashboard, IconTicket, IconUser, IconLogout } from '@tabler/icons-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { AuthContext } from '@/App';
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Tableau', icon: IconLayoutDashboard },
@@ -13,12 +15,12 @@ const NAV_ITEMS = [
 export default function Header() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const isLoggedIn = !!localStorage.getItem('token');
+    const { user, logout } = useContext(AuthContext);
+    const isLoggedIn = !!user;
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login');
+        logout();
+        navigate('/');
     };
 
     return (

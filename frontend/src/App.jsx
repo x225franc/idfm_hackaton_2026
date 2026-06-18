@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatBox from './components/Chatbot/ChatBox';
 import { apiFetch } from './utils';
@@ -20,59 +20,65 @@ import Profil from './views/app/Profil';
 import CookieBanner from './components/CookieBanner';
 import './App.css';
 
+export const AuthContext = createContext({ user: null, refreshUser: () => Promise.resolve(), logout: () => {} });
+
 const GuestRoute = ({ children }) => {
   const { state } = useLocation();
-  if (localStorage.getItem('token') && localStorage.getItem('user') && state?.startStep == null)
-    return <Navigate to="/dashboard" replace />;
+  const { user } = useContext(AuthContext);
+  if (user?.scope === 'full' && state?.startStep == null) return <Navigate to="/dashboard" replace />;
   return children;
 };
 
+const isTokenExpired = (user) => user?.exp && Date.now() / 1000 > user.exp;
+
 const PrivateRoute = ({ children }) => {
-  if (!localStorage.getItem('token') || !localStorage.getItem('user'))
+  const { user } = useContext(AuthContext);
+  if (!user) return <Navigate to="/login" replace />;
+  if (isTokenExpired(user)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     return <Navigate to="/login" replace />;
+  }
+  if (user.scope !== 'full') return <Navigate to="/login" replace />;
   return children;
 };
 
 const AdminRoute = ({ children }) => {
-  if (!localStorage.getItem('token') || !localStorage.getItem('user'))
-    return <Navigate to="/login" replace />;
-
-  try {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user.role === 'admin') {
-      return children;
-    } else {
-      return <Navigate to="/" replace />;
-    }
-  } catch (error) {
+  const { user } = useContext(AuthContext);
+  if (!user) return <Navigate to="/login" replace />;
+  if (isTokenExpired(user)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     return <Navigate to="/login" replace />;
   }
+  if (user.role !== 'admin') return <Navigate to="/" replace />;
+  return children;
 };
 
 export default function App() {
   const [sessionChecked, setSessionChecked] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
+  const refreshUser = () => {
     const token = localStorage.getItem('token');
-    const user  = JSON.parse(localStorage.getItem('user') || 'null');
-
-    if (!token || !user?.id) {
-      setSessionChecked(true);
-      return;
-    }
-
-    apiFetch(`/api/get/user/${user.id}`)
-      .then((data) => {
-        if (data.email !== user.email) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        }
-      })
+    if (!token) { setCurrentUser(null); return Promise.resolve(); }
+    return apiFetch('/api/auth/me')
+      .then((user) => setCurrentUser(user))
       .catch(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-      })
-      .finally(() => setSessionChecked(true));
+        setCurrentUser(null);
+      });
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setCurrentUser(null);
+  };
+
+  useEffect(() => {
+    refreshUser().finally(() => setSessionChecked(true));
   }, []);
 
   const { pathname } = useLocation();
@@ -81,7 +87,7 @@ export default function App() {
   if (!sessionChecked) return null;
 
   return (
-    <>
+    <AuthContext.Provider value={{ user: currentUser, refreshUser, logout }}>
       <Routes>
         <Route path="/" element={<GuestRoute><Onboarding /></GuestRoute>} />
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
@@ -104,6 +110,7 @@ export default function App() {
       {!isAdmin && <ChatBox />}
       <CookieBanner />
     </>
+    </AuthContext.Provider>
   );
 }
 
