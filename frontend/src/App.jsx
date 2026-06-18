@@ -28,9 +28,16 @@ const GuestRoute = ({ children }) => {
   return children;
 };
 
+const isTokenExpired = (user) => user?.exp && Date.now() / 1000 > user.exp;
+
 const PrivateRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
   if (!user) return <Navigate to="/login" replace />;
+  if (isTokenExpired(user)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return <Navigate to="/login" replace />;
+  }
   if (user.scope !== 'full') return <Navigate to="/login" replace />;
   return children;
 };
@@ -38,6 +45,11 @@ const PrivateRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
   if (!user) return <Navigate to="/login" replace />;
+  if (isTokenExpired(user)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return <Navigate to="/login" replace />;
+  }
   if (user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 };

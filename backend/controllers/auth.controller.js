@@ -240,8 +240,16 @@ const resetPassword = async (req, res) => {
     }
 };
 
-const me = (req, res) => {
-    res.json(req.user);
+const me = async (req, res) => {
+    try {
+        const rows = await userModel.findById(req.user.id_user);
+        if (rows.length === 0) return res.status(401).json({ message: 'Session invalide' });
+        const u = rows[0];
+        if (u.isBanned) return res.status(401).json({ message: 'Compte suspendu' });
+        res.json({ ...buildJwtPayload(u, req.user.scope), exp: req.user.exp });
+    } catch {
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
 };
 
 module.exports = {
