@@ -4,6 +4,7 @@ import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import Footer from '@/components/Footer';
+import Header from '../../../components/Header';
 
 function ArrowIcon() {
   return (
@@ -26,21 +27,14 @@ export default function StepWelcome({ onNext }) {
   const { t } = useTranslation();
 
   const BENEFITS = [
-    { title: t('welcome.benefits.speed_title'),     desc: t('welcome.benefits.speed_desc') },
+    { title: t('welcome.benefits.speed_title'), desc: t('welcome.benefits.speed_desc') },
     { title: t('welcome.benefits.paperless_title'), desc: t('welcome.benefits.paperless_desc') },
-    { title: t('welcome.benefits.payment_title'),   desc: t('welcome.benefits.payment_desc') },
+    { title: t('welcome.benefits.payment_title'), desc: t('welcome.benefits.payment_desc') },
   ];
 
   return (
     <div className="min-h-screen bg-page flex flex-col">
-      {/* ── Header ── */}
-      {/* Pas de bouton "Se connecter" ici : le hero ci-dessous propose déjà "Vous avez déjà un compte". */}
-      <header className="bg-white border-b border-border sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
-          <Logo size="md" />
-          <LanguageSwitcher />
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1">
         {/* ── Hero ── */}

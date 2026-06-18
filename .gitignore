@@ -2,5 +2,4 @@ node_modules
 .env
 dist/
 dev-dist/
-backend/uploads/images/
-backend/uploads/documents/
+/backend/uploads

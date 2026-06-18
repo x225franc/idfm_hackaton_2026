@@ -208,21 +208,21 @@ INSERT INTO `document`
   (id, profil_id, type_document, chemin_fichier, statut_verification, commentaire_admin, uploadedAt)
 VALUES
   -- Jean — CNI validée
-  (1, 1, 'Pièce d''identité',    '/images/fixture-jean-cni.jpg',        'Validé',     NULL,                                                               '2024-09-05 09:10:00'),
+  (1, 1, 'Pièce d''identité',    '/documents/fixture-jean-cni.jpg',     'Validé',     NULL,                                                               '2024-09-05 09:10:00'),
 
   -- Marie — CNI validée + attestation de bourse en attente (bloque la réduction)
-  (2, 2, 'Pièce d''identité',    '/images/fixture-marie-cni.jpg',       'Validé',     NULL,                                                               '2024-09-10 10:25:00'),
-  (3, 2, 'Attestation de bourse','/images/fixture-marie-bourse.jpg',    'En attente', NULL,                                                               '2024-09-10 10:30:00'),
+  (2, 2, 'Pièce d''identité',    '/documents/fixture-marie-cni.jpg',    'Validé',     NULL,                                                               '2024-09-10 10:25:00'),
+  (3, 2, 'Attestation de bourse','/documents/fixture-marie-bourse.jpg', 'En attente', NULL,                                                               '2024-09-10 10:30:00'),
 
   -- Robert — photo d'identité validée (Améthyste)
-  (4, 3, 'Photo d''identité',    '/images/fixture-robert-photo.jpg',    'Validé',     NULL,                                                               '2024-08-20 16:55:00'),
+  (4, 3, 'Photo d''identité',    '/documents/fixture-robert-photo.jpg',  'Validé',     NULL,                                                               '2024-08-20 16:55:00'),
 
   -- Fatima — justificatif TST en attente (bloque l'activation du forfait)
-  (5, 4, 'Justificatif TST',     '/images/fixture-fatima-tst.jpg',      'En attente', NULL,                                                               '2024-11-12 14:10:00'),
+  (5, 4, 'Justificatif TST',     '/documents/fixture-fatima-tst.jpg',    'En attente', NULL,                                                               '2024-11-12 14:10:00'),
 
   -- Lucas — CNI refusée (mauvaise qualité) puis re-soumise (en attente)
-  (6, 5, 'Pièce d''identité',    '/images/fixture-lucas-cni-v1.jpg',    'Refusé',     'Document illisible, veuillez soumettre une version plus nette.',    '2025-01-20 08:40:00'),
-  (7, 5, 'Pièce d''identité',    '/images/fixture-lucas-cni-v2.jpg',    'En attente', NULL,                                                               '2025-01-22 10:00:00');
+  (6, 5, 'Pièce d''identité',    '/documents/fixture-lucas-cni-v1.jpg', 'Refusé',     'Document illisible, veuillez soumettre une version plus nette.',    '2025-01-20 08:40:00'),
+  (7, 5, 'Pièce d''identité',    '/documents/fixture-lucas-cni-v2.jpg', 'En attente', NULL,                                                               '2025-01-22 10:00:00');
 
 -- ────────────────────────────────────────────────────────────
 -- 5. PAIEMENTS

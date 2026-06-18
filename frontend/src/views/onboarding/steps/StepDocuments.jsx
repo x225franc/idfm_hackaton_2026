@@ -144,7 +144,7 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
             <Field label={t('documents.phone')}>
               <input
                 type="tel" name="phoneNumber" value={value.phoneNumber || ''} onChange={handleChange}
-                className={inputClass(false)} placeholder="06 xx xx xx xx" pattern={PHONE_PATTERN}
+                className={inputClass(false)} placeholder="06 xx xx xx xx" pattern="0[1-9][0-9]{8}"
               />
             </Field>
           </div>

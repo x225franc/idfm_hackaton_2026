@@ -8,7 +8,7 @@ function formatPrice(price) {
   return price.toFixed(2).replace('.', ',');
 }
 
-export default function StepSuccess({ profile, frequency, offerId, isLoggedIn, email }) {
+export default function StepSuccess({ profile, frequency, offerId }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { recommended } = getOffers(profile, frequency);
@@ -31,22 +31,9 @@ export default function StepSuccess({ profile, frequency, offerId, isLoggedIn, e
         </div>
 
         <h1 className="text-2xl font-bold text-anthracite mb-2">{t('success.title')}</h1>
-        <p className="text-secondary text-sm mb-6">{t('success.subtitle')}</p>
-
-        {!isLoggedIn && (
-          <div className="w-full flex items-start gap-3 bg-[#FFFBEB] border border-[#F59E0B]/30 rounded-2xl p-4 mb-6 text-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <div>
-              <p className="text-sm font-semibold text-[#92400E]">Vérifiez votre adresse e-mail</p>
-              <p className="text-xs text-[#92400E]/80 mt-0.5 leading-relaxed">
-                Un email de confirmation a été envoyé à <span className="font-semibold">{email}</span>.
-                Vous devez le valider avant de pouvoir vous connecter.
-              </p>
-            </div>
-          </div>
-        )}
+        <p className="text-secondary text-sm mb-6">
+          Votre compte a été vérifié et votre dossier est actuellement en cours de traitement par notre équipe.
+        </p>
 
         <div className="w-full border border-border rounded-2xl p-5 mb-8 text-left">
           <div className="flex items-center gap-3 mb-4">
@@ -79,9 +66,10 @@ export default function StepSuccess({ profile, frequency, offerId, isLoggedIn, e
           {t('success.contact')}
         </Link>
 
+        {/* L'utilisateur est désormais connecté, on l'envoie sur son dashboard ! */}
         <div className="mt-auto w-full">
-          <Button variant="primary" full onClick={() => navigate(localStorage.getItem('token') ? '/dashboard' : '/login')}>
-            {t('success.view_account')}
+          <Button variant="primary" full onClick={() => navigate('/dashboard')}>
+            Accéder à mon tableau de bord
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
             </svg>

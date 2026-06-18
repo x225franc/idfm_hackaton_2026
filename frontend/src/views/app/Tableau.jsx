@@ -80,7 +80,7 @@ function SubscriptionCard({ sub }) {
         )}
       </div>
 
-      {sub.monthlyPrice && (
+      {sub.monthlyPrice > 0 && (
         <div className="bg-blue-info border border-[#BDD5F0] rounded-2xl p-4 flex gap-3">
           <IconInfoCircle size={20} stroke={2} className="text-brand-interaction shrink-0 mt-0.5" />
           <div>
