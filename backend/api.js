@@ -89,7 +89,7 @@ app.use((err, req, res, next) => {
 });
 
 // route pour servir les images
-app.use("/images", express.static(path.join(__dirname, "uploads/images")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "components/idfm_hackaton_2026")),);
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +150,7 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
+		
 		startNotificationScheduler();
 		httpServer.listen((err) => {
 			if (err) {

@@ -48,14 +48,17 @@ services:
     environment:
       - DB_HOST=db
       - NODE_ENV=production
+      - OLLAMA_URL=http://ollama:11434
     networks:
       - idfm_prod_network
+    volumes:
+      - ./uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/images`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/uploads`)"
       - "traefik.http.routers.backend.priority=10"
       - "traefik.http.services.backend.loadbalancer.server.port=${BACKEND_PORT}"
 
