@@ -68,6 +68,72 @@ router.get('/api/get/user/admin', userController.getAllAdmin);
 
 /**
  * @swagger
+ * /api/admin/users:
+ *   post:
+ *     summary: Créer un compte directement depuis le backoffice (rôle choisi, pré-vérifié)
+ *     tags: [Utilisateurs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firstName, lastName, email, password, role]
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string, format: email }
+ *               password: { type: string }
+ *               role: { type: string, enum: [user, admin] }
+ *     responses:
+ *       201:
+ *         description: Utilisateur créé
+ *       400:
+ *         description: Champs manquants ou rôle invalide
+ *       409:
+ *         description: Email déjà utilisé
+ */
+router.post('/api/admin/users', userController.adminCreate);
+
+/**
+ * @swagger
+ * /api/admin/users/{id}/full:
+ *   get:
+ *     summary: Vue détaillée d'un compte (profils, documents, forfaits, paiements) pour le backoffice
+ *     tags: [Utilisateurs]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Détail complet du compte
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user: { $ref: '#/components/schemas/User' }
+ *                 profils:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Profil' }
+ *                 documents:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Document' }
+ *                 forfaits:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Forfait' }
+ *                 paiements:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Paiement' }
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.get('/api/admin/users/:id/full', userController.getFullDetail);
+
+/**
+ * @swagger
  * /api/get/user/{id}:
  *   get:
  *     summary: Récupérer un utilisateur avec son profil
