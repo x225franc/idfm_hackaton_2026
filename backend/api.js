@@ -7,6 +7,7 @@ const swaggerUi = require("swagger-ui-express");
 // importation de middleware pour les images
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
 // importation de dotenv
@@ -59,7 +60,9 @@ app.get("/", (req, res) => {
 // image upload via multer
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "uploads/images");
+		const dir = "uploads/documents";
+		if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+		cb(null, dir);
 	},
 	filename: (req, file, cb) => {
 		cb(null, uuidv4() + path.extname(file.originalname));
@@ -88,8 +91,8 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-// route pour servir les images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/images", express.static(path.join(__dirname, "uploads/images")));
+app.use("/documents", express.static(path.join(__dirname, "uploads/documents")));
 app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "components/idfm_hackaton_2026")),);
 
 /////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { PASSWORD_PATTERN } from '@/validation';
 
 function EyeIcon({ open }) {
   if (open) {
@@ -159,7 +160,7 @@ export default function Register() {
                 <label className="text-[11px] font-semibold text-anthracite uppercase tracking-widest">{t('register.password')}</label>
                 <div className="relative">
                   <input name="password" type={showPassword ? 'text' : 'password'} value={form.password} onChange={handleChange} required placeholder="••••••••"
-                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                    pattern={PASSWORD_PATTERN}
                     className="w-full rounded-xl border border-border py-3.5 px-4 pr-12 text-anthracite text-base bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-shadow" />
                   <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-anthracite transition-colors">
                     <EyeIcon open={showPassword} />
@@ -170,7 +171,7 @@ export default function Register() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-[11px] font-semibold text-anthracite uppercase tracking-widest">{t('register.confirm_password')}</label>
                 <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={form.confirmPassword} onChange={handleChange} required placeholder="••••••••"
-                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                  pattern={PASSWORD_PATTERN}
                   className={`w-full rounded-xl border py-3.5 px-4 text-anthracite text-base bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-shadow ${errors.confirmPassword ? 'border-danger' : 'border-border'}`} />
                 {errors.confirmPassword && <p className="text-danger text-sm">{errors.confirmPassword}</p>}
               </div>

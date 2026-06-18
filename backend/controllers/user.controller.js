@@ -164,7 +164,24 @@ const update = async (req, res) => {
             if (req.body.address !== undefined) { setClauses.push('address = ?'); values.push(req.body.address || null); }
             if (req.body.postalCode !== undefined) { setClauses.push('postalCode = ?'); values.push(req.body.postalCode || null); }
             if (req.body.city !== undefined) { setClauses.push('city = ?'); values.push(req.body.city || null); }
-            if (req.body.phoneNumber !== undefined) { setClauses.push('phoneNumber = ?'); values.push(req.body.phoneNumber || null); }
+            if (req.body.phoneNumber !== undefined) {
+                const phone = req.body.phoneNumber ? String(req.body.phoneNumber).replace(/\s/g, '') : null;
+                if (phone && !/^0[1-9][0-9]{8}$/.test(phone))
+                    return res.status(400).json({ message: 'Numéro de téléphone invalide.' });
+                setClauses.push('phoneNumber = ?'); values.push(phone || null);
+            }
+            const wantsIdentityUpdate = ['firstName', 'lastName', 'date_naissance'].some(f => req.body[f] !== undefined);
+            if (wantsIdentityUpdate) {
+                const docs = await documentModel.getByProfilId(profilRows[0].id);
+                const identityLocked = docs.some(
+                    d => d.type_document === "Pièce d'identité" && d.statut_verification === 'Validé'
+                );
+                if (identityLocked)
+                    return res.status(403).json({ message: "Identité verrouillée — votre pièce d'identité a déjà été validée." });
+            }
+            if (req.body.firstName !== undefined) { setClauses.push('firstName = ?'); values.push(req.body.firstName || null); }
+            if (req.body.lastName !== undefined) { setClauses.push('lastName = ?'); values.push(req.body.lastName || null); }
+            if (req.body.date_naissance !== undefined) { setClauses.push('date_naissance = ?'); values.push(req.body.date_naissance || null); }
             if (setClauses.length > 0) await userModel.updateProfilFields(setClauses, values, id);
         }
 

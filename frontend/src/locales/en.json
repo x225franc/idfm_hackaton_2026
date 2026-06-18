@@ -221,6 +221,79 @@
       "verify_error": "Server error during verification."
     }
   },
+  "profil": {
+    "identity_section": "Identity & address",
+    "verified_badge": "Verified",
+    "certified_user": "Certified user",
+    "info_section": "Personal information",
+    "docs_section": "Supporting documents",
+    "fields": {
+      "email": "E-mail",
+      "password": "Password",
+      "phone": "Phone",
+      "address": "Address",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "birth_date": "Date of birth",
+      "street": "Street",
+      "postal_code": "Postal code",
+      "city": "City"
+    },
+    "doc_status": {
+      "valid": "Up to date",
+      "pending": "Pending",
+      "refused": "Refused"
+    },
+    "doc_types": {
+      "identity": "Identity document",
+      "photo": "Passport photo",
+      "bourse": "Scholarship certificate",
+      "tst": "TST supporting document"
+    },
+    "identity_note": "Your information must exactly match your identity document. After validation, it can no longer be modified.",
+    "identity_locked_note": "This information is locked because it has been verified by our services.",
+    "no_docs": "No documents submitted yet.",
+    "upload_doc": "Submit my documents",
+    "update_doc": "Update my documents",
+    "logout": "Log out",
+    "sent_on": "Submitted on {{date}}",
+    "prefilled": "Pre-filled from your account",
+    "modals": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "phone": { "title": "Edit phone number" },
+      "address": { "title": "Edit address" },
+      "password": {
+        "title": "Change password",
+        "new": "New password",
+        "confirm": "Confirm"
+      },
+      "identity": { "title": "Edit identity" },
+      "documents": {
+        "title": "Submit a document",
+        "type_label": "Document type",
+        "type_placeholder": "Select…",
+        "file_label": "File",
+        "pick_file": "Choose a file",
+        "file_hint": "JPG, PNG or PDF, max 5 MB",
+        "submit": "Submit",
+        "submitting": "Submitting…"
+      }
+    },
+    "errors": {
+      "phone_invalid": "Invalid number — 10 digits required, e.g. 06 12 34 56 78.",
+      "identity_locked": "Identity locked — your identity document has already been validated.",
+      "no_doc_type": "Please choose a document type.",
+      "no_file": "Please select a file.",
+      "generic": "An error occurred."
+    },
+    "validation": {
+      "password_hint": "At least 8 characters, with at least one uppercase letter, one lowercase letter, one digit and one special character (@$!%*?&).",
+      "password_error": "Min. 8 characters with uppercase, lowercase, digit and special character (@$!%*?&).",
+      "password_mismatch": "Passwords do not match."
+    }
+  },
   "register": {
     "title": "Create an account",
     "subtitle": "Sign up to configure your Île-de-France Mobilités Connect ID.",

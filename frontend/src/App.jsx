@@ -15,6 +15,7 @@ import Onboarding from './views/onboarding/Onboarding';
 import Tableau from './views/app/Tableau';
 import Passes from './views/app/Passes';
 import Ask from './views/app/Ask';
+import Profil from './views/app/Profil';
 
 import './App.css';
 
@@ -47,7 +48,7 @@ const AdminRoute = ({ children }) => {
   }
 };
 
-function App() {
+export default function App() {
   const [sessionChecked, setSessionChecked] = useState(false);
 
   useEffect(() => {
@@ -87,7 +88,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+        <Route path="/admin" element={<AdminRoute><Navigate to="/admin/users" replace /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><Admin /></AdminRoute>} />
 
         <Route path="/faq" element={<Faq />} />
@@ -96,12 +97,11 @@ function App() {
         <Route path="/dashboard" element={<PrivateRoute><Tableau /></PrivateRoute>} />
         <Route path="/passes"    element={<PrivateRoute><Passes /></PrivateRoute>} />
         <Route path="/ask"       element={<PrivateRoute><Ask /></PrivateRoute>} />
+        <Route path="/profil"    element={<PrivateRoute><Profil /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdmin && <ChatBox />}
     </>
   );
 }
-
-export default App;
 

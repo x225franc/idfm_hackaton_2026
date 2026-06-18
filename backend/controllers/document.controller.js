@@ -6,7 +6,7 @@ const upload = async (req, res) => {
         return res.status(400).json({ message: 'Aucun fichier uploadé' });
 
     try {
-        const chemin_fichier = '/images/' + req.files[0].filename;
+        const chemin_fichier = '/documents/' + req.files[0].filename;
         const result = await documentModel.create(profil_id, type_document, chemin_fichier);
         res.status(201).json({ message: 'Document envoyé pour vérification', document_id: result.insertId });
     } catch {
