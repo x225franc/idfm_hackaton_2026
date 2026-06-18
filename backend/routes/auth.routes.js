@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
+const authMiddleware = require('../middleware/auth');
 
 /**
  * @swagger
@@ -256,5 +257,7 @@ router.post('/api/forgot-password', authController.forgotPassword);
  */
 router.get('/api/reset-password', authController.getResetPassword);
 router.post('/api/reset-password', authController.resetPassword);
+
+router.get('/api/auth/me', authMiddleware, authController.me);
 
 module.exports = router;

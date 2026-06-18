@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const forfaitController = require('../controllers/forfait.controller');
+const authMiddleware = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const requireVerified = require('../middleware/requireVerified');
 
 /**
  * @swagger
@@ -41,7 +44,7 @@ const forfaitController = require('../controllers/forfait.controller');
  *       500:
  *         description: Erreur serveur
  */
-router.post('/api/forfaits', forfaitController.create);
+router.post('/api/forfaits', authMiddleware, forfaitController.create);
 
 /**
  * @swagger
@@ -63,7 +66,7 @@ router.post('/api/forfaits', forfaitController.create);
  *               type: array
  *               items: { $ref: '#/components/schemas/Forfait' }
  */
-router.get('/api/forfaits/porteur/:porteur_id', forfaitController.getByPorteur);
+router.get('/api/forfaits/porteur/:porteur_id', authMiddleware, requireVerified, forfaitController.getByPorteur);
 
 /**
  * @swagger
@@ -88,7 +91,7 @@ router.get('/api/forfaits/porteur/:porteur_id', forfaitController.getByPorteur);
  *                       payeur_nom: { type: string }
  *                       payeur_prenom: { type: string }
  */
-router.get('/api/admin/forfaits', forfaitController.getAll);
+router.get('/api/admin/forfaits', authMiddleware, requireAdmin, forfaitController.getAll);
 
 /**
  * @swagger
@@ -120,6 +123,6 @@ router.get('/api/admin/forfaits', forfaitController.getAll);
  *       500:
  *         description: Erreur serveur
  */
-router.put('/api/admin/forfaits/:id/status', forfaitController.updateStatus);
+router.put('/api/admin/forfaits/:id/status', authMiddleware, requireAdmin, forfaitController.updateStatus);
 
 module.exports = router;

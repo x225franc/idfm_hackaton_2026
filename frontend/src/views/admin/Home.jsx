@@ -1,15 +1,23 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '@/App';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Modal from '@/components/ui/Modal';
 
-const API_BASE = window.config?.BACKEND_URL || 'http://localhost:3002'; // Pense à bien pointer sur ton port backend
+const API_BASE = window.config?.BACKEND_URL || 'http://localhost:3002';
+
+function authFetch(url, opts = {}) {
+  const token = localStorage.getItem('token');
+  const headers = { ...(opts.headers ?? {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return fetch(url, { ...opts, headers });
+}
 
 const ROLE_OPTIONS = [
-  { value: 'user', label: 'Client' }, // Aligné avec ton Enum BDD ('user', 'admin')
+  { value: 'user', label: 'Client' },
   { value: 'admin', label: 'Admin' },
 ];
 
@@ -97,6 +105,8 @@ function Notice({ notice, onClose }) {
 
 /* ────────────────────────── Page principale SPA ────────────────────────── */
 export default function Admin() {
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('users'); // 'users', 'documents', 'forfaits'
   const [notice, setNotice] = useState(null);
 
@@ -140,7 +150,7 @@ export default function Admin() {
       if (role) params.set('role', role);
       if (status) params.set('status', status);
 
-      const res = await fetch(`${API_BASE}/api/get/user/admin?${params.toString()}`);
+      const res = await authFetch(`${API_BASE}/api/get/user/admin?${params.toString()}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setUsers(data.items || []);
@@ -154,7 +164,7 @@ export default function Admin() {
 
   const fetchDocuments = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/documents/pending`);
+      const res = await authFetch(`${API_BASE}/api/admin/documents/pending`);
       if (!res.ok) throw new Error();
       setDocuments(await res.json());
     } catch {
@@ -164,7 +174,7 @@ export default function Admin() {
 
   const fetchForfaits = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/forfaits`);
+      const res = await authFetch(`${API_BASE}/api/admin/forfaits`);
       if (!res.ok) throw new Error();
       setForfaits(await res.json());
     } catch {
@@ -175,7 +185,7 @@ export default function Admin() {
   const fetchUserDetail = async (id) => {
     setLoadingDetail(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/users/${id}/full`);
+      const res = await authFetch(`${API_BASE}/api/admin/users/${id}/full`);
       if (!res.ok) throw new Error();
       setViewingDetail(await res.json());
     } catch {
@@ -201,7 +211,7 @@ export default function Admin() {
   /* ── Actions globales ── */
   const handleDocStatus = async (id, statut, { fromDetail = false } = {}) => {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/documents/${id}/status`, {
+      const res = await authFetch(`${API_BASE}/api/admin/documents/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statut_verification: statut })
@@ -217,7 +227,7 @@ export default function Admin() {
 
   const handleForfaitStatus = async (id, statut, { fromDetail = false } = {}) => {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/forfaits/${id}/status`, {
+      const res = await authFetch(`${API_BASE}/api/admin/forfaits/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statut })
@@ -234,7 +244,7 @@ export default function Admin() {
   const handleDeleteUser = async () => {
     if (!deletingUser) return;
     try {
-      const res = await fetch(`${API_BASE}/api/user/${deletingUser.id}`, { method: 'DELETE' });
+      const res = await authFetch(`${API_BASE}/api/user/${deletingUser.id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
       showNotice('success', 'Compte utilisateur RGPD supprimé.');
       setDeletingUser(null);
@@ -249,7 +259,7 @@ export default function Admin() {
   const handleBanToggle = async (user) => {
     const endpoint = user.isBanned ? 'unban' : 'ban';
     try {
-      const res = await fetch(`${API_BASE}/api/${endpoint}/user/${user.id}`, { method: 'PUT' });
+      const res = await authFetch(`${API_BASE}/api/${endpoint}/user/${user.id}`, { method: 'PUT' });
       if (!res.ok) throw new Error();
       showNotice('success', user.isBanned ? 'Utilisateur rétabli.' : 'Utilisateur banni.');
       fetchUsers();
@@ -262,7 +272,7 @@ export default function Admin() {
   const handleRoleChange = async (user, newRole) => {
     if (newRole === user.role) return;
     try {
-      const res = await fetch(`${API_BASE}/api/user/${user.id}/role`, {
+      const res = await authFetch(`${API_BASE}/api/user/${user.id}/role`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole }),
@@ -281,7 +291,7 @@ export default function Admin() {
     setCreatingLoading(true);
     setCreatingError(null);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/users`, {
+      const res = await authFetch(`${API_BASE}/api/admin/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUserForm),
@@ -314,16 +324,12 @@ export default function Admin() {
               Backoffice
             </span>
           </div>
-          <Link
-            to="/login"
+          <button
             className="text-sm font-medium text-secondary hover:text-brand-interaction transition-colors"
-            onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('user');
-            }}
+            onClick={() => { logout(); navigate('/'); }}
           >
             ← Se déconnecter
-          </Link>
+          </button>
         </div>
 
         {/* Navigation des Onglets (Tabs) */}

@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../App';
 import { useTranslation } from 'react-i18next';
 import { OnboardingSidebar } from './components';
 import StepWelcome from './steps/StepWelcome';
@@ -19,8 +20,8 @@ export default function Onboarding() {
   const { t } = useTranslation();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-  const isLoggedIn = !!localStorage.getItem('token') && !!storedUser;
+  const { user: currentUser } = useContext(AuthContext);
+  const isLoggedIn = !!currentUser;
 
   // Étape de départ de cette session (figée au montage) : 'welcome'/'profile' en arrivée
   // normale, ou une étape plus avancée si on arrive directement depuis /offres avec un
@@ -39,9 +40,9 @@ export default function Onboarding() {
     frequency: '',
     offerId: state?.offerId ?? '',
     documents: isLoggedIn ? {
-      firstName: storedUser.firstName ?? '',
-      lastName:  storedUser.lastName  ?? '',
-      email:     storedUser.email     ?? '',
+      firstName: currentUser.firstName ?? '',
+      lastName:  currentUser.lastName  ?? '',
+      email:     currentUser.email     ?? '',
     } : {},
     paymentMethod: 'cb',
   });

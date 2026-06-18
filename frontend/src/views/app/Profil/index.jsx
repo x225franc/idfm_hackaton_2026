@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppShell from '@/components/app/AppShell';
@@ -7,10 +7,12 @@ import { PASSWORD_REGEX, PHONE_REGEX } from '@/validation';
 import { IconLogout, IconUser, IconPencil, IconShieldCheck } from '@tabler/icons-react';
 import { InfoRow, IdentitySection, JustificatifsSection } from './sections';
 import ProfilModal from './Modal';
+import { AuthContext } from '@/App';
 
 export default function Profil() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { logout } = useContext(AuthContext);
   const [user, setUser]           = useState(null);
   const [profile, setProfile]     = useState(null);
   const [documents, setDocuments] = useState(null);
@@ -45,9 +47,8 @@ export default function Profil() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   const openModal = (type) => {

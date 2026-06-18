@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const profilController = require('../controllers/profil.controller');
+const authMiddleware = require('../middleware/auth');
+const requireVerified = require('../middleware/requireVerified');
 
 /**
  * @swagger
@@ -31,7 +33,7 @@ const profilController = require('../controllers/profil.controller');
  *       500:
  *         description: Erreur serveur
  */
-router.get('/api/profils/compte/:compte_id', profilController.getByCompte);
+router.get('/api/profils/compte/:compte_id', authMiddleware, requireVerified, profilController.getByCompte);
 
 /**
  * @swagger
@@ -70,6 +72,6 @@ router.get('/api/profils/compte/:compte_id', profilController.getByCompte);
  *       500:
  *         description: Erreur serveur
  */
-router.post('/api/profils', profilController.create);
+router.post('/api/profils', authMiddleware, profilController.create);
 
 module.exports = router;
