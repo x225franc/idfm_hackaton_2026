@@ -17,6 +17,7 @@ import Passes from './views/app/Passes';
 import Ask from './views/app/Ask';
 import Profil from './views/app/Profil';
 
+import CookieBanner from './components/CookieBanner';
 import './App.css';
 
 export const AuthContext = createContext({ user: null, refreshUser: () => Promise.resolve(), logout: () => {} });
@@ -107,6 +108,7 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdmin && <ChatBox />}
+      <CookieBanner />
     </AuthContext.Provider>
   );
 }
