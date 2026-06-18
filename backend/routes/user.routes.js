@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
+const authMiddleware = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const requireVerified = require('../middleware/requireVerified');
 
 /**
  * @swagger
@@ -24,7 +27,7 @@ const userController = require('../controllers/user.controller');
  *               type: array
  *               items: { $ref: '#/components/schemas/User' }
  */
-router.get('/api/get/user', userController.getAll);
+router.get('/api/get/user', authMiddleware, requireAdmin, userController.getAll);
 
 /**
  * @swagger
@@ -64,7 +67,7 @@ router.get('/api/get/user', userController.getAll);
  *                 limit: { type: integer }
  *                 offset: { type: integer }
  */
-router.get('/api/get/user/admin', userController.getAllAdmin);
+router.get('/api/get/user/admin', authMiddleware, requireAdmin, userController.getAllAdmin);
 
 /**
  * @swagger
@@ -93,7 +96,7 @@ router.get('/api/get/user/admin', userController.getAllAdmin);
  *       409:
  *         description: Email déjà utilisé
  */
-router.post('/api/admin/users', userController.adminCreate);
+router.post('/api/admin/users', authMiddleware, requireAdmin, userController.adminCreate);
 
 /**
  * @swagger
@@ -130,7 +133,7 @@ router.post('/api/admin/users', userController.adminCreate);
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.get('/api/admin/users/:id/full', userController.getFullDetail);
+router.get('/api/admin/users/:id/full', authMiddleware, requireAdmin, userController.getFullDetail);
 
 /**
  * @swagger
@@ -152,7 +155,7 @@ router.get('/api/admin/users/:id/full', userController.getFullDetail);
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.get('/api/get/user/:id', userController.getById);
+router.get('/api/get/user/:id', authMiddleware, requireVerified, userController.getById);
 
 /**
  * @swagger
@@ -186,7 +189,7 @@ router.get('/api/get/user/:id', userController.getById);
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.put('/api/update/user/:id', userController.update);
+router.put('/api/update/user/:id', authMiddleware, requireVerified, userController.update);
 
 /**
  * @swagger
@@ -205,7 +208,7 @@ router.put('/api/update/user/:id', userController.update);
  *       500:
  *         description: Erreur serveur
  */
-router.put('/api/ban/user/:id', userController.ban);
+router.put('/api/ban/user/:id', authMiddleware, requireAdmin, userController.ban);
 
 /**
  * @swagger
@@ -224,7 +227,7 @@ router.put('/api/ban/user/:id', userController.ban);
  *       500:
  *         description: Erreur serveur
  */
-router.put('/api/unban/user/:id', userController.unban);
+router.put('/api/unban/user/:id', authMiddleware, requireAdmin, userController.unban);
 
 /**
  * @swagger
@@ -254,7 +257,7 @@ router.put('/api/unban/user/:id', userController.unban);
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.put('/api/user/:id/role', userController.updateRole);
+router.put('/api/user/:id/role', authMiddleware, requireAdmin, userController.updateRole);
 
 /**
  * @swagger
@@ -273,6 +276,6 @@ router.put('/api/user/:id/role', userController.updateRole);
  *       404:
  *         description: Compte introuvable
  */
-router.delete('/api/user/:id', userController.remove);
+router.delete('/api/user/:id', authMiddleware, requireAdmin, userController.remove);
 
 module.exports = router;

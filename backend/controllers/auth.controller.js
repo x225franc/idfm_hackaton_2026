@@ -7,7 +7,7 @@ const EmailTemplate = require('../components/emailTemplate');
 
 const logo = () => `${process.env.BACKEND_URL}/components/logo.svg`;
 
-const buildJwtPayload = (user) => ({
+const buildJwtPayload = (user, scope = 'full') => ({
     id_user: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -19,6 +19,7 @@ const buildJwtPayload = (user) => ({
     isBanned: user.isBanned,
     consentement_rgpd: user.consentement_rgpd,
     is_minor: !!user.is_minor,
+    scope,
 });
 
 // Envoi du mail de bienvenue (depuis le login d'un compte non vérifié)
@@ -89,7 +90,7 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Votre compte a été banni. Veuillez contacter le service client.' });
 
         await userModel.touchUpdatedAt(user.id);
-        const jwtToken = jwt.sign(buildJwtPayload(user), process.env.JWT_SECRET, { expiresIn: '24h' });
+        const jwtToken = jwt.sign(buildJwtPayload(user, 'full'), process.env.JWT_SECRET, { expiresIn: '24h' });
         res.json({ message: 'Connexion réussie', jwt: jwtToken, user, responseStatus: 'success' });
     } catch {
         res.status(500).json({ message: 'Erreur serveur' });
@@ -113,7 +114,11 @@ const registerOnboarding = async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const result = await userModel.create(req.body.firstName, req.body.lastName, req.body.email, hashedPassword, false);
-        res.status(200).json({ message: 'Utilisateur ajouté avec succès', user: result });
+        const rows = await userModel.findById(result.insertId);
+        if (rows.length === 0) return res.status(500).json({ message: 'Erreur lors de la création du compte' });
+        const user = rows[0];
+        const jwtToken = jwt.sign(buildJwtPayload(user, 'onboarding'), process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ message: 'Utilisateur ajouté avec succès', user, jwt: jwtToken });
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY')
             return res.status(409).json({ message: 'Cette adresse e-mail est déjà utilisée.' });
@@ -136,7 +141,7 @@ const googleAuth = async (req, res) => {
         const rows = await userModel.findByEmail(email);
         if (rows.length > 0) {
             const user = rows[0];
-            const tokenJWT = jwt.sign(buildJwtPayload(user), process.env.JWT_SECRET, { expiresIn: '7d' });
+            const tokenJWT = jwt.sign(buildJwtPayload(user, 'full'), process.env.JWT_SECRET, { expiresIn: '7d' });
             return res.status(200).json({ message: 'Connexion réussie', jwt: tokenJWT });
         }
 
@@ -146,7 +151,7 @@ const googleAuth = async (req, res) => {
         const created = await userModel.findById(result.insertId);
         if (created.length === 0) return res.status(500).json({ message: 'Erreur lors de la création du compte' });
 
-        const tokenJWT = jwt.sign(buildJwtPayload(created[0]), process.env.JWT_SECRET, { expiresIn: '7d' });
+        const tokenJWT = jwt.sign(buildJwtPayload(created[0], 'full'), process.env.JWT_SECRET, { expiresIn: '7d' });
         res.status(200).json({ message: 'Inscription réussie', jwt: tokenJWT });
     } catch {
         res.status(500).json({ message: 'Erreur interne du serveur' });
@@ -235,6 +240,10 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const me = (req, res) => {
+    res.json(req.user);
+};
+
 module.exports = {
     login,
     register,
@@ -245,4 +254,5 @@ module.exports = {
     forgotPassword,
     getResetPassword,
     resetPassword,
+    me,
 };

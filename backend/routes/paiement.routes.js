@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const paiementController = require('../controllers/paiement.controller');
+const authMiddleware = require('../middleware/auth');
+const requireVerified = require('../middleware/requireVerified');
 
 /**
  * @swagger
@@ -42,7 +44,7 @@ const paiementController = require('../controllers/paiement.controller');
  *       500:
  *         description: Erreur serveur
  */
-router.post('/api/paiements', paiementController.create);
+router.post('/api/paiements', authMiddleware, paiementController.create);
 
 /**
  * @swagger
@@ -69,7 +71,7 @@ router.post('/api/paiements', paiementController.create);
  *                     properties:
  *                       type_forfait: { type: string }
  */
-router.get('/api/paiements/payeur/:payeur_id', paiementController.getByPayeur);
+router.get('/api/paiements/payeur/:payeur_id', authMiddleware, requireVerified, paiementController.getByPayeur);
 
 /**
  * @swagger
@@ -99,6 +101,6 @@ router.get('/api/paiements/payeur/:payeur_id', paiementController.getByPayeur);
  *       500:
  *         description: Erreur serveur
  */
-router.put('/api/paiements/:id/status', paiementController.updateStatus);
+router.put('/api/paiements/:id/status', authMiddleware, paiementController.updateStatus);
 
 module.exports = router;
