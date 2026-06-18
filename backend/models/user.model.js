@@ -85,6 +85,10 @@ module.exports = {
     updatePassword: (id, hashedPassword) =>
         q('UPDATE compte_connect SET password = ?, updatedAt = NOW() WHERE id = ?', [hashedPassword, id]),
 
+    // Bascule un compte enfant en compte normal le jour de ses 16 ans révolus.
+    setMinorStatus: (id, isMinor) =>
+        q('UPDATE compte_connect SET is_minor = ?, updatedAt = NOW() WHERE id = ?', [isMinor ? 1 : 0, id]),
+
     touchUpdatedAt: (id) =>
         q('UPDATE compte_connect SET updatedAt = CURRENT_TIMESTAMP WHERE id = ?', [id]),
 

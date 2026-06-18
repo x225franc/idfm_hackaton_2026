@@ -259,13 +259,16 @@ export default function Tableau() {
       }
     })();
 
-    fetchChildren();
+    // Un compte mineur ne gère pas de proches : seuls les comptes normaux (parents) en ont.
+    if (!stored?.is_minor) fetchChildren();
+    else setLoadingChildren(false);
   }, []);
 
   // Arrivée depuis l'interstitiel "Junior < 16 ans" de l'onboarding : ouvre directement la modale.
+  // (jamais pour un compte mineur lui-même, qui ne peut pas ajouter de proche)
   useEffect(() => {
-    if (location.state?.openAddChild) setAddChildOpen(true);
-  }, [location.state]);
+    if (location.state?.openAddChild && !user?.is_minor) setAddChildOpen(true);
+  }, [location.state, user]);
 
   const handleChildCreated = (child) => {
     setAddChildOpen(false);
@@ -301,12 +304,15 @@ export default function Tableau() {
             }
           </div>
 
-          <FamilySection
-            children={children}
-            loading={loadingChildren}
-            onAdd={() => setAddChildOpen(true)}
-            onManage={handleManageChild}
-          />
+          {/* Un proche mineur connecté est en lecture seule : pas de gestion de famille pour lui. */}
+          {!user?.is_minor && (
+            <FamilySection
+              children={children}
+              loading={loadingChildren}
+              onAdd={() => setAddChildOpen(true)}
+              onManage={handleManageChild}
+            />
+          )}
 
           <div className="flex flex-col gap-4">
             <h2 className="text-base font-bold text-anthracite">Actions rapides</h2>

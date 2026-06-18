@@ -254,6 +254,13 @@ export function getOffers(profileId, frequencyId) {
   return { offers, recommended: offers[0] };
 }
 
+// Offres proposées lors de l'ajout d'un proche mineur (< 16 ans), selon son âge.
+export function getChildOffers(age) {
+  const ids = age < 11 ? ['imagine-r-junior'] : ['imagine-r-scolaire', 'imagine-r-junior'];
+  const offers = ids.map((id, index) => ({ ...OFFERS[id], recommended: index === 0 }));
+  return { offers, recommended: offers[0] };
+}
+
 const BASE_DOCS = [
   { id: 'identite', label: "Carte d'identité", required: true, hint: 'JPG, PNG ou PDF, max 5 Mo' },
 ];

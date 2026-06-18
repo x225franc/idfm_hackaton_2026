@@ -69,7 +69,11 @@ const sendChildWelcomeMail = (child, parentFirstName, tempPassword) => {
 };
 
 // POST /api/family/add-child — un parent authentifié crée le compte d'un proche mineur (<16 ans).
+// Un compte mineur ne peut pas lui-même ajouter de proche (seulement la visualisation côté enfant).
 const addChild = async (req, res) => {
+    if (req.user.is_minor)
+        return res.status(403).json({ message: 'Un compte mineur ne peut pas ajouter de proche.' });
+
     const { firstName, lastName, birthDate, email } = req.body;
     const parentId = req.user.id_user;
 
@@ -86,7 +90,7 @@ const addChild = async (req, res) => {
         const result = await userModel.createChild(firstName, lastName, email, hashedPassword, parentId);
         const childId = result.insertId;
 
-        await profilModel.create({
+        const profilResult = await profilModel.create({
             compte_id: childId,
             type_profil: 'Porteur',
             firstName,
@@ -98,12 +102,16 @@ const addChild = async (req, res) => {
             postalCode: null,
             city: null,
         });
+        const childProfilId = profilResult.insertId;
 
         await familyModel.insertLinkedAccount(parentId, childId, 'enfant');
 
         sendChildWelcomeMail({ firstName, email }, req.user.firstName, tempPassword);
 
-        res.status(201).json({ message: 'Compte enfant créé avec succès', child: { id: childId, firstName, lastName, email } });
+        res.status(201).json({
+            message: 'Compte enfant créé avec succès',
+            child: { id: childId, profilId: childProfilId, firstName, lastName, email },
+        });
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY')
             return res.status(409).json({ message: 'Cette adresse e-mail est déjà utilisée.' });
