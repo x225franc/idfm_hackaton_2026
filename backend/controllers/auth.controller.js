@@ -101,7 +101,10 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const result = await userModel.create(req.body.firstName, req.body.lastName, req.body.email, hashedPassword, false);
         res.status(200).json({ message: 'Utilisateur ajouté avec succès', user: result });
-    } catch {
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ message: 'Cette adresse e-mail est déjà utilisée.' });
+        }
         res.status(500).json({ message: 'Erreur serveur' });
     }
 };
