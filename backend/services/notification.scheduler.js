@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const notifModel = require('../models/notification.model');
+const userModel = require('../models/user.model');
 const transporter = require('../config/mailer');
 const EmailTemplate = require('../components/emailTemplate');
 
@@ -137,6 +138,24 @@ async function processAgeTransitions() {
     }
 }
 
+// ─── Passage à 16 ans révolus : le proche redevient un compte normal ────────
+
+async function processComingOfAge() {
+    const profiles = await notifModel.getMinorsTurning16Today();
+
+    for (const p of profiles) {
+        await userModel.setMinorStatus(p.compte_id, false);
+
+        const titre = 'Vous avez 16 ans : votre compte est désormais autonome';
+        const message = `${p.firstName}, vous venez d'avoir 16 ans. Vous gérez maintenant votre compte Comutitres comme un compte normal : vous pouvez ajouter vos propres proches et gérer votre abonnement en toute autonomie.`;
+
+        await notifModel.create(p.compte_id, 'changement_tranche_age', titre, message, null);
+        await sendEmail(p.email, titre, `Bonjour ${p.firstName},`, message);
+
+        console.log(`[Notification] Passage à 16 ans révolus (compte normal) → compte ${p.compte_id}`);
+    }
+}
+
 // ─── Scheduler entry point ────────────────────────────────────────────────────
 
 function startNotificationScheduler() {
@@ -148,6 +167,7 @@ function startNotificationScheduler() {
             await processRenewalReminder(7);
             await processRenewalReminder(1);
             await processAgeTransitions();
+            await processComingOfAge();
             console.log('[Scheduler] Notifications traitées.');
         } catch (err) {
             console.error('[Scheduler] Erreur:', err.message);
@@ -169,6 +189,7 @@ async function runSchedulerNow() {
     await processRenewalReminder(7);
     await processRenewalReminder(1);
     await processAgeTransitions();
+    await processComingOfAge();
     console.log('[Scheduler] Terminé.');
 }
 

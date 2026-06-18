@@ -10,13 +10,13 @@ Plateforme de gestion des titres de transport Île-de-France.
 docker compose up -d
 ```
 
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:3002 |
-| API Backend | http://localhost:3001 |
+| Service           | URL                            |
+| ----------------- | ------------------------------ |
+| Frontend          | http://localhost:3002          |
+| API Backend       | http://localhost:3001          |
 | Swagger (doc API) | http://localhost:3001/api-docs |
-| PhpMyAdmin | http://localhost:8080 |
-| Adminer | http://localhost:8081 |
+| PhpMyAdmin        | http://localhost:8080          |
+| Adminer           | http://localhost:8081          |
 
 ---
 
@@ -39,22 +39,22 @@ docker exec -i idfm_db mysql -u root idfm_hackaton_2026 < database/fixtures.sql
 
 ## Comptes de test
 
-| Email | Mot de passe | Rôle | Situation |
-|---|---|---|---|
-| `admin@comutitres.fr` | `Admin1234!` | Admin | Accès backoffice complet |
-| `jean.dupont@example.com` | `Test1234!` | User | Navigo Annuel — actif |
-| `marie.martin@example.com` | `Test1234!` | User | Imagine R Etudiant — doc en attente de validation |
-| `robert.leclerc@example.com` | `Test1234!` | User | Améthyste — à renouveler |
-| `fatima.benali@example.com` | `Test1234!` | User | TST — en attente de validation admin |
-| `lucas.moreau@example.com` | `Test1234!` | User | Liberté+ — doc refusé puis re-soumis |
-| `claire.dubois@example.com` | `Test1234!` | User | **Compte banni** |
-| `thomas.petit@example.com` | `Test1234!` | User | **Email non vérifié** |
-| `sophie.garnier@example.com` | `Test1234!` | User | Imagine R Scolaire — actif |
-| `nathan.petit@example.com` | `Test1234!` | User | Imagine R Junior — actif |
-| `amadou.diallo@example.com` | `Test1234!` | User | Handicap — actif (porte aussi le profil de son accompagnante Camille) |
-| `henriette.dubreuil@example.com` | `Test1234!` | User | Navigo Senior — actif |
-| `yasmine.cherif@example.com` | `Test1234!` | User | Solidarité Gratuité — actif |
-| `olivier.mensah@example.com` | `Test1234!` | User | Réduction 50% — en attente de validation |
+| Email                            | Mot de passe | Rôle  | Situation                                                             |
+| -------------------------------- | ------------ | ----- | --------------------------------------------------------------------- |
+| `admin@comutitres.fr`            | `Admin1234!` | Admin | Accès backoffice complet                                              |
+| `jean.dupont@example.com`        | `Test1234!`  | User  | Navigo Annuel — actif                                                 |
+| `marie.martin@example.com`       | `Test1234!`  | User  | Imagine R Etudiant — doc en attente de validation                     |
+| `robert.leclerc@example.com`     | `Test1234!`  | User  | Améthyste — à renouveler                                              |
+| `fatima.benali@example.com`      | `Test1234!`  | User  | TST — en attente de validation admin                                  |
+| `lucas.moreau@example.com`       | `Test1234!`  | User  | Liberté+ — doc refusé puis re-soumis                                  |
+| `claire.dubois@example.com`      | `Test1234!`  | User  | **Compte banni**                                                      |
+| `thomas.petit@example.com`       | `Test1234!`  | User  | **Email non vérifié**                                                 |
+| `sophie.garnier@example.com`     | `Test1234!`  | User  | Imagine R Scolaire — actif                                            |
+| `nathan.petit@example.com`       | `Test1234!`  | User  | Imagine R Junior — actif                                              |
+| `amadou.diallo@example.com`      | `Test1234!`  | User  | Handicap — actif (porte aussi le profil de son accompagnante Camille) |
+| `henriette.dubreuil@example.com` | `Test1234!`  | User  | Navigo Senior — actif                                                 |
+| `yasmine.cherif@example.com`     | `Test1234!`  | User  | Solidarité Gratuité — actif                                           |
+| `olivier.mensah@example.com`     | `Test1234!`  | User  | Réduction 50% — en attente de validation                              |
 
 ---
 

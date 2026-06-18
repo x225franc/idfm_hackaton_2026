@@ -80,4 +80,17 @@ module.exports = {
                AND TIMESTAMPDIFF(YEAR, p.date_naissance, CURDATE()) = ?`,
             [age]
         ),
+
+    // Comptes mineurs dont l'anniversaire est aujourd'hui et qui atteignent 16 ans révolus
+    // (passage automatique en compte normal).
+    getMinorsTurning16Today: () =>
+        q(
+            `SELECT p.id AS profil_id, p.compte_id, p.firstName, p.lastName, cc.email
+             FROM profil p
+             JOIN compte_connect cc ON p.compte_id = cc.id
+             WHERE cc.is_minor = 1
+               AND MONTH(p.date_naissance) = MONTH(CURDATE())
+               AND DAY(p.date_naissance) = DAY(CURDATE())
+               AND TIMESTAMPDIFF(YEAR, p.date_naissance, CURDATE()) = 16`
+        ),
 };
