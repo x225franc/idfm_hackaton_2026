@@ -18,15 +18,16 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-secondary flex-1">
             {[
-              'Mentions légales',
-              'Données personnelles',
-              'Accessibilité',
-              'CGU',
-              'Plan du site',
-              'Cookies',
-            ].map((l) => (
-              <Link key={l} to="#" className="hover:text-anthracite transition-colors">
-                {l}
+              { label: 'Mentions légales', to: '#' },
+              { label: 'Données personnelles', to: '#' },
+              { label: 'Accessibilité', to: '#' },
+              { label: 'CGU', to: '#' },
+              { label: 'Plan du site', to: '#' },
+              { label: 'Cookies', to: '#' },
+              { label: 'FAQ', to: '/faq' },
+            ].map(({ label, to }) => (
+              <Link key={label} to={to} className="hover:text-anthracite transition-colors">
+                {label}
               </Link>
             ))}
           </div>

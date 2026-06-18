@@ -7,6 +7,7 @@ const swaggerUi = require("swagger-ui-express");
 // importation de middleware pour les images
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
 // importation de dotenv
@@ -59,7 +60,9 @@ app.get("/", (req, res) => {
 // image upload via multer
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, "uploads/images");
+		const dir = "uploads/documents";
+		if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+		cb(null, dir);
 	},
 	filename: (req, file, cb) => {
 		cb(null, uuidv4() + path.extname(file.originalname));
@@ -88,8 +91,8 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-// route pour servir les images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/images", express.static(path.join(__dirname, "uploads/images")));
+app.use("/documents", express.static(path.join(__dirname, "uploads/documents")));
 app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "components/idfm_hackaton_2026")),);
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -110,6 +113,7 @@ const forfaitRoutes = require("./routes/forfait.routes");
 const documentRoutes = require("./routes/document.routes");
 const paiementRoutes = require("./routes/paiement.routes");
 const chatRoutes = require("./routes/chat.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 
 // Utilisation des routes
@@ -120,9 +124,11 @@ app.use(forfaitRoutes);
 app.use(documentRoutes);
 app.use(paiementRoutes);
 app.use(chatRoutes);
+app.use(notificationRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
+const { startNotificationScheduler } = require("./services/notification.scheduler");
 
 // offline
 if (process.env.ENV === "development") {
@@ -132,6 +138,7 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
+		startNotificationScheduler();
 		httpServer.listen(process.env.BACKEND_PORT, () => {
 			console.log(
 				`Le serveur est en cours d'execution sur le port ${process.env.BACKEND_PORT}.`,
@@ -146,8 +153,13 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
-		httpServer.listen(process.env.BACKEND_PORT, () => {
-			console.log(`Le serveur est en cours d'execution sur le port ${process.env.BACKEND_PORT}.`);
+		
+		startNotificationScheduler();
+		httpServer.listen((err) => {
+			if (err) {
+				console.error("Erreur de demarrage du serveur : " + err.stack);
+				return;
+			}
 		});
 	});
 }

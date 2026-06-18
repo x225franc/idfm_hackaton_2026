@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const userModel = require('../models/user.model');
+const profilModel = require('../models/profil.model');
+const documentModel = require('../models/document.model');
+const forfaitModel = require('../models/forfait.model');
+const paiementModel = require('../models/paiement.model');
 const transporter = require('../config/mailer');
 const EmailTemplate = require('../components/emailTemplate');
 
@@ -44,6 +48,50 @@ const getAllAdmin = async (req, res) => {
         ]);
 
         res.json({ items, total: countResult[0].total, limit, offset });
+    } catch {
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// Création directe d'un compte depuis le backoffice (admin choisit le rôle, compte pré-vérifié).
+const adminCreate = async (req, res) => {
+    const { firstName, lastName, email, password, role } = req.body;
+    if (!firstName || !lastName || !email || !password)
+        return res.status(400).json({ message: 'Champs manquants' });
+    if (!['admin', 'user'].includes(role))
+        return res.status(400).json({ message: 'Rôle invalide' });
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await userModel.createWithRole(firstName, lastName, email, hashedPassword, role);
+        res.status(201).json({ message: 'Utilisateur créé avec succès', id: result.insertId });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY')
+            return res.status(409).json({ message: 'Cette adresse e-mail est déjà utilisée.' });
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+// Vue détaillée d'un compte pour le backoffice : profil(s), documents, forfaits et paiements
+// rattachés à TOUS les profils de ce compte (un compte peut porter plusieurs profils, ex. un
+// payeur gérant aussi le profil d'un proche accompagné).
+const getFullDetail = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const userRows = await userModel.findById(id);
+        if (userRows.length === 0) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+
+        const profils = await profilModel.getByCompteId(id);
+        const profilIds = profils.map((p) => p.id);
+
+        const [documents, forfaits, paiements] = await Promise.all([
+            documentModel.getByProfilIds(profilIds),
+            forfaitModel.getByPorteurIds(profilIds),
+            paiementModel.getByPayeurIds(profilIds),
+        ]);
+
+        const { password, verificationToken, passwordResetToken, ...user } = userRows[0];
+        res.json({ user, profils, documents, forfaits, paiements });
     } catch {
         res.status(500).json({ message: 'Erreur serveur' });
     }
@@ -116,7 +164,24 @@ const update = async (req, res) => {
             if (req.body.address !== undefined) { setClauses.push('address = ?'); values.push(req.body.address || null); }
             if (req.body.postalCode !== undefined) { setClauses.push('postalCode = ?'); values.push(req.body.postalCode || null); }
             if (req.body.city !== undefined) { setClauses.push('city = ?'); values.push(req.body.city || null); }
-            if (req.body.phoneNumber !== undefined) { setClauses.push('phoneNumber = ?'); values.push(req.body.phoneNumber || null); }
+            if (req.body.phoneNumber !== undefined) {
+                const phone = req.body.phoneNumber ? String(req.body.phoneNumber).replace(/\s/g, '') : null;
+                if (phone && !/^0[1-9][0-9]{8}$/.test(phone))
+                    return res.status(400).json({ message: 'Numéro de téléphone invalide.' });
+                setClauses.push('phoneNumber = ?'); values.push(phone || null);
+            }
+            const wantsIdentityUpdate = ['firstName', 'lastName', 'date_naissance'].some(f => req.body[f] !== undefined);
+            if (wantsIdentityUpdate) {
+                const docs = await documentModel.getByProfilId(profilRows[0].id);
+                const identityLocked = docs.some(
+                    d => d.type_document === "Pièce d'identité" && d.statut_verification === 'Validé'
+                );
+                if (identityLocked)
+                    return res.status(403).json({ message: "Identité verrouillée — votre pièce d'identité a déjà été validée." });
+            }
+            if (req.body.firstName !== undefined) { setClauses.push('firstName = ?'); values.push(req.body.firstName || null); }
+            if (req.body.lastName !== undefined) { setClauses.push('lastName = ?'); values.push(req.body.lastName || null); }
+            if (req.body.date_naissance !== undefined) { setClauses.push('date_naissance = ?'); values.push(req.body.date_naissance || null); }
             if (setClauses.length > 0) await userModel.updateProfilFields(setClauses, values, id);
         }
 
@@ -215,4 +280,4 @@ const remove = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getAllAdmin, getById, update, ban, unban, updateRole, remove };
+module.exports = { getAll, getAllAdmin, getById, adminCreate, getFullDetail, update, ban, unban, updateRole, remove };
