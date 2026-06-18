@@ -48,6 +48,7 @@ services:
     environment:
       - DB_HOST=db
       - NODE_ENV=production
+      - OLLAMA_URL=http://ollama:11434
     networks:
       - idfm_prod_network
     volumes:
