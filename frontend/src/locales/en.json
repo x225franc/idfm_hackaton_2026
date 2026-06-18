@@ -1,0 +1,263 @@
+{
+  "welcome": {
+    "badge": "100% online subscription",
+    "title_1": "Your transit pass in",
+    "title_highlight": "a few clicks",
+    "subtitle": "Simplify your daily commute: find the offer suited to your profile, upload your documents and pay online — no appointment needed.",
+    "cta": "Start my subscription",
+    "already_account": "I already have an account",
+    "login": "Log in",
+    "benefits": {
+      "speed_title": "In just a few minutes",
+      "speed_desc": "Enter your profile and usage, we'll find the most suitable offer for you.",
+      "paperless_title": "No paperwork",
+      "paperless_desc": "Upload your supporting documents online: everything is digital and secure.",
+      "payment_title": "Secure payment",
+      "payment_desc": "Credit card, direct debit or mobile payment, with complete confidence."
+    },
+    "banner_title": "Ready to simplify your commute?",
+    "banner_subtitle": "The subscription process takes less than 5 minutes."
+  },
+  "steps": {
+    "profile": "Your situation",
+    "frequency": "Travel frequency",
+    "offer": "Your offer",
+    "documents": "Documents",
+    "payment": "Payment",
+    "footer": "© {{year}} Comutitres — Île-de-France Mobilités"
+  },
+  "profile": {
+    "title": "What is your current situation?",
+    "subtitle": "Select the option that best describes you.",
+    "next": "Next",
+    "profiles": {
+      "actif":      { "label": "Working adult",    "sub": "26–62 years" },
+      "etudiant":   { "label": "Student",          "sub": "Under 26" },
+      "senior":     { "label": "Senior",           "sub": "Over 62" },
+      "solidarite": { "label": "Solidarity",       "sub": "Social benefits recipient" },
+      "mobilite":   { "label": "Reduced mobility", "sub": "" }
+    }
+  },
+  "frequency": {
+    "title": "How often do you travel?",
+    "subtitle": "This will help us suggest the most suitable subscription for your needs.",
+    "next": "Next",
+    "options": {
+      "quotidien": "Every day",
+      "hebdo":     "Several times a week",
+      "mensuel":   "A few times a month",
+      "rare":      "Rarely"
+    }
+  },
+  "offer": {
+    "title": "Recommended offer for you!",
+    "subtitle": "Based on your criteria, here is the offer that best suits you:",
+    "badge": "Recommended",
+    "see_detail": "View offer details",
+    "next": "Next",
+    "offers": {
+      "navigo-annuel": {
+        "name": "Navigo Annual",
+        "period": "year",
+        "desc": "For people who travel less frequently or outside the region.",
+        "eligibility": "Open to everyone, no income or age conditions."
+      },
+      "imagine-r-etudiant": {
+        "name": "Imagine R Student",
+        "period": "year",
+        "desc": "The essential pass for students in Île-de-France.",
+        "perks": ["Ideal for your daily commute", "Access to the entire Île-de-France network", "Application fees included"],
+        "eligibility": "Reserved for students under 26 in Île-de-France."
+      },
+      "imagine-r-scolaire": {
+        "name": "Imagine R Schoolchild",
+        "period": "year",
+        "desc": "The annual pass for primary, secondary school pupils and apprentices.",
+        "perks": ["Access to the entire Île-de-France network", "Application fees included"],
+        "eligibility": "Reserved for primary/secondary school pupils and apprentices under 26."
+      },
+      "imagine-r-junior": {
+        "name": "Imagine R Junior",
+        "period": "year",
+        "desc": "Imagine R at an unbeatable price for children under 11.",
+        "perks": ["Unbeatable rate", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for children under 11."
+      },
+      "amethyste": {
+        "name": "Améthyste",
+        "period": "year",
+        "desc": "Free travel for seniors, disabled adults, those unfit for work, war veterans or war widows.",
+        "perks": ["Fully free", "Access to the entire Île-de-France network"],
+        "eligibility": "Subject to conditions: 62+, disability, unfitness for work, war veteran or war widow status."
+      },
+      "navigo-senior": {
+        "name": "Navigo Senior",
+        "period": "year",
+        "desc": "50% off the Navigo Annual pass for seniors.",
+        "perks": ["-50% off the full fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for people over 62, subject to conditions."
+      },
+      "tst": {
+        "name": "TST",
+        "period": "year",
+        "desc": "Social and Solidarity Pricing, subject to income conditions.",
+        "perks": ["Fare adapted to your situation", "Access to the entire Île-de-France network", "Application reviewed within 48h"],
+        "eligibility": "Subject to income conditions. Application reviewed within 48h after submitting documents."
+      },
+      "reduction-50": {
+        "name": "50% Reduction",
+        "period": "year",
+        "desc": "The 50% reduction for beneficiaries of State Medical Aid.",
+        "perks": ["-50% off the full fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for beneficiaries of State Medical Aid (AME)."
+      },
+      "solidarite-75": {
+        "name": "Solidarity 75%",
+        "period": "year",
+        "desc": "The solidarity reduction for beneficiaries of social aid.",
+        "perks": ["-75% off the full fare", "All zones included"],
+        "eligibility": "Subject to income conditions, all zones included."
+      },
+      "solidarite-gratuite": {
+        "name": "Solidarity Free",
+        "period": "3 months",
+        "desc": "Free travel throughout Île-de-France for beneficiaries of social aid.",
+        "perks": ["Fully free", "All zones included"],
+        "eligibility": "Free, renewable every 3 months. All zones included."
+      },
+      "handicap": {
+        "name": "Disability",
+        "period": "year",
+        "priceLabel": "Free or -50%",
+        "desc": "50% reduction or free travel for people with disabilities.",
+        "perks": ["Free or reduced fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Subject to conditions related to disability rate or mobility inclusion card."
+      },
+      "accompagnant-handicap": {
+        "name": "Disability Companion",
+        "period": "year",
+        "priceLabel": "Free or -50%",
+        "desc": "Get the reduction or free pass for your companion.",
+        "perks": ["Free or reduced fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for the companion of a person with a disability, subject to conditions."
+      },
+      "liberte-plus": {
+        "name": "Liberté+",
+        "period": "trip",
+        "desc": "Pay only for your trips, with no commitment.",
+        "perks": ["No commitment", "Billed for actual usage", "Ideal for occasional use"],
+        "eligibility": "No commitment, open to everyone, billed per actual trip."
+      }
+    }
+  },
+  "documents": {
+    "title": "Create your application file",
+    "subtitle": "We need some information to finalise your subscription.",
+    "section_identity": "Personal information",
+    "section_docs": "Required documents",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "password": "Password",
+    "birthDate": "Date of birth",
+    "phone": "Phone",
+    "required_badge": "Required",
+    "optional_badge": "Optional",
+    "upload_cta": "Click to upload",
+    "next": "Next",
+    "docs": {
+      "identite":    { "label": "Identity card",            "hint": "JPG, PNG or PDF, max 5 MB" },
+      "scolarite":   { "label": "School certificate",       "hint": "Accepted formats above" },
+      "bourse":      { "label": "Scholarship certificate",  "hint": "If you are a scholarship holder" },
+      "aide-sociale":{ "label": "Social benefit proof",     "hint": "Accepted formats above" },
+      "photo":       { "label": "Passport photo",           "hint": "For your card" }
+    }
+  },
+  "payment": {
+    "title": "Secure payment",
+    "subtitle": "Choose your payment method to finalise your subscription.",
+    "total": "Total to pay",
+    "pay": "Pay {{amount}} €",
+    "processing": "Processing payment…",
+    "methods": {
+      "cb":          { "label": "Credit card",            "sub": "Visa, Mastercard, CB" },
+      "prelevement": { "label": "Direct debit",           "sub": "IBAN mandate required" },
+      "autres":      { "label": "Other payment methods",  "sub": "Apple Pay, Google Pay" }
+    }
+  },
+  "success": {
+    "title": "Your subscription is now active!",
+    "subtitle": "A summary has been sent to your email.",
+    "price_label": "Total Price",
+    "paid": "Paid",
+    "help": "Need help with your subscription?",
+    "contact": "Contact us",
+    "view_account": "View my account"
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Access your personal Comutitres space.",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot password?",
+    "submit": "Log in",
+    "loading": "Logging in...",
+    "register": "Create an account",
+    "help": "Need help?",
+    "faq": "Visit FAQ",
+    "or": "OR",
+    "verification": {
+      "title": "One last step!",
+      "subtitle": "Your account is not yet activated. A new 6-character code has just been sent to your email.",
+      "code_label": "Verification code",
+      "code_placeholder": "e.g. A1B2C3",
+      "submit": "Verify my account",
+      "loading": "Verifying...",
+      "cancel": "Cancel and return to login"
+    },
+    "errors": {
+      "server": "Unable to reach the server.",
+      "invalid_code": "Invalid or expired code.",
+      "verify_error": "Server error during verification."
+    }
+  },
+  "register": {
+    "title": "Create an account",
+    "subtitle": "Sign up to configure your Île-de-France Mobilités Connect ID.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "terms_text": "I accept the",
+    "terms_link": "terms and conditions",
+    "terms_and": "and the",
+    "privacy_link": "privacy policy",
+    "submit": "Create my account",
+    "loading": "Creating...",
+    "already_account": "Already have an account?",
+    "login_link": "Log in",
+    "help": "Need help?",
+    "faq": "Visit FAQ",
+    "verification": {
+      "title": "Code sent!",
+      "subtitle": "To complete your registration, please enter the 6-character code sent to",
+      "code_label": "Verification code",
+      "code_placeholder": "e.g. A1B2C3",
+      "submit": "Verify my account",
+      "loading": "Verifying..."
+    },
+    "success": {
+      "title": "Account verified successfully!",
+      "subtitle": "Your profile is ready to use. You can now log in.",
+      "login_button": "Go to login"
+    },
+    "errors": {
+      "password_mismatch": "Passwords do not match.",
+      "terms_required": "You must accept the terms and conditions and the privacy policy.",
+      "server": "Unable to reach the backend server.",
+      "invalid_code": "The entered code is invalid or expired.",
+      "verify_error": "Error during verification."
+    }
+  }
+}

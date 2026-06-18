@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "category": "Profils et tarifs",
+    "question": "Quels profils d'abonnement propose Comutitres ?",
+    "answer": "Comutitres propose un tarif adapté à chaque situation : Actif (26-62 ans), Étudiant (moins de 26 ans), Senior (plus de 62 ans), Solidarité pour les bénéficiaires d'aides sociales, et Mobilité Réduite. Sélectionnez votre profil pour accéder aux forfaits qui vous correspondent."
+  },
+  {
+    "id": 2,
+    "category": "Profils et tarifs",
+    "question": "Qu'est-ce que le forfait Liberté+ ?",
+    "answer": "Le forfait Liberté+ est une nouvelle offre d'abonnement disponible sur Comutitres, pensée pour s'adapter à une utilisation plus flexible des transports."
+  },
+  {
+    "id": 3,
+    "category": "Gestion de l'abonnement",
+    "question": "Puis-je changer de profil d'abonnement si ma situation évolue ?",
+    "answer": "Oui, vous pouvez changer de profil à tout moment, par exemple passer du tarif Étudiant au tarif Actif, ou bénéficier du tarif Senior une fois l'âge atteint."
+  },
+  {
+    "id": 4,
+    "category": "Gestion de l'abonnement",
+    "question": "Puis-je gérer mon abonnement et celui de ma famille depuis un seul compte ?",
+    "answer": "Oui, votre compte Comutitres centralise la gestion de tous vos abonnements ainsi que ceux de votre famille, depuis un espace unique."
+  },
+  {
+    "id": 5,
+    "category": "Paiement",
+    "question": "Mes paiements liés à mon abonnement sont-ils sécurisés ?",
+    "answer": "Oui, toutes les transactions liées à votre abonnement Comutitres sont protégées par les plus hauts standards de sécurité bancaire."
+  },
+  {
+    "id": 6,
+    "category": "Accompagnement",
+    "question": "Puis-je être accompagné pour choisir mon abonnement ?",
+    "answer": "Une équipe à votre écoute vous accompagne pour vous guider dans le choix de votre forfait et répondre à toutes vos questions sur les abonnements."
+  }
+]

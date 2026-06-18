@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const swaggerUi = require("swagger-ui-express");
 
 // importation de middleware pour les images
 const multer = require("multer");
@@ -14,6 +15,9 @@ const { resolve } = require("path");
 
 // importation de la connexion à la base de données
 const db = require("./config/db");
+
+// métriques Prometheus
+const { metricsMiddleware, metricsHandler } = require("./middleware/metrics");
 
 // configuration de dotenv
 dotenv.config({ path: resolve(__dirname, "../.env") });
@@ -37,6 +41,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(metricsMiddleware);
+
+// Endpoint Prometheus — accessible par le conteneur prometheus sur /metrics
+app.get("/metrics", metricsHandler);
+
 /////////////////////////////////////////////////////////////////////////////////
 
 app.get("/", (req, res) => {
@@ -60,9 +69,9 @@ const upload = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
         if (!allowedTypes.includes(file.mimetype)) {
-            return cb(new Error('Type de fichier non valide. Seules les images sont autorisées.'), false);
+            return cb(new Error('Type de fichier non valide. Seuls les formats JPG, PNG et PDF sont autorisés.'), false);
         }
         cb(null, true);
     },
@@ -85,15 +94,32 @@ app.use("/components/idfm_hackaton_2026",express.static(path.join(__dirname, "co
 
 /////////////////////////////////////////////////////////////////////////////////
 
+// Swagger UI
+const swaggerSpec = require("./config/swagger");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "Comutitres API",
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+}));
+
 // Importation des routes
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const profilRoutes = require("./routes/profil.routes");
+const forfaitRoutes = require("./routes/forfait.routes");
+const documentRoutes = require("./routes/document.routes");
+const paiementRoutes = require("./routes/paiement.routes");
+const chatRoutes = require("./routes/chat.routes");
 
 
 // Utilisation des routes
 app.use(authRoutes);
 app.use(userRoutes);
+app.use(profilRoutes);
+app.use(forfaitRoutes);
+app.use(documentRoutes);
+app.use(paiementRoutes);
+app.use(chatRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);

@@ -1,0 +1,263 @@
+{
+  "welcome": {
+    "badge": "Souscription 100% en ligne",
+    "title_1": "Votre abonnement de transport en",
+    "title_highlight": "quelques clics",
+    "subtitle": "Simplifions vos trajets au quotidien : trouvez l'offre adaptée à votre profil, déposez vos documents et payez en ligne, sans rendez-vous.",
+    "cta": "Démarrer mon abonnement",
+    "already_account": "J'ai déjà un compte",
+    "login": "Se connecter",
+    "benefits": {
+      "speed_title": "En quelques minutes",
+      "speed_desc": "Indiquez votre profil et votre usage, on s'occupe de trouver l'offre la plus adaptée.",
+      "paperless_title": "Sans paperasse",
+      "paperless_desc": "Déposez vos justificatifs en ligne : tout est dématérialisé et sécurisé.",
+      "payment_title": "Paiement sécurisé",
+      "payment_desc": "Carte bancaire, prélèvement automatique ou paiement mobile, en toute confiance."
+    },
+    "banner_title": "Prêt à simplifier vos trajets ?",
+    "banner_subtitle": "Le tunnel de souscription prend moins de 5 minutes."
+  },
+  "steps": {
+    "profile": "Votre situation",
+    "frequency": "Fréquence de trajet",
+    "offer": "Votre offre",
+    "documents": "Documents",
+    "payment": "Paiement",
+    "footer": "© {{year}} Comutitres — Île-de-France Mobilités"
+  },
+  "profile": {
+    "title": "Quelle est votre situation actuelle ?",
+    "subtitle": "Sélectionnez l'option qui vous correspond.",
+    "next": "Suivant",
+    "profiles": {
+      "actif":      { "label": "Actif",            "sub": "26-62 ans" },
+      "etudiant":   { "label": "Étudiant",          "sub": "-26 ans" },
+      "senior":     { "label": "Senior",            "sub": "+62 ans" },
+      "solidarite": { "label": "Solidarité",        "sub": "Bénéficiaire d'aides sociales" },
+      "mobilite":   { "label": "Mobilité réduite",  "sub": "" }
+    }
+  },
+  "frequency": {
+    "title": "À quelle fréquence voyagez-vous ?",
+    "subtitle": "Cela nous aidera à vous proposer l'abonnement le plus adapté à vos besoins.",
+    "next": "Suivant",
+    "options": {
+      "quotidien": "Tous les jours",
+      "hebdo":     "Plusieurs fois par semaine",
+      "mensuel":   "Quelques fois par mois",
+      "rare":      "Rarement"
+    }
+  },
+  "offer": {
+    "title": "Offre recommandée pour vous !",
+    "subtitle": "Selon vos critères, voici l'offre qui vous correspond le mieux :",
+    "badge": "Recommandé",
+    "see_detail": "Voir le détail de l'offre",
+    "next": "Suivant",
+    "offers": {
+      "navigo-annuel": {
+        "name": "Navigo Annuel",
+        "period": "an",
+        "desc": "Pour les personnes qui se déplacent moins fréquemment ou hors de la région.",
+        "eligibility": "Ouvert à tous, sans condition de ressources ni d'âge."
+      },
+      "imagine-r-etudiant": {
+        "name": "Imagine R Etudiant",
+        "period": "an",
+        "desc": "Le forfait indispensable des étudiants en Île-de-France.",
+        "perks": ["Idéal pour vos trajets quotidiens", "Accès à tout le réseau Île-de-France", "Frais de dossier inclus"],
+        "eligibility": "Réservé aux étudiants de moins de 26 ans en Île-de-France."
+      },
+      "imagine-r-scolaire": {
+        "name": "Imagine R Scolaire",
+        "period": "an",
+        "desc": "Le forfait annuel des jeunes du primaire, secondaire et apprentis.",
+        "perks": ["Accès à tout le réseau Île-de-France", "Frais de dossier inclus"],
+        "eligibility": "Réservé aux élèves du primaire, secondaire et apprentis de moins de 26 ans."
+      },
+      "imagine-r-junior": {
+        "name": "Imagine R Junior",
+        "period": "an",
+        "desc": "Imagine R à un prix imbattable pour les moins de 11 ans.",
+        "perks": ["Tarif imbattable", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Réservé aux enfants de moins de 11 ans."
+      },
+      "amethyste": {
+        "name": "Améthyste",
+        "period": "an",
+        "desc": "La gratuité pour les seniors, adultes handicapés ou inaptes au travail, anciens combattants ou veuves de guerre.",
+        "perks": ["Gratuité totale", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Sous conditions : +62 ans, situation de handicap, inaptitude au travail, ancien combattant ou veuve de guerre."
+      },
+      "navigo-senior": {
+        "name": "Navigo Senior",
+        "period": "an",
+        "desc": "50% sur le forfait Navigo Annuel pour les seniors.",
+        "perks": ["-50% sur le tarif plein", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Réservé aux personnes de plus de 62 ans, sous condition."
+      },
+      "tst": {
+        "name": "TST",
+        "period": "an",
+        "desc": "Tarification Sociale et Solidaire, sous conditions de ressources.",
+        "perks": ["Tarif adapté à votre situation", "Accès à tout le réseau Île-de-France", "Dossier étudié sous 48h"],
+        "eligibility": "Sous conditions de ressources. Dossier étudié sous 48h après envoi des justificatifs."
+      },
+      "reduction-50": {
+        "name": "Réduction 50%",
+        "period": "an",
+        "desc": "La réduction 50% pour les bénéficiaires de l'Aide Médicale d'État.",
+        "perks": ["-50% sur le tarif plein", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Réservé aux bénéficiaires de l'Aide Médicale d'État (AME)."
+      },
+      "solidarite-75": {
+        "name": "Solidarité 75%",
+        "period": "an",
+        "desc": "La réduction solidaire pour les bénéficiaires d'aides sociales.",
+        "perks": ["-75% sur le tarif plein", "Toutes zones incluses"],
+        "eligibility": "Sous conditions de ressources, toutes zones incluses."
+      },
+      "solidarite-gratuite": {
+        "name": "Solidarité Gratuité",
+        "period": "3 mois",
+        "desc": "Les transports gratuits dans toute l'Île-de-France pour les bénéficiaires d'aides sociales.",
+        "perks": ["Gratuité totale", "Toutes zones incluses"],
+        "eligibility": "Gratuit, renouvelable tous les 3 mois. Toutes zones incluses."
+      },
+      "handicap": {
+        "name": "Handicap",
+        "period": "an",
+        "priceLabel": "Gratuité ou -50%",
+        "desc": "Réduction 50% ou gratuité pour les personnes en situation de handicap.",
+        "perks": ["Gratuité ou tarif réduit", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Sous conditions liées au taux d'invalidité ou à la carte mobilité inclusion."
+      },
+      "accompagnant-handicap": {
+        "name": "Accompagnant Handicap",
+        "period": "an",
+        "priceLabel": "Gratuité ou -50%",
+        "desc": "Obtenez la réduction ou gratuité pour votre accompagnant.",
+        "perks": ["Gratuité ou tarif réduit", "Accès à tout le réseau Île-de-France"],
+        "eligibility": "Réservé à l'accompagnant d'une personne en situation de handicap, sous conditions."
+      },
+      "liberte-plus": {
+        "name": "Liberté+",
+        "period": "trajet",
+        "desc": "Payez uniquement vos trajets, sans engagement.",
+        "perks": ["Aucun engagement", "Facturation à l'usage réel", "Idéal pour un usage occasionnel"],
+        "eligibility": "Sans engagement, ouvert à tous, facturé au trajet réel."
+      }
+    }
+  },
+  "documents": {
+    "title": "Création de votre dossier",
+    "subtitle": "Nous avons besoin de quelques informations pour finaliser votre abonnement.",
+    "section_identity": "Informations personnelles",
+    "section_docs": "Justificatifs requis",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "birthDate": "Date de naissance",
+    "phone": "Téléphone",
+    "required_badge": "Requis",
+    "optional_badge": "Optionnel",
+    "upload_cta": "Cliquez pour charger",
+    "next": "Suivant",
+    "docs": {
+      "identite":    { "label": "Carte d'identité",          "hint": "JPG, PNG ou PDF, max 5 Mo" },
+      "scolarite":   { "label": "Certificat de scolarité",   "hint": "Formats acceptés ci-dessus" },
+      "bourse":      { "label": "Attestation de bourse",     "hint": "Si vous êtes boursier" },
+      "aide-sociale":{ "label": "Justificatif d'aide sociale","hint": "Formats acceptés ci-dessus" },
+      "photo":       { "label": "Photo d'identité",          "hint": "Pour votre carte" }
+    }
+  },
+  "payment": {
+    "title": "Paiement sécurisé",
+    "subtitle": "Choisissez votre moyen de paiement pour finaliser votre abonnement.",
+    "total": "Total à payer",
+    "pay": "Payer {{amount}} €",
+    "processing": "Paiement en cours…",
+    "methods": {
+      "cb":          { "label": "Carte bancaire",            "sub": "Visa, Mastercard, CB" },
+      "prelevement": { "label": "Prélèvement automatique",   "sub": "Mandat IBAN requis" },
+      "autres":      { "label": "Autres moyens de paiement", "sub": "Apple Pay, Google Pay" }
+    }
+  },
+  "success": {
+    "title": "Votre abonnement est activé !",
+    "subtitle": "Un récapitulatif vous a été envoyé par email.",
+    "price_label": "Prix Total",
+    "paid": "Payé",
+    "help": "Besoin d'aide pour votre abonnement ?",
+    "contact": "Nous contacter",
+    "view_account": "Voir mon compte"
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Accédez à votre espace personnel Comutitres.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "loading": "Connexion en cours...",
+    "register": "Créer un compte",
+    "help": "Besoin d'aide ?",
+    "faq": "Consulter la FAQ",
+    "or": "OU",
+    "verification": {
+      "title": "Dernière étape !",
+      "subtitle": "Votre compte n'est pas encore activé. Un nouveau code à 6 caractères vient de vous être envoyé par email.",
+      "code_label": "Code de vérification",
+      "code_placeholder": "Ex : A1B2C3",
+      "submit": "Valider mon compte",
+      "loading": "Vérification...",
+      "cancel": "Annuler et retourner à la connexion"
+    },
+    "errors": {
+      "server": "Impossible de joindre le serveur.",
+      "invalid_code": "Code invalide ou expiré.",
+      "verify_error": "Erreur serveur lors de la vérification."
+    }
+  },
+  "register": {
+    "title": "Créer un compte",
+    "subtitle": "Inscrivez-vous pour configurer votre identifiant Île-de-France Mobilités Connect.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "terms_text": "J'accepte les",
+    "terms_link": "conditions générales d'utilisation",
+    "terms_and": "et la",
+    "privacy_link": "politique de confidentialité",
+    "submit": "Créer mon compte",
+    "loading": "Création...",
+    "already_account": "Déjà un compte ?",
+    "login_link": "Se connecter",
+    "help": "Besoin d'aide ?",
+    "faq": "Consulter la FAQ",
+    "verification": {
+      "title": "Code envoyé !",
+      "subtitle": "Pour finaliser votre inscription, veuillez saisir le code à 6 caractères envoyé à",
+      "code_label": "Code de vérification",
+      "code_placeholder": "Ex : A1B2C3",
+      "submit": "Valider mon compte",
+      "loading": "Vérification..."
+    },
+    "success": {
+      "title": "Compte vérifié avec succès !",
+      "subtitle": "Votre profil est prêt à être utilisé. Vous pouvez désormais vous connecter.",
+      "login_button": "Aller à la connexion"
+    },
+    "errors": {
+      "password_mismatch": "Les mots de passe ne correspondent pas.",
+      "terms_required": "Vous devez accepter les conditions générales et la politique de confidentialité.",
+      "server": "Impossible de joindre le serveur backend.",
+      "invalid_code": "Le code saisi est invalide ou expiré.",
+      "verify_error": "Erreur lors de la vérification."
+    }
+  }
+}

@@ -4,16 +4,15 @@ services:
     container_name: idfm_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: '${DB_PASS}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: '${DB_NAME}'
     ports:
-      - "3307:3306"
+      - '3307:3306'
     volumes:
       - ./database/idfm_hackaton.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 3s
       timeout: 2s
       retries: 10
@@ -26,14 +25,38 @@ services:
     env_file:
       - .env
     environment:
-      - DB_HOST=db 
+      - DB_HOST=db
       - PORT=${BACKEND_PORT}
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
     volumes:
       - ./backend:/app
       - /app/node_modules
     command: sh -c "npm install && npm run start"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: idfm_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: '${DB_PASS}'
+    ports:
+      - '8080:80'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  adminer:
+    image: adminer:latest
+    container_name: idfm_adminer
+    restart: unless-stopped
+    ports:
+      - '8081:8080'
     depends_on:
       db:
         condition: service_healthy
@@ -51,7 +74,7 @@ services:
       - WATCHPACK_POLLING=true
       - WDS_SOCKET_PORT=0
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -59,5 +82,35 @@ services:
     depends_on:
       - backend
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama
+    restart: unless-stopped
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    healthcheck:
+      test: ['CMD', 'ollama', 'list']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama_init
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://idfm_ollama:11434
+    entrypoint: /bin/sh -c "ollama pull mistral && echo '✅ Modèle Mistral téléchargé!'"
+    depends_on:
+      ollama:
+        condition: service_healthy
+
 volumes:
   mysql_data:
+  ollama_data:

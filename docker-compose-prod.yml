@@ -1,0 +1,108 @@
+version: '3.8'
+
+networks:
+  idfm_prod_network:
+    driver: bridge
+
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: idfm_traefik
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - idfm_prod_network
+
+  db:
+    image: mysql:8.0
+    container_name: idfm_db_prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASS}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "${DB_NAME}"
+    networks:
+      - idfm_prod_network
+    volumes:
+      - ./database/idfm_hackaton.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: mijose/idfm-backend:latest
+    container_name: idfm_backend_prod
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - NODE_ENV=production
+    networks:
+      - idfm_prod_network
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`) || PathPrefix(`/images`)"
+      - "traefik.http.routers.backend.priority=10"
+      - "traefik.http.services.backend.loadbalancer.server.port=${BACKEND_PORT}"
+
+  frontend:
+    image: mijose/idfm-frontend:latest
+    container_name: idfm_frontend_prod
+    restart: unless-stopped
+    networks:
+      - idfm_prod_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama_prod
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    networks:
+      - idfm_prod_network
+    volumes:
+      - ollama_data_prod:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: idfm_ollama_init_prod
+    restart: "no"
+    networks:
+      - idfm_prod_network
+    volumes:
+      - ollama_data_prod:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://idfm_ollama_prod:11434
+    entrypoint: /bin/sh -c "ollama pull mistral"
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+volumes:
+  mysql_data_prod:
+  ollama_data_prod:
