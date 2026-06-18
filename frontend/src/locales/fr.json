@@ -31,11 +31,18 @@
     "subtitle": "Sélectionnez l'option qui vous correspond.",
     "next": "Suivant",
     "profiles": {
+      "junior":     { "label": "Junior",            "sub": "- 16 ans" },
       "actif":      { "label": "Actif",            "sub": "26-62 ans" },
       "etudiant":   { "label": "Étudiant",          "sub": "-26 ans" },
       "senior":     { "label": "Senior",            "sub": "+62 ans" },
       "solidarite": { "label": "Solidarité",        "sub": "Bénéficiaire d'aides sociales" },
       "mobilite":   { "label": "Mobilité réduite",  "sub": "" }
+    },
+    "minor_block": {
+      "title": "Ce forfait est réservé aux moins de 16 ans",
+      "text": "Les mineurs ne peuvent pas souscrire directement. Un parent doit créer le compte.",
+      "cta_parent": "Je suis le parent → Créer un compte pour mon enfant",
+      "cta_existing": "J'ai déjà un compte enfant — Se connecter"
     }
   },
   "frequency": {

@@ -12,6 +12,16 @@ export const PROFILES = [
     summary: 'Vous travaillez ou vous déplacez régulièrement, entre 26 et 62 ans.',
   },
   {
+    id: 'junior',
+    label: 'Junior',
+    sub: '- 16 ans',
+    bg: '#EDFAF3',
+    color: '#007D44',
+    img: '/images/personnage/Jeune.svg',
+    summary: 'Vous avez moins de 16 ans : ce forfait doit être souscrit par un parent.',
+    minorBlocked: true,
+  },
+  {
     id: 'etudiant',
     label: 'Étudiant',
     sub: '-26 ans',
@@ -221,6 +231,7 @@ export const OFFERS = {
 // `frequencyAware: true` signifie que ce profil a un choix piloté par la fréquence d'usage
 // (un usage rare bascule vers Liberté+) ; les profils basés sur un statut/une aide ne le sont pas.
 const ELIGIBLE_OFFERS_MAP = {
+  junior:     { ids: ['imagine-r-junior'], frequencyAware: false },
   actif:      { ids: ['navigo-annuel', 'liberte-plus'], frequencyAware: true },
   etudiant:   { ids: ['imagine-r-etudiant', 'imagine-r-scolaire', 'imagine-r-junior'], frequencyAware: true },
   senior:     { ids: ['navigo-senior', 'amethyste'], frequencyAware: false },

@@ -43,6 +43,15 @@ module.exports = {
             [firstName, lastName, email, hashedPassword, role]
         ),
 
+    // Création d'un compte enfant par un parent ("Ajouter un proche") : pré-vérifié, marqué
+    // mineur, rattaché au parent via parent_id (en plus de la table linked_accounts).
+    createChild: (firstName, lastName, email, hashedPassword, parentId) =>
+        q(
+            `INSERT INTO compte_connect (firstName, lastName, email, password, role, consentement_rgpd, isVerified, passwordResetToken, createdAt, updatedAt, isBanned, is_minor, parent_id)
+             VALUES (?, ?, ?, ?, 'user', 1, 1, null, NOW(), NOW(), 0, 1, ?)`,
+            [firstName, lastName, email, hashedPassword, parentId]
+        ),
+
     updateVerificationToken: (email, token) =>
         q(
             'UPDATE compte_connect SET verificationToken = ?, updatedAt = CURRENT_TIMESTAMP WHERE email = ?',

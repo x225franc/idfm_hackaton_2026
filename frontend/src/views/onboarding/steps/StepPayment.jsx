@@ -61,6 +61,10 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
   const { recommended } = getOffers(profile, frequency);
   const offer = OFFERS[offerId] || recommended;
 
+  // Un proche mineur ne gère jamais le paiement lui-même : c'est son parent qui le prendra en charge.
+  const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+  const isMinorAccount = !!storedUser?.is_minor;
+
   const handlePay = async () => {
     setProcessing(true);
     setError(null);
@@ -167,58 +171,70 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('payment.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('payment.subtitle')}</p>
 
-        <div className="flex flex-col gap-3 mb-6">
-          {PAYMENT_METHODS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => onChange(m.id)}
-              className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                value === m.id ? 'border-brand bg-blue-light' : 'border-border hover:border-secondary/30'
-              }`}
-            >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${value === m.id ? 'bg-brand text-white' : 'bg-surface text-secondary'}`}>
-                <PaymentIcon id={m.id} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-anthracite text-sm">
-                  {t(`payment.methods.${m.id}.label`, { defaultValue: m.label })}
-                </p>
-                <p className="text-secondary text-xs">
-                  {t(`payment.methods.${m.id}.sub`, { defaultValue: m.sub })}
-                </p>
-              </div>
-              <span className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: value === m.id ? '#6485F6' : '#DDDDDD' }}>
-                {value === m.id && <span className="w-2.5 h-2.5 rounded-full bg-brand" />}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {error && (
-          <div className="mb-4 px-4 py-3 rounded-xl bg-[#FFF0F0] border border-danger/20 text-danger text-sm">
-            {error}
+        {isMinorAccount ? (
+          <div className="mt-auto rounded-2xl border-2 border-border bg-page p-6 flex flex-col items-center text-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-blue-light text-brand-interaction flex items-center justify-center">
+              <LockIcon />
+            </div>
+            <p className="text-anthracite font-semibold text-sm">Le paiement est géré par votre parent.</p>
+            <p className="text-secondary text-sm">Votre abonnement sera activé une fois validé.</p>
           </div>
-        )}
+        ) : (
+          <>
+            <div className="flex flex-col gap-3 mb-6">
+              {PAYMENT_METHODS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => onChange(m.id)}
+                  className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                    value === m.id ? 'border-brand bg-blue-light' : 'border-border hover:border-secondary/30'
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${value === m.id ? 'bg-brand text-white' : 'bg-surface text-secondary'}`}>
+                    <PaymentIcon id={m.id} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-anthracite text-sm">
+                      {t(`payment.methods.${m.id}.label`, { defaultValue: m.label })}
+                    </p>
+                    <p className="text-secondary text-xs">
+                      {t(`payment.methods.${m.id}.sub`, { defaultValue: m.sub })}
+                    </p>
+                  </div>
+                  <span className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: value === m.id ? '#6485F6' : '#DDDDDD' }}>
+                    {value === m.id && <span className="w-2.5 h-2.5 rounded-full bg-brand" />}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-        <div className="mt-auto pt-2">
-          <div className="flex items-center justify-between mb-4 pt-4 border-t border-border">
-            <span className="text-secondary font-medium">{t('payment.total')}</span>
-            <span className="text-xl font-black text-anthracite">
-              {offer.priceLabel ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel }) : `${formatPrice(offer.price)} €`}
-            </span>
-          </div>
-          <Button variant="primary" full disabled={!value || processing} onClick={handlePay}>
-            {processing ? t('payment.processing') : (
-              <>
-                <LockIcon />{' '}
-                {offer.priceLabel
-                  ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel })
-                  : t('payment.pay', { amount: formatPrice(offer.price) })}
-              </>
+            {error && (
+              <div className="mb-4 px-4 py-3 rounded-xl bg-[#FFF0F0] border border-danger/20 text-danger text-sm">
+                {error}
+              </div>
             )}
-          </Button>
-        </div>
+
+            <div className="mt-auto pt-2">
+              <div className="flex items-center justify-between mb-4 pt-4 border-t border-border">
+                <span className="text-secondary font-medium">{t('payment.total')}</span>
+                <span className="text-xl font-black text-anthracite">
+                  {offer.priceLabel ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel }) : `${formatPrice(offer.price)} €`}
+                </span>
+              </div>
+              <Button variant="primary" full disabled={!value || processing} onClick={handlePay}>
+                {processing ? t('payment.processing') : (
+                  <>
+                    <LockIcon />{' '}
+                    {offer.priceLabel
+                      ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel })
+                      : t('payment.pay', { amount: formatPrice(offer.price) })}
+                  </>
+                )}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AppShell, { STATUS_MAP, subscriptionProgress } from '@/components/app/AppShell';
+import AddChildModal from '@/components/app/AddChildModal';
 import Button from '@/components/ui/Button';
 import { apiFetch, toDateStr, formatDate } from '@/utils';
-
-function nextDebitDateLabel() {
-  const now = new Date();
-  const next = new Date(now.getFullYear(), now.getMonth() + 1, 5);
-  const y = next.getFullYear();
-  const m = String(next.getMonth() + 1).padStart(2, '0');
-  return formatDate(`${y}-${m}-05`, 'long');
-}
 import {
   IconCalendar,
   IconClock,
@@ -20,10 +13,33 @@ import {
   IconInfoCircle,
   IconChevronRight,
   IconTicket,
+  IconPlus,
+  IconCheck,
+  IconX,
 } from '@tabler/icons-react';
+
+function nextDebitDateLabel() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+  const y = next.getFullYear();
+  const m = String(next.getMonth() + 1).padStart(2, '0');
+  return formatDate(`${y}-${m}-05`, 'long');
+}
 
 function CardSkeleton() {
   return <div className="rounded-2xl bg-surface h-52 animate-pulse" />;
+}
+
+function Notice({ notice, onClose }) {
+  if (!notice) return null;
+  const isError = notice.type === 'error';
+  return (
+    <div className={`fixed top-4 right-4 z-50 max-w-sm rounded-xl border shadow-lg px-4 py-3 flex items-start gap-3 bg-white ${isError ? 'border-danger' : 'border-success'}`}>
+      <div className={`mt-0.5 ${isError ? 'text-danger' : 'text-success'}`}>{isError ? <IconX size={18} /> : <IconCheck size={18} />}</div>
+      <p className="text-sm text-anthracite flex-1">{notice.message}</p>
+      <button onClick={onClose} className="text-secondary hover:text-anthracite"><IconX size={14} /></button>
+    </div>
+  );
 }
 
 function SubscriptionCard({ sub }) {
@@ -129,9 +145,81 @@ function EmptySubscription() {
   );
 }
 
+function ChildCard({ child, onManage }) {
+  return (
+    <div className="shrink-0 w-48 bg-white rounded-2xl border border-border p-4 flex flex-col gap-3">
+      <div className="w-10 h-10 rounded-xl bg-blue-light text-brand-interaction flex items-center justify-center font-bold text-sm">
+        {child.firstName?.[0]}{child.lastName?.[0]}
+      </div>
+      <div>
+        <p className="font-semibold text-anthracite text-sm truncate">{child.firstName} {child.lastName}</p>
+        <p className="text-secondary text-xs mt-0.5">
+          {child.activeSubscription ? child.activeSubscription.type_forfait : 'Aucun abonnement actif'}
+        </p>
+      </div>
+      <Button variant="outline" className="text-xs py-2" onClick={() => onManage(child)}>Gérer</Button>
+    </div>
+  );
+}
+
+function FamilySection({ children, loading, onAdd, onManage }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-bold text-anthracite">Mes proches</h2>
+        <button
+          onClick={onAdd}
+          aria-label="Ajouter un proche"
+          className="w-8 h-8 rounded-full bg-blue-light text-brand-interaction flex items-center justify-center hover:bg-blue-light/70 transition-colors"
+        >
+          <IconPlus size={18} stroke={2.5} />
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="rounded-2xl bg-surface h-28 animate-pulse" />
+      ) : children.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-border bg-white p-6 flex flex-col items-center text-center gap-3">
+          <span className="text-3xl">👨‍👧</span>
+          <p className="text-secondary text-sm">Ajoutez le compte d'un proche mineur pour gérer son abonnement.</p>
+          <Button variant="primary" onClick={onAdd}>Ajouter un proche</Button>
+        </div>
+      ) : (
+        <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
+          {children.map((child) => (
+            <ChildCard key={child.id} child={child} onManage={onManage} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Tableau() {
+  const location = useLocation();
   const [user, setUser]   = useState(null);
   const [sub,  setSub]    = useState(undefined); // undefined = chargement, null = aucun forfait
+
+  const [children, setChildren] = useState([]);
+  const [loadingChildren, setLoadingChildren] = useState(true);
+  const [addChildOpen, setAddChildOpen] = useState(false);
+  const [notice, setNotice] = useState(null);
+
+  const showNotice = (type, message) => {
+    setNotice({ type, message });
+    setTimeout(() => setNotice(null), 4000);
+  };
+
+  const fetchChildren = async () => {
+    setLoadingChildren(true);
+    try {
+      setChildren(await apiFetch('/api/family/children'));
+    } catch {
+      setChildren([]);
+    } finally {
+      setLoadingChildren(false);
+    }
+  };
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user') || 'null');
@@ -170,10 +258,29 @@ export default function Tableau() {
         setSub(null);
       }
     })();
+
+    fetchChildren();
   }, []);
+
+  // Arrivée depuis l'interstitiel "Junior < 16 ans" de l'onboarding : ouvre directement la modale.
+  useEffect(() => {
+    if (location.state?.openAddChild) setAddChildOpen(true);
+  }, [location.state]);
+
+  const handleChildCreated = (child) => {
+    setAddChildOpen(false);
+    showNotice('success', `✓ Le compte de ${child.firstName} a été créé. Identifiants envoyés par email.`);
+    fetchChildren();
+  };
+
+  const handleManageChild = () => {
+    showNotice('success', 'La gestion détaillée du compte d\'un proche arrive prochainement.');
+  };
 
   return (
     <AppShell>
+      <Notice notice={notice} onClose={() => setNotice(null)} />
+
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-8 pb-6">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-anthracite">
@@ -193,6 +300,13 @@ export default function Tableau() {
                   : <EmptySubscription />
             }
           </div>
+
+          <FamilySection
+            children={children}
+            loading={loadingChildren}
+            onAdd={() => setAddChildOpen(true)}
+            onManage={handleManageChild}
+          />
 
           <div className="flex flex-col gap-4">
             <h2 className="text-base font-bold text-anthracite">Actions rapides</h2>
@@ -251,6 +365,12 @@ export default function Tableau() {
           </div>
         </div>
       </div>
+
+      <AddChildModal
+        open={addChildOpen}
+        onClose={() => setAddChildOpen(false)}
+        onCreated={handleChildCreated}
+      />
     </AppShell>
   );
 }

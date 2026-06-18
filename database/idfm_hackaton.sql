@@ -23,10 +23,13 @@ CREATE TABLE `compte_connect` (
     `verificationToken` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
     `passwordResetToken` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
     `isBanned` tinyint(1) NOT NULL DEFAULT '0',
+    `is_minor` tinyint(1) NOT NULL DEFAULT '0',
+    `parent_id` int DEFAULT NULL,
     `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `email` (`email`)
+    UNIQUE KEY `email` (`email`),
+    CONSTRAINT `fk_compte_parent` FOREIGN KEY (`parent_id`) REFERENCES `compte_connect` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 2. Table Profil
@@ -89,3 +92,17 @@ CREATE TABLE `paiement` (
     CONSTRAINT `fk_paiement_forfait` FOREIGN KEY (`forfait_id`) REFERENCES `forfait` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_paiement_payeur` FOREIGN KEY (`payeur_id`) REFERENCES `profil` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 6. Table Linked_Accounts (lien parent / proche mineur — feature "Ajouter un proche")
+DROP TABLE IF EXISTS `linked_accounts`;
+CREATE TABLE `linked_accounts` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `parent_user_id` int NOT NULL,
+    `child_user_id` int NOT NULL,
+    `relationship` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'enfant',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_linked_parent_child` (`parent_user_id`, `child_user_id`),
+    CONSTRAINT `fk_linked_parent` FOREIGN KEY (`parent_user_id`) REFERENCES `compte_connect` (`id`),
+    CONSTRAINT `fk_linked_child` FOREIGN KEY (`child_user_id`) REFERENCES `compte_connect` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

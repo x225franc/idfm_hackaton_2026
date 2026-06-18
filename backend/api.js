@@ -110,6 +110,7 @@ const forfaitRoutes = require("./routes/forfait.routes");
 const documentRoutes = require("./routes/document.routes");
 const paiementRoutes = require("./routes/paiement.routes");
 const chatRoutes = require("./routes/chat.routes");
+const familyRoutes = require("./routes/family.routes");
 
 
 // Utilisation des routes
@@ -120,6 +121,7 @@ app.use(forfaitRoutes);
 app.use(documentRoutes);
 app.use(paiementRoutes);
 app.use(chatRoutes);
+app.use(familyRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
