@@ -9,7 +9,7 @@ export default function StepProfile({ value, onChange, onNext, onBack, progress 
   return (
     <>
       <OnboardingHeader onBack={onBack} progress={progress} />
-      <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col">
+      <div className="flex-1 w-full max-w-xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('profile.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('profile.subtitle')}</p>
 

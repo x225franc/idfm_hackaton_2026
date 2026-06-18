@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import Footer from '@/components/Footer';
 
 function ArrowIcon() {
   return (
@@ -98,6 +99,8 @@ export default function StepWelcome({ onNext }) {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

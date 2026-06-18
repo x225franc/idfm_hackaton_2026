@@ -90,7 +90,7 @@ const options = {
                         payeur_id: { type: 'integer' },
                         type_forfait: {
                             type: 'string',
-                            enum: ['Navigo Annuel', 'Imagine R Etudiant', 'Imagine R Junior', 'Imagine R Scolaire', 'Liberté+', 'TST', 'Améthyste'],
+                            enum: ['Navigo Annuel', 'Imagine R Etudiant', 'Imagine R Junior', 'Imagine R Scolaire', 'Liberté+', 'TST', 'Améthyste', 'Navigo Senior', 'Réduction 50%', 'Solidarité 75%', 'Solidarité Gratuité', 'Handicap', 'Accompagnant Handicap'],
                         },
                         statut: {
                             type: 'string',

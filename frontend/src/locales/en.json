@@ -59,31 +59,94 @@
       "navigo-annuel": {
         "name": "Navigo Annual",
         "period": "year",
-        "desc": "For people who travel less frequently or outside the region."
+        "desc": "For people who travel less frequently or outside the region.",
+        "eligibility": "Open to everyone, no income or age conditions."
       },
-      "imagine-r": {
-        "name": "Navigo Imagine R",
+      "imagine-r-etudiant": {
+        "name": "Imagine R Student",
         "period": "year",
-        "desc": "Ideal for students in Île-de-France.",
-        "perks": ["Ideal for your daily commute", "Access to the entire Île-de-France network", "Reduced fare tailored to your profile"]
+        "desc": "The essential pass for students in Île-de-France.",
+        "perks": ["Ideal for your daily commute", "Access to the entire Île-de-France network", "Application fees included"],
+        "eligibility": "Reserved for students under 26 in Île-de-France."
+      },
+      "imagine-r-scolaire": {
+        "name": "Imagine R Schoolchild",
+        "period": "year",
+        "desc": "The annual pass for primary, secondary school pupils and apprentices.",
+        "perks": ["Access to the entire Île-de-France network", "Application fees included"],
+        "eligibility": "Reserved for primary/secondary school pupils and apprentices under 26."
+      },
+      "imagine-r-junior": {
+        "name": "Imagine R Junior",
+        "period": "year",
+        "desc": "Imagine R at an unbeatable price for children under 11.",
+        "perks": ["Unbeatable rate", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for children under 11."
       },
       "amethyste": {
         "name": "Améthyste",
         "period": "year",
-        "desc": "Reduced fare reserved for senior residents of Île-de-France.",
-        "perks": ["Preferential senior rate", "Access to the entire Île-de-France network", "Simplified annual renewal"]
+        "desc": "Free travel for seniors, disabled adults, those unfit for work, war veterans or war widows.",
+        "perks": ["Fully free", "Access to the entire Île-de-France network"],
+        "eligibility": "Subject to conditions: 62+, disability, unfitness for work, war veteran or war widow status."
+      },
+      "navigo-senior": {
+        "name": "Navigo Senior",
+        "period": "year",
+        "desc": "50% off the Navigo Annual pass for seniors.",
+        "perks": ["-50% off the full fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for people over 62, subject to conditions."
       },
       "tst": {
         "name": "TST",
         "period": "year",
         "desc": "Social and Solidarity Pricing, subject to income conditions.",
-        "perks": ["Fare adapted to your situation", "Access to the entire Île-de-France network", "Application reviewed within 48h"]
+        "perks": ["Fare adapted to your situation", "Access to the entire Île-de-France network", "Application reviewed within 48h"],
+        "eligibility": "Subject to income conditions. Application reviewed within 48h after submitting documents."
+      },
+      "reduction-50": {
+        "name": "50% Reduction",
+        "period": "year",
+        "desc": "The 50% reduction for beneficiaries of State Medical Aid.",
+        "perks": ["-50% off the full fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for beneficiaries of State Medical Aid (AME)."
+      },
+      "solidarite-75": {
+        "name": "Solidarity 75%",
+        "period": "year",
+        "desc": "The solidarity reduction for beneficiaries of social aid.",
+        "perks": ["-75% off the full fare", "All zones included"],
+        "eligibility": "Subject to income conditions, all zones included."
+      },
+      "solidarite-gratuite": {
+        "name": "Solidarity Free",
+        "period": "3 months",
+        "desc": "Free travel throughout Île-de-France for beneficiaries of social aid.",
+        "perks": ["Fully free", "All zones included"],
+        "eligibility": "Free, renewable every 3 months. All zones included."
+      },
+      "handicap": {
+        "name": "Disability",
+        "period": "year",
+        "priceLabel": "Free or -50%",
+        "desc": "50% reduction or free travel for people with disabilities.",
+        "perks": ["Free or reduced fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Subject to conditions related to disability rate or mobility inclusion card."
+      },
+      "accompagnant-handicap": {
+        "name": "Disability Companion",
+        "period": "year",
+        "priceLabel": "Free or -50%",
+        "desc": "Get the reduction or free pass for your companion.",
+        "perks": ["Free or reduced fare", "Access to the entire Île-de-France network"],
+        "eligibility": "Reserved for the companion of a person with a disability, subject to conditions."
       },
       "liberte-plus": {
         "name": "Liberté+",
         "period": "trip",
         "desc": "Pay only for your trips, with no commitment.",
-        "perks": ["No commitment", "Billed for actual usage", "Ideal for occasional use"]
+        "perks": ["No commitment", "Billed for actual usage", "Ideal for occasional use"],
+        "eligibility": "No commitment, open to everyone, billed per actual trip."
       }
     }
   },

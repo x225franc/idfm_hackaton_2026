@@ -163,7 +163,7 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
   return (
     <>
       <OnboardingHeader onBack={onBack} progress={progress} />
-      <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col">
+      <div className="flex-1 w-full max-w-xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('payment.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('payment.subtitle')}</p>
 
@@ -204,11 +204,18 @@ export default function StepPayment({ profile, frequency, offerId, value, userDa
         <div className="mt-auto pt-2">
           <div className="flex items-center justify-between mb-4 pt-4 border-t border-border">
             <span className="text-secondary font-medium">{t('payment.total')}</span>
-            <span className="text-xl font-black text-anthracite">{formatPrice(offer.price)} €</span>
+            <span className="text-xl font-black text-anthracite">
+              {offer.priceLabel ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel }) : `${formatPrice(offer.price)} €`}
+            </span>
           </div>
           <Button variant="primary" full disabled={!value || processing} onClick={handlePay}>
             {processing ? t('payment.processing') : (
-              <><LockIcon /> {t('payment.pay', { amount: formatPrice(offer.price) })}</>
+              <>
+                <LockIcon />{' '}
+                {offer.priceLabel
+                  ? t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel })
+                  : t('payment.pay', { amount: formatPrice(offer.price) })}
+              </>
             )}
           </Button>
         </div>

@@ -20,15 +20,23 @@ IMPORTANT: Réponds TOUJOURS en JSON valide avec cette structure exacte:
 - Imagine R Etudiant: Pour étudiants (< 26 ans) - Tarif réduit excellent
 - Liberté+: Flexibilité maximale, utilisation occasionnelle/variable
 - Navigo Annuel: Abonnement annuel pour usage quotidien/régulier (travail, études)
-- Imagine R Junior: Pour enfants (< 16 ans)
-- Imagine R Scolaire: Pour collégiens/lycéens
-- Améthyste: Pour seniors 60+ - Tarif réduit social
-- TST: Pour demandeurs d'emploi, allocation sociale
+- Imagine R Junior: Pour enfants (< 11 ans)
+- Imagine R Scolaire: Pour élèves du primaire/secondaire et apprentis (< 26 ans)
+- Améthyste: Gratuité pour seniors 62+, adultes handicapés, anciens combattants ou veuves de guerre (sous conditions)
+- Navigo Senior: -50% sur le Navigo Annuel pour les personnes de plus de 62 ans (sous conditions)
+- TST: Tarification Sociale et Solidaire générique, pour demandeurs d'emploi, allocation sociale
+- Réduction 50%: -50% pour les bénéficiaires de l'Aide Médicale d'État
+- Solidarité 75%: -75% pour les bénéficiaires d'aides sociales, toutes zones
+- Solidarité Gratuité: Gratuit (renouvelable tous les 3 mois) pour les bénéficiaires d'aides sociales, toutes zones
+- Handicap: Gratuité ou -50% pour les personnes en situation de handicap (sous conditions)
+- Accompagnant Handicap: Gratuité ou -50% pour l'accompagnant d'une personne en situation de handicap
 
 🎯 LOGIQUE DE RECOMMANDATION:
 1. Profil + Fréquence → Choisir le forfait principal
 2. Si quotidien/régulier → Navigo Annuel ou Imagine R (selon profil)
 3. Si occasionnel → Liberté+
+4. Si bénéficiaire d'aides sociales → demander le type d'aide pour orienter vers Réduction 50%, Solidarité 75% ou Solidarité Gratuité
+5. Si situation de handicap → Améthyste ou Handicap, et mentionner Accompagnant Handicap si besoin
 4. Toujours personnaliser la réponse au contexte
 
 💡 QUALITÉ DES RÉPONSES:

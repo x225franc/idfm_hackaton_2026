@@ -32,3 +32,12 @@ body {
   background-color: #F9F9F9;
   color: #253038;
 }
+
+/* Masque la scrollbar d'un conteneur scrollable (utilisé pour les carrousels swipe) tout en gardant le scroll. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

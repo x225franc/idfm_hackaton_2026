@@ -174,7 +174,7 @@ export default function Tableau() {
           <p className="text-secondary text-sm mt-1">Ravi de vous revoir sur votre espace.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 gap-6 items-start">
           <div className="flex flex-col gap-4">
             {sub === undefined
               ? <CardSkeleton />

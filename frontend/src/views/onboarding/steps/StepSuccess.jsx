@@ -23,7 +23,7 @@ export default function StepSuccess({ profile, frequency, offerId, isLoggedIn, e
         <Logo size="md" />
       </header>
 
-      <div className="flex-1 px-6 py-10 lg:px-10 lg:py-12 flex flex-col items-center text-center">
+      <div className="flex-1 w-full max-w-md mx-auto px-6 py-10 lg:px-10 lg:py-14 flex flex-col items-center text-center">
         <div className="w-20 h-20 rounded-full bg-success flex items-center justify-center mb-6 shadow-md">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
@@ -61,7 +61,11 @@ export default function StepSuccess({ profile, frequency, offerId, isLoggedIn, e
             <div>
               <p className="text-secondary text-xs uppercase tracking-wide mb-0.5">{t('success.price_label')}</p>
               <p className="text-lg font-black text-anthracite">
-                {formatPrice(offer.price)} €<span className="text-sm font-medium text-secondary">/{offerPeriod}</span>
+                {offer.priceLabel ? (
+                  t(`offer.offers.${offer.id}.priceLabel`, { defaultValue: offer.priceLabel })
+                ) : (
+                  <>{formatPrice(offer.price)} €<span className="text-sm font-medium text-secondary">/{offerPeriod}</span></>
+                )}
               </p>
             </div>
             <span className="text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#EDFAF3] text-success">

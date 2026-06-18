@@ -34,8 +34,8 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
           </button>
         </div>
       ) : (
-        <label htmlFor={inputId} className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-border rounded-xl py-5 cursor-pointer hover:border-brand hover:bg-blue-light/40 transition-colors">
-          <svg className="text-brand-interaction" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <label htmlFor={inputId} className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-border rounded-xl py-3.5 cursor-pointer hover:border-brand hover:bg-blue-light/40 transition-colors">
+          <svg className="text-brand-interaction" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
@@ -45,6 +45,15 @@ function DocumentRow({ doc, file, onPick, onRemove }) {
           <input id={inputId} type="file" accept=".jpg,.jpeg,.png,.pdf" className="hidden" onChange={(e) => e.target.files[0] && onPick(e.target.files[0])} />
         </label>
       )}
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-secondary mb-1">{label}</label>
+      {children}
     </div>
   );
 }
@@ -65,13 +74,17 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
     if (isReady) onNext();
   };
 
+  const inputClass = (readOnly) =>
+    `w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${readOnly ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`;
+
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col h-full">
       <OnboardingHeader onBack={onBack} progress={progress} />
-      <div className="flex-1 px-5 py-7 lg:px-8 lg:py-8 flex flex-col overflow-y-auto">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('documents.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('documents.subtitle')}</p>
 
+        {/* Section 1 : informations personnelles, sur 3 colonnes pour mieux utiliser la largeur disponible */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">1</span>
@@ -85,69 +98,64 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.firstName')} *</label>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            <Field label={`${t('documents.firstName')} *`}>
               <input
                 type="text" name="firstName" value={value.firstName || ''} onChange={handleChange}
                 required readOnly={isLoggedIn}
-                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                className={inputClass(isLoggedIn)}
                 placeholder="Jean"
               />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.lastName')} *</label>
+            </Field>
+            <Field label={`${t('documents.lastName')} *`}>
               <input
                 type="text" name="lastName" value={value.lastName || ''} onChange={handleChange}
                 required readOnly={isLoggedIn}
-                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                className={inputClass(isLoggedIn)}
                 placeholder="Dupont"
               />
-            </div>
-          </div>
-
-          <div className={`gap-4 mb-4 ${isLoggedIn ? 'flex flex-col' : 'grid grid-cols-2'}`}>
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.email')} *</label>
+            </Field>
+            <Field label={`${t('documents.email')} *`}>
               <input
                 type="email" name="email" value={value.email || ''} onChange={handleChange}
                 required readOnly={isLoggedIn}
-                className={`w-full px-3 py-2.5 rounded-xl border border-border outline-none transition-colors ${isLoggedIn ? 'bg-surface text-secondary cursor-default' : 'bg-page focus:bg-white focus:border-brand'}`}
+                className={inputClass(isLoggedIn)}
                 placeholder="jean@email.com"
               />
-            </div>
+            </Field>
             {!isLoggedIn && (
-              <div>
-                <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.password')} *</label>
+              <Field label={`${t('documents.password')} *`}>
                 <input
                   type="password" name="password" value={value.password || ''} onChange={handleChange}
                   required
-                  className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors"
+                  className={inputClass(false)}
                   placeholder="••••••••"
                   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
                 />
-              </div>
+              </Field>
             )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.birthDate')} *</label>
-              <input type="date" name="date_naissance" value={value.date_naissance || ''} onChange={handleChange} required className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-secondary mb-1">{t('documents.phone')}</label>
-              <input type="tel" name="phoneNumber" value={value.phoneNumber || ''} onChange={handleChange} className="w-full px-3 py-2.5 rounded-xl border border-border bg-page focus:bg-white focus:border-brand outline-none transition-colors" placeholder="06 xx xx xx xx" pattern="0[1-9][0-9]{8}" />
-            </div>
+            <Field label={`${t('documents.birthDate')} *`}>
+              <input
+                type="date" name="date_naissance" value={value.date_naissance || ''} onChange={handleChange}
+                required className={inputClass(false)}
+              />
+            </Field>
+            <Field label={t('documents.phone')}>
+              <input
+                type="tel" name="phoneNumber" value={value.phoneNumber || ''} onChange={handleChange}
+                className={inputClass(false)} placeholder="06 xx xx xx xx" pattern="0[1-9][0-9]{8}"
+              />
+            </Field>
           </div>
         </div>
 
+        {/* Section 2 : justificatifs, sous la section 1, sur 2 colonnes quand il y a plusieurs documents */}
         <div className="bg-white border border-border rounded-2xl p-5 mb-6 shadow-sm">
           <h2 className="font-bold text-anthracite mb-4 flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-info text-brand-interaction flex items-center justify-center text-xs">2</span>
             {t('documents.section_docs')}
           </h2>
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {docs.map((doc) => (
               <DocumentRow
                 key={doc.id}
