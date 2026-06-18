@@ -228,6 +228,79 @@
       "verify_error": "Erreur serveur lors de la vérification."
     }
   },
+  "profil": {
+    "identity_section": "Identité et adresse",
+    "verified_badge": "Vérifié",
+    "certified_user": "Utilisateur certifié",
+    "info_section": "Informations personnelles",
+    "docs_section": "Justificatifs et validation",
+    "fields": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "birth_date": "Date de naissance",
+      "street": "Rue",
+      "postal_code": "Code postal",
+      "city": "Ville"
+    },
+    "doc_status": {
+      "valid": "À jour",
+      "pending": "En attente",
+      "refused": "Refusé"
+    },
+    "doc_types": {
+      "identity": "Pièce d'identité",
+      "photo": "Photo d'identité",
+      "bourse": "Attestation de bourse",
+      "tst": "Justificatif TST"
+    },
+    "identity_note": "Vos informations doivent être identiques à celles de votre pièce d'identité. Après validation, elles ne pourront plus être modifiées.",
+    "identity_locked_note": "Ces informations sont verrouillées car elles ont été vérifiées par nos services.",
+    "no_docs": "Aucun justificatif envoyé pour le moment.",
+    "upload_doc": "Envoyer mes justificatifs",
+    "update_doc": "Mettre à jour mes justificatifs",
+    "logout": "Déconnexion",
+    "sent_on": "Envoyé le {{date}}",
+    "prefilled": "Informations pré-remplies depuis votre compte",
+    "modals": {
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "phone": { "title": "Modifier le téléphone" },
+      "address": { "title": "Modifier l'adresse" },
+      "password": {
+        "title": "Changer le mot de passe",
+        "new": "Nouveau mot de passe",
+        "confirm": "Confirmer"
+      },
+      "identity": { "title": "Modifier l'identité" },
+      "documents": {
+        "title": "Envoyer un justificatif",
+        "type_label": "Type de document",
+        "type_placeholder": "Sélectionner…",
+        "file_label": "Fichier",
+        "pick_file": "Choisir un fichier",
+        "file_hint": "JPG, PNG ou PDF, max 5 Mo",
+        "submit": "Envoyer",
+        "submitting": "Envoi…"
+      }
+    },
+    "errors": {
+      "phone_invalid": "Numéro invalide — 10 chiffres requis, ex: 06 12 34 56 78.",
+      "identity_locked": "Identité verrouillée — votre pièce d'identité a déjà été validée.",
+      "no_doc_type": "Choisissez un type de document.",
+      "no_file": "Sélectionnez un fichier.",
+      "generic": "Une erreur est survenue."
+    },
+    "validation": {
+      "password_hint": "8 caractères minimum, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&).",
+      "password_error": "8 caractères min. avec majuscule, minuscule, chiffre et caractère spécial (@$!%*?&).",
+      "password_mismatch": "Les mots de passe ne correspondent pas."
+    }
+  },
   "register": {
     "title": "Créer un compte",
     "subtitle": "Inscrivez-vous pour configurer votre identifiant Île-de-France Mobilités Connect.",

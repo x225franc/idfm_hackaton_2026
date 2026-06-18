@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { PASSWORD_PATTERN } from '@/validation';
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function ResetPassword() {
                         type="password"
                         name="password"
                         placeholder="••••••••"
-                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                        pattern={PASSWORD_PATTERN}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -104,7 +105,7 @@ export default function ResetPassword() {
                         type="password"
                         name="confirmPassword"
                         placeholder="••••••••"
-                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                        pattern={PASSWORD_PATTERN}
                         title="Le mot de passe doit contenir au moins 8 caractères."
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}

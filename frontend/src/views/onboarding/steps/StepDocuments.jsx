@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import { OnboardingHeader } from '../components';
 import { getDocuments } from '../data';
+import { PASSWORD_PATTERN, PHONE_PATTERN } from '@/validation';
 
 function DocumentRow({ doc, file, onPick, onRemove }) {
   const { t } = useTranslation();
@@ -130,7 +131,7 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
                   required
                   className={inputClass(false)}
                   placeholder="••••••••"
-                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                  pattern={PASSWORD_PATTERN}
                 />
               </Field>
             )}
@@ -143,7 +144,7 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
             <Field label={t('documents.phone')}>
               <input
                 type="tel" name="phoneNumber" value={value.phoneNumber || ''} onChange={handleChange}
-                className={inputClass(false)} placeholder="06 xx xx xx xx" pattern="0[1-9][0-9]{8}"
+                className={inputClass(false)} placeholder="06 xx xx xx xx" pattern={PHONE_PATTERN}
               />
             </Field>
           </div>
