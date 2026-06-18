@@ -12,7 +12,6 @@ module.exports = {
             [parentUserId, childUserId, relationship]
         ),
 
-    // Proches d'un parent, avec leur abonnement actif si le proche en a un (sinon NULL).
     getChildrenByParentId: (parentUserId) =>
         q(
             `SELECT c.id, c.firstName, c.lastName, c.email,

@@ -1,9 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import Logo from '@/components/Logo';
 
-// Header partagé par les étapes du tunnel : bouton retour + logo centré + barre de progression.
-// Sur desktop (lg+), le logo et la progression sont déjà portés par la sidebar du tunnel
-// (cf. OnboardingShell) : on ne garde alors que le bouton retour.
+
 export function OnboardingHeader({ onBack, progress, onLogoClick }) {
   return (
     <div className="sticky top-0 z-10 bg-white lg:static">
@@ -38,7 +36,6 @@ export function OnboardingHeader({ onBack, progress, onLogoClick }) {
   );
 }
 
-// Sidebar desktop uniquement (cachée en mobile) : logo + stepper vertical cliquable.
 export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo, onLogoClick }) {
   const { t } = useTranslation();
   return (
@@ -90,7 +87,6 @@ export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo, onLogoC
   );
 }
 
-// Ligne de sélection façon "radio" utilisée pour le profil et la fréquence de trajet.
 export function RadioRow({ selected, onSelect, label, sub, img, color = '#1972D2', bg }) {
   return (
     <button

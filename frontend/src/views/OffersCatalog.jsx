@@ -36,7 +36,6 @@ function ProfileFlipCard({ profile, flipped, onToggle, onSubscribe }) {
         className="relative w-full h-72 lg:h-64 transition-transform duration-500"
         style={{ transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
       >
-        {/* FACE AVANT : image dans son cadre + libellé, comme le sélecteur de profil */}
         <div
           className="absolute inset-0 rounded-2xl border border-border bg-white overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow"
           style={{ backfaceVisibility: 'hidden' }}
@@ -50,7 +49,6 @@ function ProfileFlipCard({ profile, flipped, onToggle, onSubscribe }) {
           </div>
         </div>
 
-        {/* FACE ARRIÈRE : éligibilité + offres disponibles + souscription directe */}
         <div
           className="absolute inset-0 rounded-2xl border-2 p-3 lg:p-4 flex flex-col shadow-md"
           style={{
@@ -106,8 +104,7 @@ export default function OffersCatalog() {
 
   const toggle = (id) => setFlippedId((prev) => (prev === id ? null : id));
 
-  // Le profil et l'offre sont déjà connus : on saute directement à l'étape "Documents"
-  // du tunnel d'onboarding, qui reprend la main pour la création du compte et du dossier.
+
   const handleSubscribe = (profileId, offerId) => {
     navigate('/', { state: { startStep: STEPS.indexOf('documents'), profile: profileId, offerId } });
   };
@@ -138,7 +135,6 @@ export default function OffersCatalog() {
           />
         </div>
 
-        {/* Mobile / tablette : carrousel plein écran, swipe horizontal de droite à gauche */}
         <div className="lg:hidden">
           <div
             ref={scrollRef}
@@ -172,7 +168,6 @@ export default function OffersCatalog() {
           </div>
         </div>
 
-        {/* Desktop : grille, toutes les cartes visibles en une fois */}
         <div className="hidden lg:block px-5 max-w-5xl mx-auto">
           <div className="grid grid-cols-5 gap-5">
             {PROFILES.map((profile) => (

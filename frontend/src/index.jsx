@@ -8,12 +8,10 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Service worker pwa ---
 import { registerSW } from 'virtual:pwa-register';
 registerSW({ immediate: true });
 
-// Volontairement minimal et sans dépendance aux composants de l'app (Header, Button...) :
-// si le crash vient d'un composant partagé, ce fallback doit pouvoir s'afficher quand même.
+
 function ErrorFallback() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-5 bg-white">

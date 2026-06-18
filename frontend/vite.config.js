@@ -49,9 +49,9 @@ export default defineConfig(({ mode }) => {
                 registerType: 'autoUpdate',
                 devOptions: { enabled: true },
                 manifest: {
-                    name: env.WEBSITE_NAME || 'IDFM Hackaton 2026',
-                    short_name: 'IDFM',
-                    description: 'Application pour le hackaton IDFM',
+                    name: env.WEBSITE_NAME || 'Comutitres Hackaton 2026',
+                    short_name: 'Comutitres',
+                    description: 'Application pour le hackaton Comutitres 2026',
                     theme_color: '#ffffff',
                     background_color: '#ffffff',
                     display: 'standalone',

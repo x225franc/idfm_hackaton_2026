@@ -17,6 +17,7 @@ import Passes from './views/app/Passes';
 import Ask from './views/app/Ask';
 import Profil from './views/app/Profil';
 
+import CookieBanner from './components/CookieBanner';
 import './App.css';
 
 const GuestRoute = ({ children }) => {
@@ -101,6 +102,7 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAdmin && <ChatBox />}
+      <CookieBanner />
     </>
   );
 }

@@ -16,7 +16,6 @@ const calculateAge = (birthDateStr) => {
     return age;
 };
 
-// 12 caractères, au moins une minuscule/majuscule/chiffre/caractère spécial.
 const generateTempPassword = () => {
     const lower = 'abcdefghijklmnopqrstuvwxyz';
     const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -68,8 +67,6 @@ const sendChildWelcomeMail = (child, parentFirstName, tempPassword) => {
     transporter.sendMail({ from: process.env.MAIL_USER, to: child.email, subject: 'Votre compte Comutitres a été créé', html }, () => {});
 };
 
-// POST /api/family/add-child — un parent authentifié crée le compte d'un proche mineur (<16 ans).
-// Un compte mineur ne peut pas lui-même ajouter de proche (seulement la visualisation côté enfant).
 const addChild = async (req, res) => {
     if (req.user.is_minor)
         return res.status(403).json({ message: 'Un compte mineur ne peut pas ajouter de proche.' });
@@ -119,7 +116,6 @@ const addChild = async (req, res) => {
     }
 };
 
-// GET /api/family/children — liste des proches du parent authentifié + leur abonnement actif.
 const getChildren = async (req, res) => {
     try {
         const rows = await familyModel.getChildrenByParentId(req.user.id_user);
