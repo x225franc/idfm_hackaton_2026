@@ -58,7 +58,7 @@ function Field({ label, children }) {
   );
 }
 
-export default function StepDocuments({ profile, value, onChange, onNext, onBack, progress, isLoggedIn }) {
+export default function StepDocuments({ profile, value, onChange, onNext, onBack, onLogoClick, progress, isLoggedIn }) {
   const { t } = useTranslation();
   const docs = getDocuments(profile);
 
@@ -79,7 +79,7 @@ export default function StepDocuments({ profile, value, onChange, onNext, onBack
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 flex flex-col h-full">
-      <OnboardingHeader onBack={onBack} progress={progress} />
+      <OnboardingHeader onBack={onBack} onLogoClick={onLogoClick} progress={progress} />
       <div className="flex-1 w-full max-w-2xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('documents.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('documents.subtitle')}</p>

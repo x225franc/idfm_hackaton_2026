@@ -3,12 +3,12 @@ import Button from '@/components/ui/Button';
 import { OnboardingHeader, RadioRow } from '../components';
 import { PROFILES } from '../data';
 
-export default function StepProfile({ value, onChange, onNext, onBack, progress }) {
+export default function StepProfile({ value, onChange, onNext, onBack, onLogoClick, progress }) {
   const { t } = useTranslation();
 
   return (
     <>
-      <OnboardingHeader onBack={onBack} progress={progress} />
+      <OnboardingHeader onBack={onBack} onLogoClick={onLogoClick} progress={progress} />
       <div className="flex-1 w-full max-w-xl mx-auto px-5 py-7 lg:px-8 lg:py-10 flex flex-col">
         <h1 className="text-2xl font-bold text-anthracite mb-1.5">{t('profile.title')}</h1>
         <p className="text-secondary text-sm mb-6">{t('profile.subtitle')}</p>

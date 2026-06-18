@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OnboardingSidebar } from './components';
 import StepWelcome from './steps/StepWelcome';
@@ -18,12 +18,19 @@ const PROGRESS_STEPS = ['profile', 'frequency', 'offer', 'documents', 'payment']
 export default function Onboarding() {
   const { t } = useTranslation();
   const { state } = useLocation();
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
   const isLoggedIn = !!localStorage.getItem('token') && !!storedUser;
 
-  const [stepIndex, setStepIndex] = useState(
+  // Étape de départ de cette session (figée au montage) : 'welcome'/'profile' en arrivée
+  // normale, ou une étape plus avancée si on arrive directement depuis /offres avec un
+  // profil/une offre déjà choisis. Sert à savoir, dans goBack, s'il existe une étape
+  // précédente *réellement visitée* ou s'il faut quitter le tunnel vers la page d'origine.
+  const initialStepIndex = useRef(
     state?.startStep != null ? state.startStep : isLoggedIn ? 1 : 0
-  );
+  ).current;
+
+  const [stepIndex, setStepIndex] = useState(initialStepIndex);
 
   // Arrivée directe depuis la page /offres (carte retournée → "Souscrire") :
   // le profil et l'offre choisis sont déjà connus, on les pré-remplit.
@@ -49,12 +56,19 @@ export default function Onboarding() {
 
   const step = STEPS[stepIndex];
   const goNext = () => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
-  const goBack = isLoggedIn && stepIndex === 1 ? undefined : () => setStepIndex((i) => Math.max(0, i - 1));
+  // Sur l'étape de départ de la session, il n'y a pas de "précédente" à montrer dans le
+  // tunnel : on quitte plutôt vers la page réellement visitée avant (navigation navigateur).
+  // Au-delà, on recule simplement d'une étape parmi celles effectivement parcourues.
+  const goBack = stepIndex === initialStepIndex
+    ? () => navigate(-1)
+    : () => setStepIndex((i) => Math.max(0, i - 1));
   const update = (patch) => setData((prev) => ({ ...prev, ...patch }));
 
   const progressIndex = PROGRESS_STEPS.indexOf(step); // -1 sur welcome/success
   const progress = progressIndex >= 0 ? ((progressIndex + 1) / PROGRESS_STEPS.length) * 100 : undefined;
   const goToStep = (targetStep) => setStepIndex(STEPS.indexOf(targetStep));
+  // Logo cliquable pendant le tunnel : ramène à l'écran d'accueil (hero "Souscription 100% en ligne").
+  const goHome = () => goToStep('welcome');
 
   const renderStep = () => {
     switch (step) {
@@ -65,6 +79,7 @@ export default function Onboarding() {
             onChange={(profile) => update({ profile })}
             onNext={goNext}
             onBack={goBack}
+            onLogoClick={goHome}
             progress={progress}
           />
         );
@@ -76,6 +91,7 @@ export default function Onboarding() {
             onChange={(frequency) => update({ frequency })}
             onNext={goNext}
             onBack={goBack}
+            onLogoClick={goHome}
             progress={progress}
           />
         );
@@ -89,6 +105,7 @@ export default function Onboarding() {
             onChange={(offerId) => update({ offerId })}
             onNext={goNext}
             onBack={goBack}
+            onLogoClick={goHome}
             progress={progress}
           />
         );
@@ -101,6 +118,7 @@ export default function Onboarding() {
             onChange={(documents) => update({ documents })}
             onNext={goNext}
             onBack={goBack}
+            onLogoClick={goHome}
             progress={progress}
             isLoggedIn={isLoggedIn}
           />
@@ -117,6 +135,7 @@ export default function Onboarding() {
             onChange={(val) => update({ paymentMethod: val })}
             onNext={goNext}
             onBack={goBack}
+            onLogoClick={goHome}
             progress={100}
           />
         );
@@ -148,6 +167,7 @@ export default function Onboarding() {
         labels={STEP_LABELS}
         currentIndex={progressIndex}
         onGoTo={goToStep}
+        onLogoClick={goHome}
       />
 
       {/*

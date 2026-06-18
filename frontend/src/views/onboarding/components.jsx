@@ -4,7 +4,7 @@ import Logo from '@/components/Logo';
 // Header partagé par les étapes du tunnel : bouton retour + logo centré + barre de progression.
 // Sur desktop (lg+), le logo et la progression sont déjà portés par la sidebar du tunnel
 // (cf. OnboardingShell) : on ne garde alors que le bouton retour.
-export function OnboardingHeader({ onBack, progress }) {
+export function OnboardingHeader({ onBack, progress, onLogoClick }) {
   return (
     <div className="sticky top-0 z-10 bg-white lg:static">
       <header className="flex items-center px-4 py-3 border-b border-border lg:px-8 lg:py-5">
@@ -23,7 +23,9 @@ export function OnboardingHeader({ onBack, progress }) {
           <div className="w-9" />
         )}
         <div className="flex-1 flex justify-center lg:hidden">
-          <Logo size="md" />
+          <button type="button" onClick={onLogoClick} aria-label="Retour à l'accueil">
+            <Logo size="md" />
+          </button>
         </div>
         <div className="w-9 lg:hidden" />
       </header>
@@ -37,12 +39,14 @@ export function OnboardingHeader({ onBack, progress }) {
 }
 
 // Sidebar desktop uniquement (cachée en mobile) : logo + stepper vertical cliquable.
-export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo }) {
+export function OnboardingSidebar({ steps, labels, currentIndex, onGoTo, onLogoClick }) {
   const { t } = useTranslation();
   return (
     <aside className="hidden lg:flex lg:w-[380px] xl:w-[420px] lg:sticky lg:top-0 lg:self-start lg:h-screen flex-col justify-between bg-gradient-to-br from-brand to-brand-focus text-white p-10 shrink-0">
       <div>
-        <img src="/comutitres_v_blanc.svg" alt="Comutitres" className="h-9 w-auto mb-12" />
+        <button type="button" onClick={onLogoClick} aria-label="Retour à l'accueil" className="block mb-12">
+          <img src="/comutitres_v_blanc.svg" alt="Comutitres" className="h-9 w-auto" />
+        </button>
 
         {currentIndex >= 0 && (
           <nav className="flex flex-col gap-1">
