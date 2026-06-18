@@ -11,23 +11,26 @@ DROP TABLE IF EXISTS `forfait`;
 DROP TABLE IF EXISTS `profil`;
 DROP TABLE IF EXISTS `compte_connect`;
 
--- 1. Table Compte_Connect 
+-- 1. Table Compte_Connect
 CREATE TABLE `compte_connect` (
     `id` int NOT NULL AUTO_INCREMENT,
     `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `firstName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-    `lastName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL, 
+    `lastName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `role` enum('user','admin') NOT NULL DEFAULT 'user',
     `consentement_rgpd` tinyint(1) NOT NULL DEFAULT '1',
     `isVerified` tinyint(1) NOT NULL DEFAULT '0',
     `verificationToken` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
     `passwordResetToken` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
     `isBanned` tinyint(1) NOT NULL DEFAULT '0',
+    `is_minor` tinyint(1) NOT NULL DEFAULT '0',
+    `parent_id` int DEFAULT NULL,
     `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `email` (`email`)
+    UNIQUE KEY `email` (`email`),
+    CONSTRAINT `fk_compte_parent` FOREIGN KEY (`parent_id`) REFERENCES `compte_connect` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 2. Table Profil
@@ -49,7 +52,7 @@ CREATE TABLE `profil` (
     CONSTRAINT `fk_profil_compte` FOREIGN KEY (`compte_id`) REFERENCES `compte_connect` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- 3. Table forfait 
+-- 3. Table forfait
 CREATE TABLE `forfait` (
     `id` int NOT NULL AUTO_INCREMENT,
     `porteur_id` int NOT NULL,
@@ -109,4 +112,18 @@ CREATE TABLE `notification` (
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_notification_compte` FOREIGN KEY (`compte_id`) REFERENCES `compte_connect` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_notification_forfait` FOREIGN KEY (`forfait_id`) REFERENCES `forfait` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 6. Table Linked_Accounts (lien parent / proche mineur — feature "Ajouter un proche")
+DROP TABLE IF EXISTS `linked_accounts`;
+CREATE TABLE `linked_accounts` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `parent_user_id` int NOT NULL,
+    `child_user_id` int NOT NULL,
+    `relationship` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'enfant',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_linked_parent_child` (`parent_user_id`, `child_user_id`),
+    CONSTRAINT `fk_linked_parent` FOREIGN KEY (`parent_user_id`) REFERENCES `compte_connect` (`id`),
+    CONSTRAINT `fk_linked_child` FOREIGN KEY (`child_user_id`) REFERENCES `compte_connect` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -18,6 +18,7 @@ const buildJwtPayload = (user) => ({
     updatedAt: user.updatedAt,
     isBanned: user.isBanned,
     consentement_rgpd: user.consentement_rgpd,
+    is_minor: !!user.is_minor,
 });
 
 // Envoi du mail de bienvenue (depuis le login d'un compte non vérifié)

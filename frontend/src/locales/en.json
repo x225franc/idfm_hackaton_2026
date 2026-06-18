@@ -31,11 +31,18 @@
     "subtitle": "Select the option that best describes you.",
     "next": "Next",
     "profiles": {
+      "junior":     { "label": "Junior",           "sub": "Under 16" },
       "actif":      { "label": "Working adult",    "sub": "26–62 years" },
       "etudiant":   { "label": "Student",          "sub": "Under 26" },
       "senior":     { "label": "Senior",           "sub": "Over 62" },
       "solidarite": { "label": "Solidarity",       "sub": "Social benefits recipient" },
       "mobilite":   { "label": "Reduced mobility", "sub": "" }
+    },
+    "minor_block": {
+      "title": "This pass is reserved for under-16s",
+      "text": "Minors cannot subscribe directly. A parent must create the account.",
+      "cta_parent": "I'm the parent → Create an account for my child",
+      "cta_existing": "I already have a child account — Sign in"
     }
   },
   "frequency": {
