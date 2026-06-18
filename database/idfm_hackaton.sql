@@ -4,6 +4,7 @@ SET NAMES 'utf8mb4';
 CREATE DATABASE IF NOT EXISTS `idfm_hackaton_2026` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `idfm_hackaton_2026`;
 
+DROP TABLE IF EXISTS `notification`;
 DROP TABLE IF EXISTS `paiement`;
 DROP TABLE IF EXISTS `document`;
 DROP TABLE IF EXISTS `forfait`;
@@ -89,3 +90,23 @@ CREATE TABLE `paiement` (
     CONSTRAINT `fk_paiement_forfait` FOREIGN KEY (`forfait_id`) REFERENCES `forfait` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_paiement_payeur` FOREIGN KEY (`payeur_id`) REFERENCES `profil` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 6. Table Notification
+CREATE TABLE `notification` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `compte_id` int NOT NULL,
+    `type` enum(
+        'renouvellement_1_mois',
+        'renouvellement_1_semaine',
+        'renouvellement_1_jour',
+        'changement_tranche_age'
+    ) NOT NULL,
+    `titre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `forfait_id` int DEFAULT NULL,
+    `lu` tinyint(1) NOT NULL DEFAULT '0',
+    `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_notification_compte` FOREIGN KEY (`compte_id`) REFERENCES `compte_connect` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_notification_forfait` FOREIGN KEY (`forfait_id`) REFERENCES `forfait` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

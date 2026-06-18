@@ -110,6 +110,7 @@ const forfaitRoutes = require("./routes/forfait.routes");
 const documentRoutes = require("./routes/document.routes");
 const paiementRoutes = require("./routes/paiement.routes");
 const chatRoutes = require("./routes/chat.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 
 // Utilisation des routes
@@ -120,9 +121,11 @@ app.use(forfaitRoutes);
 app.use(documentRoutes);
 app.use(paiementRoutes);
 app.use(chatRoutes);
+app.use(notificationRoutes);
 
 /////////////////////////////////////////////////////////////////////////////////
 const httpServer = http.createServer(app);
+const { startNotificationScheduler } = require("./services/notification.scheduler");
 
 // offline
 if (process.env.ENV === "development") {
@@ -132,6 +135,7 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
+		startNotificationScheduler();
 		httpServer.listen(process.env.BACKEND_PORT, () => {
 			console.log(
 				`Le serveur est en cours d'execution sur le port ${process.env.BACKEND_PORT}.`,
@@ -146,6 +150,7 @@ if (process.env.ENV === "development") {
 			return;
 		}
 		console.log("Connecté a la bdd.");
+		startNotificationScheduler();
 		httpServer.listen((err) => {
 			if (err) {
 				console.error("Erreur de demarrage du serveur : " + err.stack);
