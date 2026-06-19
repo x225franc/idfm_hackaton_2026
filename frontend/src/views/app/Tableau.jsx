@@ -407,7 +407,7 @@ export default function Tableau() {
 
             {sub && (
               <div className="hidden md:block mt-2">
-                <Link to="/passes">
+                <Link to="/historique">
                   <Button variant="outline" full>Voir mes transactions</Button>
                 </Link>
               </div>

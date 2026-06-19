@@ -146,6 +146,7 @@ const paiementRoutes = require("./routes/paiement.routes");
 const chatRoutes = require("./routes/chat.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const familyRoutes = require("./routes/family.routes");
+const trajetRoutes = require("./routes/trajet.routes");
 
 // Utilisation des routes
 app.use(authRoutes);
@@ -157,6 +158,7 @@ app.use(paiementRoutes);
 app.use(chatRoutes);
 app.use(notificationRoutes);
 app.use(familyRoutes);
+app.use(trajetRoutes);
 
 if (process.env.ENV === 'development') {
   app.get('/api/debug-sentry', () => {

@@ -4,16 +4,18 @@ import Footer from '@/components/Footer';
 import { MONTH_NAMES } from '@/utils';
 import {
   IconLayoutDashboard,
-  IconTicket,
+  IconReceipt2,
+  IconTrain,
   IconMessageChatbot,
   IconUser,
 } from '@tabler/icons-react';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Tableau', icon: IconLayoutDashboard },
-  { to: '/passes',    label: 'Passes',  icon: IconTicket           },
-  { to: '/ask',       label: 'Ask',     icon: IconMessageChatbot   },
-  { to: '/profil',    label: 'Profil',  icon: IconUser             },
+  { to: '/dashboard',  label: 'Tableau',    icon: IconLayoutDashboard },
+  { to: '/historique', label: 'Historique', icon: IconReceipt2        },
+  { to: '/trajets',    label: 'Trajets',    icon: IconTrain            },
+  { to: '/ask',        label: 'Ask',        icon: IconMessageChatbot   },
+  { to: '/profil',     label: 'Profil',     icon: IconUser             },
 ];
 
 export const STATUS_MAP = {

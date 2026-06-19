@@ -2,14 +2,15 @@ import { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import NotificationBell from '@/components/NotificationBell';
-import { IconLayoutDashboard, IconTicket, IconUser, IconLogout } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconReceipt2, IconTrain, IconUser, IconLogout } from '@tabler/icons-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { AuthContext } from '@/App';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Tableau', icon: IconLayoutDashboard },
-  { to: '/passes',    label: 'Passes',  icon: IconTicket           },
-  { to: '/profil',    label: 'Profil',  icon: IconUser             },
+  { to: '/dashboard',  label: 'Tableau',     icon: IconLayoutDashboard },
+  { to: '/historique', label: 'Historique',  icon: IconReceipt2        },
+  { to: '/trajets',    label: 'Mes trajets', icon: IconTrain           },
+  { to: '/profil',     label: 'Profil',      icon: IconUser            },
 ];
 
 export default function Header() {

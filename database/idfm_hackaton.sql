@@ -114,7 +114,21 @@ CREATE TABLE `notification` (
     CONSTRAINT `fk_notification_forfait` FOREIGN KEY (`forfait_id`) REFERENCES `forfait` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- 6. Table Linked_Accounts (lien parent / proche mineur — feature "Ajouter un proche")
+-- 6. Table Trajet (historique des scans de pass)
+DROP TABLE IF EXISTS `trajet`;
+CREATE TABLE `trajet` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `profil_id` INT NOT NULL,
+    `station` VARCHAR(100) NOT NULL,
+    `ligne` VARCHAR(20) NOT NULL,
+    `direction` VARCHAR(100) DEFAULT NULL,
+    `date_scan` DATETIME NOT NULL,
+    `type_scan` ENUM('entree', 'sortie') NOT NULL DEFAULT 'entree',
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_trajet_profil` FOREIGN KEY (`profil_id`) REFERENCES `profil`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 7. Table Linked_Accounts (lien parent / proche mineur — feature "Ajouter un proche")
 DROP TABLE IF EXISTS `linked_accounts`;
 CREATE TABLE `linked_accounts` (
     `id` int NOT NULL AUTO_INCREMENT,
