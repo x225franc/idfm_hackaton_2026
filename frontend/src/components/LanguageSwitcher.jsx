@@ -6,6 +6,16 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', label: 'English' },
 ];
 
+const COMING_SOON = [
+  { flag: '🇪🇸', label: 'Español' },
+  { flag: '🇩🇪', label: 'Deutsch' },
+  { flag: '🇮🇹', label: 'Italiano' },
+  { flag: '🇨🇳', label: '中文' },
+  { flag: '🇸🇦', label: 'العربية' },
+  { flag: '🇯🇵', label: '日本語' },
+  { flag: '🇰🇷', label: '한국어' },
+];
+
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -39,7 +49,7 @@ export default function LanguageSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-white border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[140px]">
+        <div className="absolute right-0 top-full mt-1 bg-white border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-40">
           {others.map((lang) => (
             <button
               key={lang.code}
@@ -51,6 +61,20 @@ export default function LanguageSwitcher() {
               <span>{lang.label}</span>
             </button>
           ))}
+          {COMING_SOON.length > 0 && (
+            <div className="border-t border-border mt-1 pt-1">
+              {COMING_SOON.map((lang) => (
+                <div
+                  key={lang.label}
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-sm text-secondary/50 cursor-not-allowed"
+                >
+                  <span className="text-xl leading-none opacity-50">{lang.flag}</span>
+                  <span>{lang.label}</span>
+                  <span className="ml-auto text-[10px] text-secondary/40">bientôt</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
