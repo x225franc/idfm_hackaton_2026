@@ -25,7 +25,7 @@ export const AuthContext = createContext({ user: null, refreshUser: () => Promis
 const GuestRoute = ({ children }) => {
   const { state } = useLocation();
   const { user } = useContext(AuthContext);
-  if (user?.scope === 'full' && state?.startStep == null) return <Navigate to="/dashboard" replace />;
+  if (user?.scope === 'full' && state?.startStep == null) return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />;
   return children;
 };
 

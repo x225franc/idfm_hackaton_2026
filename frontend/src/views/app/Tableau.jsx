@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import AppShell, { STATUS_MAP, subscriptionProgress } from '@/components/app/AppShell';
 import AddChildModal from '@/components/app/AddChildModal';
+import ManageChildModal from '@/components/app/ManageChildModal';
 import Button from '@/components/ui/Button';
 import { apiFetch, toDateStr, formatDate } from '@/utils';
 import {
@@ -42,11 +43,18 @@ function Notice({ notice, onClose }) {
   );
 }
 
-function SubscriptionCard({ sub }) {
+function SubscriptionCard({ sub, onNfcToggle }) {
   const status   = STATUS_MAP[sub.status] ?? { label: sub.status, dot: 'bg-secondary/60' };
   const progress = sub.startDate && sub.endDate
     ? subscriptionProgress(sub.startDate, sub.endDate)
     : 0;
+  const [nfcEnabled, setNfcEnabled] = useState(false);
+
+  const handleNfcToggle = () => {
+    const next = !nfcEnabled;
+    setNfcEnabled(next);
+    onNfcToggle?.(next);
+  };
 
   return (
     <>
@@ -76,6 +84,24 @@ function SubscriptionCard({ sub }) {
               className="h-full rounded-full bg-white transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
+          </div>
+        )}
+
+        {sub.status === 'Actif' && (
+          <div className="md:hidden flex items-center justify-between bg-white/10 rounded-xl px-3 py-2 mt-1">
+            <span className="text-xs font-semibold text-white/90">Activer le NFC</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={nfcEnabled}
+              aria-label="Activer le NFC"
+              onClick={handleNfcToggle}
+              className={`relative w-11 h-6 shrink-0 rounded-full transition-colors ${nfcEnabled ? 'bg-success' : 'bg-white/25'}`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${nfcEnabled ? 'translate-x-5' : 'translate-x-0'}`}
+              />
+            </button>
           </div>
         )}
       </div>
@@ -146,6 +172,9 @@ function EmptySubscription() {
 }
 
 function ChildCard({ child, onManage }) {
+  const sub = child.activeSubscription;
+  const status = sub ? (STATUS_MAP[sub.statut] ?? { label: sub.statut, dot: 'bg-secondary/60' }) : null;
+
   return (
     <div className="shrink-0 w-48 bg-white rounded-2xl border border-border p-4 flex flex-col gap-3">
       <div className="w-10 h-10 rounded-xl bg-blue-light text-brand-interaction flex items-center justify-center font-bold text-sm">
@@ -153,9 +182,14 @@ function ChildCard({ child, onManage }) {
       </div>
       <div>
         <p className="font-semibold text-anthracite text-sm truncate">{child.firstName} {child.lastName}</p>
-        <p className="text-secondary text-xs mt-0.5">
-          {child.activeSubscription ? child.activeSubscription.type_forfait : 'Aucun abonnement actif'}
-        </p>
+        {sub ? (
+          <p className="text-secondary text-xs mt-0.5 flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dot}`} />
+            <span className="truncate">{sub.type_forfait} · {status.label}</span>
+          </p>
+        ) : (
+          <p className="text-secondary text-xs mt-0.5">Aucun abonnement actif</p>
+        )}
       </div>
       <Button variant="outline" className="text-xs py-2" onClick={() => onManage(child)}>Gérer</Button>
     </div>
@@ -203,6 +237,7 @@ export default function Tableau() {
   const [children, setChildren] = useState([]);
   const [loadingChildren, setLoadingChildren] = useState(true);
   const [addChildOpen, setAddChildOpen] = useState(false);
+  const [manageChild, setManageChild] = useState(null);
   const [notice, setNotice] = useState(null);
 
   const showNotice = (type, message) => {
@@ -273,8 +308,12 @@ export default function Tableau() {
     fetchChildren();
   };
 
-  const handleManageChild = () => {
-    showNotice('success', 'La gestion détaillée du compte d\'un proche arrive prochainement.');
+  const handleManageChild = (child) => setManageChild(child);
+
+  const handleChildSubscribed = (child) => {
+    setManageChild(null);
+    showNotice('success', `✓ Forfait souscrit pour ${child.firstName}.`);
+    fetchChildren();
   };
 
   return (
@@ -296,7 +335,15 @@ export default function Tableau() {
               : sub?.status === 'En attente de validation'
                 ? <PendingSubscription sub={sub} />
                 : sub
-                  ? <SubscriptionCard sub={sub} />
+                  ? <SubscriptionCard
+                      sub={sub}
+                      onNfcToggle={(enabled) => showNotice(
+                        'success',
+                        enabled
+                          ? '📡 Mode NFC activé. Approchez votre téléphone du valideur.'
+                          : 'Mode NFC désactivé.'
+                      )}
+                    />
                   : <EmptySubscription />
             }
           </div>
@@ -373,6 +420,13 @@ export default function Tableau() {
         open={addChildOpen}
         onClose={() => setAddChildOpen(false)}
         onCreated={handleChildCreated}
+      />
+
+      <ManageChildModal
+        open={!!manageChild}
+        child={manageChild}
+        onClose={() => setManageChild(null)}
+        onSubscribed={handleChildSubscribed}
       />
     </AppShell>
   );

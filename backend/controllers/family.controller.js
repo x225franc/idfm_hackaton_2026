@@ -121,12 +121,15 @@ const getChildren = async (req, res) => {
         const rows = await familyModel.getChildrenByParentId(req.user.id_user);
         const children = rows.map((r) => ({
             id: r.id,
+            profilId: r.profilId,
             firstName: r.firstName,
             lastName: r.lastName,
             email: r.email,
+            birthDate: r.birthDate,
             activeSubscription: r.subscription_type ? {
                 type_forfait: r.subscription_type,
                 statut: r.subscription_statut,
+                date_debut: r.subscription_date_debut,
                 date_fin: r.subscription_date_fin,
             } : null,
         }));

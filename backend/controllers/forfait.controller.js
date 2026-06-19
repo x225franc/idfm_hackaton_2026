@@ -5,7 +5,7 @@ const create = async (req, res) => {
     const { porteur_id, payeur_id, type_forfait } = req.body;
     try {
         const [porteurRows, payeurRows] = await Promise.all([
-            profilModel.belongsToCompte(porteur_id, req.user.id_user),
+            profilModel.belongsToFamily(porteur_id, req.user.id_user),
             profilModel.belongsToCompte(payeur_id, req.user.id_user),
         ]);
         if (porteurRows.length === 0 || payeurRows.length === 0)
