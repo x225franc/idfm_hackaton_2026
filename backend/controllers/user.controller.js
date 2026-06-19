@@ -10,7 +10,7 @@ const paiementModel = require('../models/paiement.model');
 const transporter = require('../config/mailer');
 const EmailTemplate = require('../components/emailTemplate');
 
-const logo = () => `${process.env.BACKEND_URL}/components/logo.svg`;
+const logo = () => `${process.env.FRONTEND_URL}/components/logo.svg`;
 
 const getAll = async (req, res) => {
     try {
