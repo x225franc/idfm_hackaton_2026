@@ -91,9 +91,43 @@ database/
 
 ---
 
-## Production (Docker Swarm)
+## Production
+
+| Service           | URL                                          |
+| ----------------- | -------------------------------------------- |
+| Frontend          | https://comutitres.crosskultur.fr            |
+| API Backend       | https://comutitres.crosskultur.fr/api        |
+| Swagger (doc API) | https://comutitres.crosskultur.fr/api-docs   |
+| GlitchTip         | http://162.19.241.58:8001                    |
+| Traefik Dashboard | http://162.19.241.58:8090                    |
+
+**VPS** : `162.19.241.58` — Debian, user `debian`, dossier `/home/debian/idfm_hackaton_2026`
+
+### Déploiement
+
+Le déploiement est automatique via GitHub Actions à chaque push sur `main`.
+
+Pour forcer un redéploiement manuel sur le VPS :
 
 ```bash
-docker swarm init
-docker stack deploy -c docker-compose-prod.yml idfm_app
+ssh debian@162.19.241.58
+cd /home/debian/idfm_hackaton_2026
+git pull
+docker compose -f docker-compose-prod.yml up -d --build
+```
+
+### Migrations BDD en prod
+
+Sans mot de passe (DB_PASS est vide en prod) :
+
+```bash
+docker exec -i idfm_db_prod mysql -u root idfm_hackaton_2026 << 'EOF'
+-- coller le SQL ici
+EOF
+```
+
+Charger les fixtures en prod :
+
+```bash
+docker exec -i idfm_db_prod mysql -u root idfm_hackaton_2026 < database/fixtures.sql
 ```
