@@ -13,7 +13,8 @@ import NotFound from './views/Notfound';
 import Admin from './views/admin/Home';
 import Onboarding from './views/onboarding/Onboarding';
 import Tableau from './views/app/Tableau';
-import Passes from './views/app/Passes';
+import Historique from './views/app/Historique';
+import Trajets from './views/app/Trajets';
 import Ask from './views/app/Ask';
 import Profil from './views/app/Profil';
 
@@ -102,7 +103,8 @@ export default function App() {
         <Route path="/offres" element={<OffersCatalog />} />
 
         <Route path="/dashboard" element={<PrivateRoute><Tableau /></PrivateRoute>} />
-        <Route path="/passes"    element={<PrivateRoute><Passes /></PrivateRoute>} />
+        <Route path="/historique" element={<PrivateRoute><Historique /></PrivateRoute>} />
+        <Route path="/trajets"   element={<PrivateRoute><Trajets /></PrivateRoute>} />
         <Route path="/ask"       element={<PrivateRoute><Ask /></PrivateRoute>} />
         <Route path="/profil"    element={<PrivateRoute><Profil /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />

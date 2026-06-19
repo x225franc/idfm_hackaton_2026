@@ -1,5 +1,6 @@
 const documentModel = require('../models/document.model');
 const profilModel = require('../models/profil.model');
+const notifModel = require('../models/notification.model');
 
 const upload = async (req, res) => {
     const { profil_id, type_document } = req.body;
@@ -45,7 +46,18 @@ const updateStatus = async (req, res) => {
         return res.status(400).json({ message: 'Statut invalide' });
 
     try {
+        const [owner] = await documentModel.getOwnerInfo(req.params.id);
         await documentModel.updateStatus(req.params.id, statut_verification, commentaire_admin);
+
+        if (owner) {
+            const validated = statut_verification === 'Validé';
+            const titre = validated ? 'Document validé' : 'Document refusé';
+            const message = validated
+                ? `Votre document "${owner.type_document}" a été validé.`
+                : `Votre document "${owner.type_document}" a été refusé.${commentaire_admin ? ' Motif : ' + commentaire_admin : ''}`;
+            await notifModel.create(owner.compte_id, validated ? 'document_valide' : 'document_refuse', titre, message);
+        }
+
         res.status(200).json({ message: `Document marqué comme ${statut_verification}` });
     } catch {
         res.status(500).json({ message: 'Erreur serveur' });

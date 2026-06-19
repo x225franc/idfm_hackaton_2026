@@ -41,6 +41,7 @@ USE `idfm_hackaton_2026`;
 
 -- Vider dans l'ordre inverse des FK
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `trajet`;
 TRUNCATE TABLE `notification`;
 TRUNCATE TABLE `paiement`;
 TRUNCATE TABLE `document`;
@@ -362,3 +363,38 @@ VALUES
    'Votre enfant peut bénéficier de l''Imagine R Junior',
    'Nathan vient d''avoir 4 ans. Il peut désormais bénéficier de l''abonnement Imagine R Junior pour circuler en Île-de-France. Rendez-vous dans votre espace pour faire la demande.',
    NULL, 0, DATE_SUB(CURDATE(), INTERVAL 4 YEAR));
+
+-- ────────────────────────────────────────────────────────────
+-- 7. TRAJETS (scans de pass — mêmes 2 entrées pour tous les profils)
+-- ────────────────────────────────────────────────────────────
+INSERT INTO `trajet`
+  (profil_id, station, ligne, direction, date_scan, type_scan)
+VALUES
+  (1,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (1,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (2,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (2,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (3,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (3,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (4,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (4,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (5,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (5,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (6,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (6,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (7,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (7,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (8,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (8,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (9,  'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (9,  'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (10, 'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (10, 'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (11, 'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (11, 'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (12, 'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (12, 'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (13, 'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (13, 'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree'),
+  (14, 'Châtelet – Les Halles', 'RER A', 'Direction Marne-la-Vallée', DATE_SUB(NOW(), INTERVAL 1 DAY), 'entree'),
+  (14, 'Gare du Nord',          'RER B', 'Direction Mitry-Claye',      DATE_SUB(NOW(), INTERVAL 3 DAY), 'entree');

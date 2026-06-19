@@ -43,4 +43,22 @@ module.exports = {
         values.push(id);
         return q(sql, values);
     },
+
+    getOwnerInfo: (id) =>
+        q(
+            `SELECT f.type_forfait, p.compte_id
+             FROM forfait f
+             JOIN profil p ON f.porteur_id = p.id
+             WHERE f.id = ?`,
+            [id]
+        ),
+
+    getCore: (id) =>
+        q('SELECT id, porteur_id, payeur_id, type_forfait, statut FROM forfait WHERE id = ?', [id]),
+
+    resetToPending: (id) =>
+        q(
+            `UPDATE forfait SET statut = 'En attente de validation', date_debut = NULL, date_fin = NULL WHERE id = ?`,
+            [id]
+        ),
 };

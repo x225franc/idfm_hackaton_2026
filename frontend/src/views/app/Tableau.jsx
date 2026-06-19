@@ -3,14 +3,15 @@ import { Link, useLocation } from 'react-router-dom';
 import AppShell, { STATUS_MAP, subscriptionProgress } from '@/components/app/AppShell';
 import AddChildModal from '@/components/app/AddChildModal';
 import ManageChildModal from '@/components/app/ManageChildModal';
+import RenewModal from '@/components/app/RenewModal';
 import Button from '@/components/ui/Button';
 import { apiFetch, toDateStr, formatDate } from '@/utils';
 import {
   IconCalendar,
   IconClock,
   IconFileDescription,
-  IconRefresh,
   IconHeadset,
+  IconRefresh,
   IconInfoCircle,
   IconChevronRight,
   IconTicket,
@@ -152,6 +153,23 @@ function PendingSubscription({ sub }) {
   );
 }
 
+function RenewalBanner({ sub, onRenew }) {
+  return (
+    <div className="rounded-2xl border-2 border-warning/30 bg-warning-light p-4 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-warning/15 flex items-center justify-center text-warning shrink-0">
+        <IconRefresh size={20} stroke={2} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-anthracite text-sm">Votre forfait doit être renouvelé</p>
+        <p className="text-secondary text-xs mt-0.5">
+          {sub.name} — renouvelez-le pour continuer à voyager sans interruption.
+        </p>
+      </div>
+      <Button variant="primary" className="text-xs py-2 shrink-0" onClick={onRenew}>Renouveler</Button>
+    </div>
+  );
+}
+
 function EmptySubscription() {
   return (
     <div className="rounded-2xl border-2 border-dashed border-border bg-white p-8 flex flex-col items-center text-center gap-4">
@@ -238,6 +256,7 @@ export default function Tableau() {
   const [loadingChildren, setLoadingChildren] = useState(true);
   const [addChildOpen, setAddChildOpen] = useState(false);
   const [manageChild, setManageChild] = useState(null);
+  const [renewOpen, setRenewOpen] = useState(false);
   const [notice, setNotice] = useState(null);
 
   const showNotice = (type, message) => {
@@ -256,43 +275,48 @@ export default function Tableau() {
     }
   };
 
+  const fetchSub = async () => {
+    const stored = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!stored?.id) { setSub(null); return; }
+
+    try {
+      const profile = await apiFetch(`/api/get/user/${stored.id}`);
+      if (!profile.profil_id) { setSub(null); return; }
+
+      const [forfaits, paiements] = await Promise.all([
+        apiFetch(`/api/forfaits/porteur/${profile.profil_id}`),
+        apiFetch(`/api/paiements/payeur/${profile.profil_id}`),
+      ]);
+
+      const forfait = forfaits.find((f) => f.statut === 'Actif')
+        ?? forfaits.find((f) => f.statut === 'En attente de validation')
+        ?? forfaits.find((f) => f.statut === 'A renouveler')
+        ?? forfaits[0]
+        ?? null;
+
+      setSub(forfait ? {
+        id:           forfait.id,
+        name:         forfait.type_forfait,
+        status:       forfait.statut,
+        startDate:    toDateStr(forfait.date_debut),
+        endDate:      toDateStr(forfait.date_fin),
+        monthlyPrice: paiements[0] ? parseFloat(paiements[0].montant) : null,
+      } : null);
+    } catch (err) {
+      if (err.message === '404') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
+      setSub(null);
+    }
+  };
+
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('user') || 'null');
     setUser(stored);
-    if (!stored?.id) { setSub(null); return; }
-
-    (async () => {
-      try {
-        const profile = await apiFetch(`/api/get/user/${stored.id}`);
-        if (!profile.profil_id) { setSub(null); return; }
-
-        const [forfaits, paiements] = await Promise.all([
-          apiFetch(`/api/forfaits/porteur/${profile.profil_id}`),
-          apiFetch(`/api/paiements/payeur/${profile.profil_id}`),
-        ]);
-
-        const forfait = forfaits.find((f) => f.statut === 'Actif')
-          ?? forfaits.find((f) => f.statut === 'En attente de validation')
-          ?? forfaits[0]
-          ?? null;
-
-        setSub(forfait ? {
-          name:         forfait.type_forfait,
-          status:       forfait.statut,
-          startDate:    toDateStr(forfait.date_debut),
-          endDate:      toDateStr(forfait.date_fin),
-          monthlyPrice: paiements[0] ? parseFloat(paiements[0].montant) : null,
-        } : null);
-      } catch (err) {
-        if (err.message === '404') {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-          return;
-        }
-        setSub(null);
-      }
-    })();
+    fetchSub();
 
     if (!stored?.is_minor) fetchChildren();
     else setLoadingChildren(false);
@@ -309,6 +333,12 @@ export default function Tableau() {
   };
 
   const handleManageChild = (child) => setManageChild(child);
+
+  const handleRenewed = () => {
+    setRenewOpen(false);
+    showNotice('success', '✓ Demande de renouvellement envoyée, en attente de validation.');
+    fetchSub();
+  };
 
   const handleChildSubscribed = (child) => {
     setManageChild(null);
@@ -346,6 +376,10 @@ export default function Tableau() {
                     />
                   : <EmptySubscription />
             }
+
+            {sub?.status === 'A renouveler' && (
+              <RenewalBanner sub={sub} onRenew={() => setRenewOpen(true)} />
+            )}
           </div>
 
           {/* Un proche mineur connecté est en lecture seule : pas de gestion de famille pour lui. */}
@@ -363,7 +397,7 @@ export default function Tableau() {
 
             {sub && sub.status === 'Actif' && (
               <Link
-                to="/documents"
+                to="/profil"
                 className="bg-white rounded-2xl border border-border p-4 flex items-center gap-3 hover:border-brand/40 hover:shadow-sm transition-all shadow-xs"
               >
                 <div className="w-10 h-10 rounded-xl bg-blue-light flex items-center justify-center shrink-0 text-brand-interaction">
@@ -377,24 +411,10 @@ export default function Tableau() {
               </Link>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
-              {sub && sub.status === 'Actif' && (
-                <Link
-                  to="/changer-forfait"
-                  className="bg-white rounded-2xl border border-border p-4 flex flex-col items-center gap-2 hover:border-brand/40 hover:shadow-sm transition-all shadow-xs text-center"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-blue-light flex items-center justify-center text-brand-interaction">
-                    <IconRefresh size={20} stroke={2} />
-                  </div>
-                  <p className="font-semibold text-anthracite text-xs leading-snug">
-                    Changer de forfait
-                  </p>
-                </Link>
-              )}
-
+            <div className="grid grid-cols-1 gap-3">
               <Link
-                to="/support"
-                className={`bg-white rounded-2xl border border-border p-4 flex flex-col items-center gap-2 hover:border-brand/40 hover:shadow-sm transition-all shadow-xs text-center ${(!sub || sub.status !== 'Actif') ? 'col-span-2' : ''}`}
+                to="/faq"
+                className="bg-white rounded-2xl border border-border p-4 flex flex-col items-center gap-2 hover:border-brand/40 hover:shadow-sm transition-all shadow-xs text-center"
               >
                 <div className="w-10 h-10 rounded-xl bg-blue-light flex items-center justify-center text-brand-interaction">
                   <IconHeadset size={20} stroke={2} />
@@ -407,7 +427,7 @@ export default function Tableau() {
 
             {sub && (
               <div className="hidden md:block mt-2">
-                <Link to="/passes">
+                <Link to="/historique">
                   <Button variant="outline" full>Voir mes transactions</Button>
                 </Link>
               </div>
@@ -427,6 +447,13 @@ export default function Tableau() {
         child={manageChild}
         onClose={() => setManageChild(null)}
         onSubscribed={handleChildSubscribed}
+      />
+
+      <RenewModal
+        open={renewOpen}
+        sub={sub}
+        onClose={() => setRenewOpen(false)}
+        onRenewed={handleRenewed}
       />
     </AppShell>
   );
