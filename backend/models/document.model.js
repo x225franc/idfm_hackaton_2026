@@ -37,4 +37,13 @@ module.exports = {
             commentaire || null,
             id,
         ]),
+
+    getOwnerInfo: (id) =>
+        q(
+            `SELECT d.type_document, p.compte_id
+             FROM document d
+             JOIN profil p ON d.profil_id = p.id
+             WHERE d.id = ?`,
+            [id]
+        ),
 };

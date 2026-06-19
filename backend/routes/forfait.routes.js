@@ -48,6 +48,37 @@ router.post('/api/forfaits', authMiddleware, forfaitController.create);
 
 /**
  * @swagger
+ * /api/forfaits/{id}/renew:
+ *   post:
+ *     summary: Demander le renouvellement d'un forfait au statut "A renouveler"
+ *     tags: [Forfaits]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [montant, type_paiement]
+ *             properties:
+ *               montant: { type: number }
+ *               type_paiement: { type: string }
+ *     responses:
+ *       201:
+ *         description: Demande de renouvellement enregistrée (forfait repassé en attente de validation)
+ *       400:
+ *         description: Le forfait n'est pas au statut "A renouveler"
+ *       403:
+ *         description: Accès refusé
+ */
+router.post('/api/forfaits/:id/renew', authMiddleware, requireVerified, forfaitController.renew);
+
+/**
+ * @swagger
  * /api/forfaits/porteur/{porteur_id}:
  *   get:
  *     summary: Récupérer les forfaits d'un porteur

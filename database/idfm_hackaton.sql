@@ -102,7 +102,10 @@ CREATE TABLE `notification` (
         'renouvellement_1_mois',
         'renouvellement_1_semaine',
         'renouvellement_1_jour',
-        'changement_tranche_age'
+        'changement_tranche_age',
+        'document_valide',
+        'document_refuse',
+        'forfait_statut_change'
     ) NOT NULL,
     `titre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
