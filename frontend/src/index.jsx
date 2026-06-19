@@ -6,7 +6,8 @@ import './index.css';
 import './i18n';
 import App from './App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+const root = container._reactRoot ?? (container._reactRoot = ReactDOM.createRoot(container));
 
 import { registerSW } from 'virtual:pwa-register';
 registerSW({ immediate: true });
