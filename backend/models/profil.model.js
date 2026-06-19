@@ -18,4 +18,14 @@ module.exports = {
 
     belongsToCompte: (profilId, compteId) =>
         q('SELECT id FROM profil WHERE id = ? AND compte_id = ?', [profilId, compteId]),
+
+    belongsToFamily: (profilId, compteId) =>
+        q(
+            `SELECT id FROM profil
+             WHERE id = ?
+               AND (compte_id = ? OR compte_id IN (
+                   SELECT child_user_id FROM linked_accounts WHERE parent_user_id = ?
+               ))`,
+            [profilId, compteId, compteId]
+        ),
 };
