@@ -6,7 +6,7 @@ const EmailTemplate = require('../components/emailTemplate');
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const MAIL_FROM    = process.env.MAIL_USER    || 'noreply@comutitres.fr';
-const LOGO_URL     = `${FRONTEND_URL}/logo.png`;
+const LOGO_URL     = `${FRONTEND_URL}/components/logo.svg`;
 
 const AGE_TRANSITIONS = [
     {

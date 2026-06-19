@@ -118,8 +118,8 @@ app.use(
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
-	"/components/idfm_hackaton_2026",
-	express.static(path.join(__dirname, "components/idfm_hackaton_2026")),
+	"/components",
+	express.static(path.join(__dirname, "components/")),
 );
 
 /////////////////////////////////////////////////////////////////////////////////
